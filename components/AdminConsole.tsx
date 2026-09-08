@@ -48,10 +48,20 @@ const EMPTY_FORM: LessonFormState = {
   category: '기초',
   description: '',
   access: 'subscribers',
-  sort_order: 10,
+  sort_order: 1,
   duration_label: '',
   published: true,
 };
+
+function nextSortOrder(lessons: Lesson[]): number {
+  if (!lessons.length) return 1;
+  const max = Math.max(...lessons.map((l) => Number(l.sort_order) || 0));
+  return (Number.isFinite(max) ? max : lessons.length) + 1;
+}
+
+function blankForm(lessons: Lesson[]): LessonFormState {
+  return { ...EMPTY_FORM, sort_order: nextSortOrder(lessons) };
+}
 
 function formatSeoul(iso: string | null): string {
   if (!iso) return '—';
@@ -99,9 +109,10 @@ export default function AdminConsole() {
 
   const loadLessons = useCallback(async () => {
     const client = getMemberClient();
-    if (!client) return;
+    if (!client) return [] as Lesson[];
     const rows = await listAllLessons(client);
     setLessons(rows);
+    return rows;
   }, []);
 
   useEffect(() => {
@@ -300,8 +311,9 @@ export default function AdminConsole() {
         setUploadFile(null);
       }
 
-      await loadLessons();
-      setForm(formFromLesson(lesson));
+      const rows = (await loadLessons()) || [];
+      setForm(blankForm(rows));
+      setUploadFile(null);
       setUploadPct(null);
       setMessage(form.id ? '강의를 저장했습니다.' : '강의를 만들고 저장했습니다.');
     } catch (err) {
@@ -322,11 +334,11 @@ export default function AdminConsole() {
     setLessonError(null);
     try {
       await deleteLesson(client, lesson.id, lesson.storage_path);
+      const rows = (await loadLessons()) || [];
       if (form.id === lesson.id) {
-        setForm(EMPTY_FORM);
+        setForm(blankForm(rows));
         setUploadFile(null);
       }
-      await loadLessons();
       setMessage('강의를 삭제했습니다.');
     } catch (err) {
       const detail = err instanceof Error && err.message ? err.message : '삭제 실패';
@@ -532,7 +544,7 @@ export default function AdminConsole() {
                   className="btn-outline"
                   disabled={busy || actionBusy}
                   onClick={() => {
-                    setForm(EMPTY_FORM);
+                    setForm(blankForm(lessons));
                     setUploadFile(null);
                     setLessonError(null);
                   }}
@@ -735,7 +747,7 @@ export default function AdminConsole() {
                     className="btn-outline"
                     disabled={actionBusy}
                     onClick={() => {
-                      setForm(EMPTY_FORM);
+                      setForm(blankForm(lessons));
                       setUploadFile(null);
                       setLessonError(null);
                     }}
