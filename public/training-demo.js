@@ -23,10 +23,10 @@ loadFavorites();
 
 function fallbackLessons(){
   return [
-    {id:'1',sort_order:1,category:'기초',title:'연습을 시작하기 전에',description:'목표와 연습 환경을 정리하는 첫 시간',access:'free',storage_path:null,video_url:'/training-sample.mp4',duration_label:'미리보기',tag:'무료 미리보기',sessions:[]},
-    {id:'2',sort_order:2,category:'SOVT',title:'빨대 발성, 연습의 출발점',description:'수업에서 배운 연습을 다시 확인하기',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
-    {id:'3',sort_order:3,category:'기초',title:'작은 소리에서 연결 찾기',description:'소리의 크기와 연결을 살펴보는 시간',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
-    {id:'4',sort_order:4,category:'노래 적용',title:'한 구절로 옮겨보기',description:'연습과 노래를 연결하는 과정',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
+    {id:'1',sort_order:1,category:'기초',title:'연습을 시작하기 전에',description:'목표와 연습 환경을 정리하는 첫 시간',body:'',access:'free',storage_path:null,video_url:'/training-sample.mp4',duration_label:'미리보기',tag:'무료 미리보기',sessions:[]},
+    {id:'2',sort_order:2,category:'SOVT',title:'빨대 발성, 연습의 출발점',description:'수업에서 배운 연습을 다시 확인하기',body:'',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
+    {id:'3',sort_order:3,category:'기초',title:'작은 소리에서 연결 찾기',description:'소리의 크기와 연결을 살펴보는 시간',body:'',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
+    {id:'4',sort_order:4,category:'노래 적용',title:'한 구절로 옮겨보기',description:'연습과 노래를 연결하는 과정',body:'',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
   ];
 }
 
@@ -50,6 +50,7 @@ function lessons(){
         category:l.category||'',
         title:l.title||'',
         description:l.description||'',
+        body:l.body||'',
         access:l.access==='free'?'free':'subscribers',
         storage_path:l.storage_path||null,
         video_url:l.video_url||'/training-sample.mp4',
