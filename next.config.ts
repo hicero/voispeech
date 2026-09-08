@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -14,6 +15,10 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
       },
     ],
+  },
+  typescript: {
+    // Keep local typecheck; do not fail Vercel on transient TS tooling mismatches
+    ignoreBuildErrors: false,
   },
 };
 
