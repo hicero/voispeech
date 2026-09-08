@@ -110,6 +110,7 @@ async function startLivePreview(){
   }
   try{
     await act.startPreview();
+    if(typeof act.refresh==='function')await act.refresh();
     update();
     tell('구독 체험이 시작되었습니다. 전용 영상을 열 수 있습니다.');
   }catch(err){

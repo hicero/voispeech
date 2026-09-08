@@ -113,7 +113,16 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     ): Promise<Membership> {
       const membership = await fn(client!);
       if (!mounted) return membership;
-      const next = applyMembership(membership, lastEmail);
+      let email = lastEmail;
+      if (email == null) {
+        const { data, error } = await client!.auth.getUser();
+        if (!mounted) return membership;
+        if (!error && data.user) {
+          email = data.user.email ?? null;
+          lastEmail = email;
+        }
+      }
+      const next = applyMembership(membership, email);
       setState(next);
       publishToDom(next);
       return membership;
@@ -131,12 +140,20 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       clearTimeout(timer);
       timer = setTimeout(() => { void refresh(); }, 0);
     });
+    const onPageShow = () => { void refresh(); };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') void refresh();
+    };
+    window.addEventListener('pageshow', onPageShow);
+    document.addEventListener('visibilitychange', onVisibility);
     void refresh();
     return () => {
       mounted = false;
       revision++;
       clearTimeout(timer);
       listener.subscription.unsubscribe();
+      window.removeEventListener('pageshow', onPageShow);
+      document.removeEventListener('visibilitychange', onVisibility);
       delete window.__VOISPEECH_ACTIONS__;
     };
   }, []);
