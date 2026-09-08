@@ -139,6 +139,20 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         }
       }
 
+      // Prefer an active session snapshot over a still-stale inactive fetch
+      // (RPC may have activated membership while this refresh was in flight).
+      const latestSnapshot = loadMembershipSnapshot();
+      if (
+        !isSubscriptionActive(membership) &&
+        latestSnapshot &&
+        isSubscriptionActive(latestSnapshot)
+      ) {
+        const next = applyMembership(latestSnapshot, lastEmail);
+        setState(next);
+        publishToDom(next);
+        return;
+      }
+
       saveMembershipSnapshot(membership);
       const next = applyMembership(membership, lastEmail);
       setState(next);

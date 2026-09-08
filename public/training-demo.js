@@ -122,8 +122,12 @@ async function startLivePreview(){
   }
   try{
     await act.startPreview();
-    if(typeof act.refresh==='function')await act.refresh();
-    update();
+    // Do not refresh() here — stale fetch can overwrite the just-activated membership.
+    if(window.__VOISPEECH_TRAINING__&&typeof window.__VOISPEECH_TRAINING__.sync==='function'){
+      window.__VOISPEECH_TRAINING__.sync();
+    }else{
+      update();
+    }
     tell('구독 체험이 시작되었습니다. 전용 영상을 열 수 있습니다.');
   }catch(err){
     tell('구독 체험을 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.');
@@ -138,8 +142,11 @@ async function liveCancelRenewal(){
   }
   try{
     await act.cancelRenewal();
-    if(typeof act.refresh==='function')await act.refresh();
-    update();
+    if(window.__VOISPEECH_TRAINING__&&typeof window.__VOISPEECH_TRAINING__.sync==='function'){
+      window.__VOISPEECH_TRAINING__.sync();
+    }else{
+      update();
+    }
     tell('자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.');
   }catch(err){
     tell('자동 갱신 해지를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.');
@@ -154,8 +161,11 @@ async function liveExpire(){
   }
   try{
     await act.expirePreview();
-    if(typeof act.refresh==='function')await act.refresh();
-    update();
+    if(window.__VOISPEECH_TRAINING__&&typeof window.__VOISPEECH_TRAINING__.sync==='function'){
+      window.__VOISPEECH_TRAINING__.sync();
+    }else{
+      update();
+    }
     tell('이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.');
   }catch(err){
     tell('이용기간 만료를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.');
