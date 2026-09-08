@@ -20,7 +20,10 @@ export type Lesson = {
   sort_order: number;
   category: string;
   title: string;
+  /** 소제목 (subtitle under title in player) */
   description: string;
+  /** 내용 (body text below video) */
+  body: string;
   access: LessonAccess;
   storage_path: string | null;
   duration_label: string;
@@ -35,6 +38,7 @@ export type LessonInput = {
   category: string;
   title: string;
   description: string;
+  body?: string;
   access: LessonAccess;
   duration_label?: string;
   published: boolean;
@@ -51,7 +55,7 @@ export type LessonSessionInput = {
 };
 
 const LESSON_COLS =
-  'id,sort_order,category,title,description,access,storage_path,duration_label,published,created_at,updated_at';
+  'id,sort_order,category,title,description,body,access,storage_path,duration_label,published,created_at,updated_at';
 
 const SESSION_COLS =
   'id,lesson_id,sort_order,title,description,storage_path,duration_label,published,created_at,updated_at';
@@ -89,6 +93,7 @@ function mapLesson(raw: unknown, sessions: LessonSession[] = []): Lesson | null 
     category: typeof r.category === 'string' ? r.category : '',
     title: r.title,
     description: typeof r.description === 'string' ? r.description : '',
+    body: typeof r.body === 'string' ? r.body : '',
     access,
     storage_path: typeof r.storage_path === 'string' ? r.storage_path : null,
     duration_label: typeof r.duration_label === 'string' ? r.duration_label : '',
@@ -205,6 +210,7 @@ export async function createLesson(
     category: input.category.trim(),
     title: input.title.trim(),
     description: input.description.trim(),
+    body: (input.body || '').trim(),
     access: input.access,
     duration_label: (input.duration_label || '').trim(),
     published: input.published,
@@ -232,6 +238,7 @@ export async function updateLesson(
   if (input.category != null) patch.category = input.category.trim();
   if (input.title != null) patch.title = input.title.trim();
   if (input.description != null) patch.description = input.description.trim();
+  if (input.body != null) patch.body = input.body.trim();
   if (input.access != null) patch.access = input.access;
   if (input.duration_label != null) patch.duration_label = input.duration_label.trim();
   if (input.published != null) patch.published = input.published;

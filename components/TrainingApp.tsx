@@ -58,7 +58,10 @@ export type TrainingLessonDto = {
   sort_order: number;
   category: string;
   title: string;
+  /** 소제목 */
   description: string;
+  /** 내용 below video */
+  body: string;
   access: 'free' | 'subscribers';
   storage_path: string | null;
   video_url: string;
@@ -102,6 +105,7 @@ function toDto(lesson: Lesson): TrainingLessonDto {
     category: lesson.category,
     title: lesson.title,
     description: lesson.description,
+    body: lesson.body || '',
     access: lesson.access,
     storage_path: lesson.storage_path,
     video_url: lessonVideoSrc(lesson),

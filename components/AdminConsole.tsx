@@ -39,6 +39,7 @@ type LessonFormState = {
   title: string;
   category: string;
   description: string;
+  body: string;
   access: LessonAccess;
   sort_order: number;
   duration_label: string;
@@ -56,6 +57,7 @@ const EMPTY_FORM: LessonFormState = {
   title: '',
   category: '기초',
   description: '',
+  body: '',
   access: 'subscribers',
   sort_order: 1,
   duration_label: '',
@@ -122,6 +124,7 @@ function formFromLesson(l: Lesson): LessonFormState {
     title: l.title,
     category: l.category,
     description: l.description,
+    body: l.body || '',
     access: l.access,
     sort_order: l.sort_order,
     duration_label: l.duration_label,
@@ -340,6 +343,7 @@ export default function AdminConsole() {
         title: form.title,
         category: form.category || '기초',
         description: form.description,
+        body: form.body,
         access: form.access,
         sort_order: Number.isFinite(form.sort_order) ? form.sort_order : 0,
         duration_label: form.duration_label,
@@ -678,7 +682,7 @@ export default function AdminConsole() {
                               #{l.sort_order} · {l.title}
                             </div>
                             <div className="admin-member-name">
-                              {l.category} · {l.description || '설명 없음'}
+                              {l.category} · {l.description || '소제목 없음'}
                             </div>
                           </td>
                           <td>
@@ -752,13 +756,14 @@ export default function AdminConsole() {
                     />
                   </label>
                   <label className="admin-form-span">
-                    설명
+                    소제목
                     <textarea
                       value={form.description}
                       onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                      maxLength={500}
-                      rows={3}
+                      maxLength={200}
+                      rows={2}
                       disabled={actionBusy}
+                      placeholder="플레이어 제목 아래에 짧게 표시됩니다"
                     />
                   </label>
                   <label>
@@ -824,6 +829,17 @@ export default function AdminConsole() {
                             ? '세션이 없을 때 이 파일이 훈련관 재생에 사용됩니다.'
                             : '세션 없이 단일 영상 강의로 저장할 수 있습니다.'}
                     </span>
+                  </label>
+                  <label className="admin-form-span">
+                    내용
+                    <textarea
+                      value={form.body}
+                      onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
+                      maxLength={10000}
+                      rows={6}
+                      disabled={actionBusy}
+                      placeholder="영상 아래에 표시되는 본문 내용입니다"
+                    />
                   </label>
 
                   <div className="admin-form-span admin-sessions">

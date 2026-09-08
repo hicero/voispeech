@@ -297,13 +297,23 @@ function openLesson(id){
   }
   currentId=lesson.id;step=0;renderModules();
   const playerTitle=$('#player-title');if(playerTitle)playerTitle.textContent=lesson.title;
+  setPlayerCopy(lesson);
+  const dialog=$('#player-dialog');if(dialog)dialog.showModal();
+}
+
+function setPlayerCopy(lesson){
   const playerDesc=$('#player-description');
   if(playerDesc){
-    const desc=(lesson.description||'').trim();
+    const desc=(lesson&&lesson.description||'').trim();
     playerDesc.textContent=desc;
     playerDesc.hidden=!desc;
   }
-  const dialog=$('#player-dialog');if(dialog)dialog.showModal();
+  const playerBody=$('#player-body');
+  if(playerBody){
+    const body=(lesson&&lesson.body||'').trim();
+    playerBody.textContent=body;
+    playerBody.hidden=!body;
+  }
 }
 
 function checkout(){
@@ -499,12 +509,7 @@ function renderModules(){
   }else{
     list.hidden=true;
   }
-  const playerDesc=$('#player-description');
-  if(playerDesc&&lesson){
-    const desc=(lesson.description||'').trim();
-    playerDesc.textContent=desc;
-    playerDesc.hidden=!desc;
-  }
+  if(lesson)setPlayerCopy(lesson);
   const hintEl=$('#player-hint');
   if(hintEl){
     const total=lessonStepCount(lesson);
