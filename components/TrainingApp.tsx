@@ -33,6 +33,9 @@ declare global {
       expirePreview: () => Promise<Membership>;
       refresh: () => Promise<void>;
     };
+    __VOISPEECH_TRAINING__?: {
+      sync: () => void;
+    };
   }
 }
 
@@ -53,6 +56,7 @@ function publishToDom(next: AuthState) {
     active: next.active,
   };
   window.dispatchEvent(new CustomEvent('voispeech:membership'));
+  window.__VOISPEECH_TRAINING__?.sync?.();
 }
 
 function applyMembership(membership: Membership | null, email: string | null): AuthState {
