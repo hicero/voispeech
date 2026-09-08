@@ -121,8 +121,12 @@ async function startLivePreview(){
     return;
   }
   try{
-    await act.startPreview();
-    // Do not refresh() here — stale fetch can overwrite the just-activated membership.
+    const row=await act.startPreview();
+    const root=academy();
+    const prev=window.__VOISPEECH__||{};
+    window.__VOISPEECH__={userEmail:prev.userEmail||null,status:(row&&row.status)||'active',active:true};
+    if(root){root.dataset.auth='user';root.dataset.sub='active';}
+    window.dispatchEvent(new CustomEvent('voispeech:force-membership',{detail:row||null}));
     if(window.__VOISPEECH_TRAINING__&&typeof window.__VOISPEECH_TRAINING__.sync==='function'){
       window.__VOISPEECH_TRAINING__.sync();
     }else{
@@ -203,7 +207,7 @@ function onAcademyClick(e){
         break;
       }
       void startLivePreview();
-      break;
+      return;
     }
     case 'complete':
       if(!modules[current])modules[current]=new Set();
@@ -214,11 +218,11 @@ function onAcademyClick(e){
     case 'cancel':{const cancelDlg=$('#cancel-dialog');if(cancelDlg)cancelDlg.showModal();break;}
     case 'confirm-cancel':
       {const cancelDlg=$('#cancel-dialog');if(cancelDlg)cancelDlg.close();}
-      if(membership().live){void liveCancelRenewal();break;}
+      if(membership().live){void liveCancelRenewal();return;}
       cancelled=true;tell('자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.');
       break;
     case 'expire':
-      if(membership().live){void liveExpire();break;}
+      if(membership().live){void liveExpire();return;}
       demoActive=false;cancelled=false;tell('이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.');
       break;
     case 'reset':
