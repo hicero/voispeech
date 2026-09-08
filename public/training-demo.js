@@ -386,6 +386,18 @@ async function liveExpire(){
 }
 
 function onAcademyClick(e){
+  const likeEl=e.target.closest('[data-like]');
+  if(likeEl){e.preventDefault();void onCommunityLike(likeEl.dataset.like);return;}
+  const delEl=e.target.closest('[data-delete-post]');
+  if(delEl){e.preventDefault();void onCommunityDelete(delEl.dataset.deletePost);return;}
+  const replyEl=e.target.closest('[data-reply]');
+  if(replyEl){
+    e.preventDefault();
+    const form=$('[data-reply-form="'+replyEl.dataset.reply+'"]');
+    if(form)form.hidden=!form.hidden;
+    return;
+  }
+
   const root=academy();
   if(!root||!root.contains(e.target))return;
   const b=e.target.closest('button');if(!b||!root.contains(b))return;
@@ -620,19 +632,114 @@ async function onPracticeSubmit(e){
   tell('체험 기록을 추가했습니다. 외부 저장은 하지 않습니다.');
 }
 
+
+function isAdmin(){
+  const a=api();
+  if(a&&a.isAdmin===true)return true;
+  const v=window.__VOISPEECH__;
+  return !!(v&&v.isAdmin);
+}
+function viewerUserId(){
+  const v=window.__VOISPEECH__;
+  return(v&&v.userId)||null;
+}
 function updateCommunityHint(){
   const desc=$('[data-panel="community"] .academy-description');
   const m=membership();
+  const admin=isAdmin();
   if(desc){
-    if(m.live&&m.loggedIn)desc.textContent='로그인한 회원글이 채널별로 저장됩니다. 작성자 이메일은 짧게 표시됩니다.';
-    else if(m.live)desc.textContent='글을 남기려면 로그인해 주세요. 비로그인 상태에서는 게시할 수 없습니다.';
+    if(m.live&&m.loggedIn){
+      desc.textContent=channel==='공지'
+        ?(admin?'운영자만 공지를 등록할 수 있습니다. 답글·추천·삭제를 사용할 수 있어요.':'공지는 운영자만 등록할 수 있습니다. 추천과 답글은 가능합니다.')
+        :'로그인한 회원글이 채널별로 저장됩니다. 추천·답글·삭제를 사용할 수 있어요.';
+    }else if(m.live)desc.textContent='글을 남기려면 로그인해 주세요. 비로그인 상태에서는 게시할 수 없습니다.';
     else desc.textContent='실제 커뮤니티가 아닌 화면 체험입니다. 글은 외부로 전송되지 않습니다.';
   }
   const form=$('#community-form');
   const btn=form&&form.querySelector('button');
   const ta=form&&form.querySelector('textarea');
-  if(btn)btn.textContent=(m.live&&m.loggedIn)?'글 등록':(m.live?'로그인 후 작성':'화면에만 추가');
-  if(ta)ta.placeholder=(m.live&&m.loggedIn)?'채널에 남길 글을 적어 주세요.':(m.live?'로그인 후 작성할 수 있습니다.':'이 화면에만 표시됩니다.');
+  const noticeOnly=m.live&&m.loggedIn&&channel==='공지'&&!admin;
+  if(form)form.hidden=!!(m.live&&m.loggedIn&&noticeOnly);
+  let ban=$('#community-notice-ban');
+  if(noticeOnly){
+    if(!ban){
+      ban=document.createElement('p');
+      ban.id='community-notice-ban';
+      ban.className='community-ban';
+      if(form&&form.parentNode)form.parentNode.insertBefore(ban,form);
+    }
+    ban.hidden=false;
+    ban.textContent='공지 채널은 운영자만 글을 등록할 수 있습니다.';
+  }else if(ban){
+    ban.hidden=true;
+  }
+  if(btn){
+    btn.disabled=!!(m.live&&!m.loggedIn);
+    btn.textContent=(m.live&&m.loggedIn)?'글 등록':(m.live?'로그인 후 작성':'화면에만 추가');
+  }
+  if(ta){
+    ta.disabled=!!(m.live&&!m.loggedIn);
+    ta.placeholder=(m.live&&m.loggedIn)?'채널에 남길 글을 적어 주세요.':(m.live?'로그인 후 작성할 수 있습니다.':'이 화면에만 표시됩니다.');
+  }
+}
+
+function appendPostArticle(feed,x,opts){
+  const nested=!!(opts&&opts.nested);
+  const m=membership();
+  const uid=viewerUserId();
+  const admin=isAdmin();
+  const a=document.createElement('article');
+  a.className=nested?'community-post community-reply':'community-post';
+  a.dataset.postId=String(x.id||'');
+  const label=x.author_label||'회원';
+  const meta=document.createElement('span');
+  meta.textContent=nested?`${label} · 답글`:`${label} · ${x.channel||channel}`;
+  const body=document.createElement('p');
+  body.textContent=x.body||x.text||'';
+  a.append(meta,body);
+  if(m.live&&m.loggedIn&&x.id){
+    const actions=document.createElement('div');
+    actions.className='community-actions';
+    const likeBtn=document.createElement('button');
+    likeBtn.type='button';
+    likeBtn.className='community-action';
+    likeBtn.dataset.like=String(x.id);
+    likeBtn.setAttribute('aria-pressed',String(!!x.liked_by_me));
+    likeBtn.textContent=`추천 ${Number(x.like_count)||0}`;
+    actions.append(likeBtn);
+    if(!nested){
+      const replyBtn=document.createElement('button');
+      replyBtn.type='button';
+      replyBtn.className='community-action';
+      replyBtn.dataset.reply=String(x.id);
+      replyBtn.textContent='답글';
+      actions.append(replyBtn);
+    }
+    if(admin||(uid&&String(x.user_id)===String(uid))){
+      const delBtn=document.createElement('button');
+      delBtn.type='button';
+      delBtn.className='community-action community-action-danger';
+      delBtn.dataset.deletePost=String(x.id);
+      delBtn.textContent='삭제';
+      actions.append(delBtn);
+    }
+    a.append(actions);
+    if(!nested){
+      const replyBox=document.createElement('form');
+      replyBox.className='community-reply-form';
+      replyBox.hidden=true;
+      replyBox.dataset.replyForm=String(x.id);
+      replyBox.innerHTML='<label>답글<textarea name="reply" required maxlength="500" placeholder="답글을 적어 주세요."></textarea></label><button class="btn-primary" type="submit">답글 등록</button>';
+      a.append(replyBox);
+    }
+  }
+  feed.append(a);
+  if(!nested&&Array.isArray(x.replies)&&x.replies.length){
+    const wrap=document.createElement('div');
+    wrap.className='community-replies';
+    feed.append(wrap);
+    x.replies.forEach(r=>appendPostArticle(wrap,r,{nested:true}));
+  }
 }
 
 function renderPosts(){
@@ -644,6 +751,7 @@ function renderPosts(){
     prompt.className='community-post';
     prompt.innerHTML='<span>안내</span><h2>로그인 후 커뮤니티에 참여할 수 있어요.</h2><p><a href="/account/">회원 계정으로 이동</a></p>';
     feed.append(prompt);
+    updateCommunityHint();
     return;
   }
   const rows=(m.live&&m.loggedIn)?dbPosts:localPosts.filter(x=>x.channel===channel);
@@ -652,16 +760,11 @@ function renderPosts(){
     p.className='community-post';
     p.textContent=channel+' · 아직 글이 없습니다. 첫 글을 남겨 보세요.';
     feed.append(p);
+    updateCommunityHint();
     return;
   }
-  rows.forEach(x=>{
-    const a=document.createElement('article');
-    a.className='community-post';
-    const label=x.author_label||'체험 회원';
-    a.innerHTML=`<span>${label} · ${x.channel||channel}</span><p></p>`;
-    a.querySelector('p').textContent=x.body||x.text||'';
-    feed.append(a);
-  });
+  rows.forEach(x=>appendPostArticle(feed,x,{nested:false}));
+  updateCommunityHint();
 }
 
 async function refreshPosts(){
@@ -676,7 +779,6 @@ async function refreshPosts(){
     }
   }
   renderPosts();
-  updateCommunityHint();
 }
 
 async function onCommunitySubmit(e){
@@ -689,6 +791,10 @@ async function onCommunitySubmit(e){
     goAccount('로그인 후 커뮤니티에 글을 남길 수 있습니다.');
     return;
   }
+  if(m.live&&m.loggedIn&&channel==='공지'&&!isAdmin()){
+    tell('공지 채널은 운영자만 글을 등록할 수 있습니다.');
+    return;
+  }
   if(m.live&&m.loggedIn&&a&&typeof a.createPost==='function'){
     try{
       await a.createPost(channel,text);
@@ -696,14 +802,57 @@ async function onCommunitySubmit(e){
       await refreshPosts();
       tell('커뮤니티에 글을 등록했습니다.');
     }catch(_){
-      tell('글을 등록하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      tell(channel==='공지'&&!isAdmin()
+        ?'공지 채널은 운영자만 글을 등록할 수 있습니다.'
+        :'글을 등록하지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
     return;
   }
-  localPosts.push({channel,text,body:text,author_label:'체험 회원'});
+  localPosts.push({channel,text,body:text,author_label:'체험 회원',replies:[],like_count:0});
   e.target.reset();
   renderPosts();
   tell('체험 글을 화면에 추가했습니다. 외부로 게시하지 않았습니다.');
+}
+
+async function onCommunityLike(id){
+  const a=api();
+  if(!a||typeof a.toggleLike!=='function')return;
+  try{
+    await a.toggleLike(id);
+    await refreshPosts();
+  }catch(_){
+    tell('추천을 처리하지 못했습니다.');
+  }
+}
+
+async function onCommunityDelete(id){
+  const a=api();
+  if(!a||typeof a.deletePost!=='function')return;
+  if(!window.confirm('이 글을 삭제할까요?'))return;
+  try{
+    await a.deletePost(id);
+    await refreshPosts();
+    tell('글을 삭제했습니다.');
+  }catch(_){
+    tell('글을 삭제하지 못했습니다.');
+  }
+}
+
+async function onCommunityReplySubmit(form){
+  const id=form.dataset.replyForm;
+  const text=String(new FormData(form).get('reply')).trim();
+  if(!id||!text)return;
+  const a=api();
+  if(!a||typeof a.createPost!=='function')return;
+  try{
+    await a.createPost(channel,text,id);
+    form.reset();
+    form.hidden=true;
+    await refreshPosts();
+    tell('답글을 등록했습니다.');
+  }catch(_){
+    tell('답글을 등록하지 못했습니다.');
+  }
 }
 
 function bindAcademy(root){
@@ -719,6 +868,12 @@ function bindAcademy(root){
   if(practice)practice.addEventListener('submit',(e)=>{void onPracticeSubmit(e);});
   const community=$('#community-form');
   if(community)community.addEventListener('submit',(e)=>{void onCommunitySubmit(e);});
+  root.addEventListener('submit',(e)=>{
+    const rf=e.target.closest('[data-reply-form]');
+    if(!rf||!root.contains(rf))return;
+    e.preventDefault();
+    void onCommunityReplySubmit(rf);
+  });
 }
 
 function sync(){

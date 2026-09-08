@@ -25,9 +25,13 @@ import {
 } from '@/lib/lessons';
 import {
   createCommunityPost,
+  deleteCommunityPost,
   listCommunityPosts,
+  toggleCommunityLike,
   type CommunityPost,
+  type LikeToggleResult,
 } from '@/lib/community';
+import { isVoiSpeechAdmin } from '@/lib/admin';
 import {
   createPracticeRecord,
   listPracticeRecords,
@@ -41,6 +45,7 @@ type AuthState = {
   userId: string | null;
   status: string | null;
   active: boolean;
+  isAdmin: boolean;
 };
 
 export type TrainingLessonSessionDto = {
@@ -77,6 +82,7 @@ declare global {
       userId: string | null;
       status: string | null;
       active: boolean;
+      isAdmin: boolean;
     };
     __VOISPEECH_ACTIONS__?: {
       startPreview: () => Promise<Membership>;
@@ -90,8 +96,15 @@ declare global {
     __VOISPEECH_LESSONS__?: TrainingLessonDto[];
     __VOISPEECH_LESSONS_LOADED__?: boolean;
     __VOISPEECH_API__?: {
+      isAdmin: boolean;
       listPosts: (channel: string) => Promise<CommunityPost[]>;
-      createPost: (channel: string, body: string) => Promise<CommunityPost>;
+      createPost: (
+        channel: string,
+        body: string,
+        parentId?: string | null,
+      ) => Promise<CommunityPost>;
+      deletePost: (id: string) => Promise<void>;
+      toggleLike: (postId: string) => Promise<LikeToggleResult>;
       listRecords: () => Promise<PracticeRecord[]>;
       createRecord: (kind: string, minutes: number, note: string) => Promise<PracticeRecord>;
     };
@@ -141,7 +154,11 @@ function publishToDom(next: AuthState) {
     userId: next.userId,
     status: next.status,
     active: next.active,
+    isAdmin: next.isAdmin,
   };
+  if (window.__VOISPEECH_API__) {
+    window.__VOISPEECH_API__.isAdmin = next.isAdmin;
+  }
   window.dispatchEvent(new CustomEvent('voispeech:membership'));
   window.__VOISPEECH_TRAINING__?.sync?.();
 }
@@ -150,6 +167,7 @@ function applyMembership(
   membership: Membership | null,
   email: string | null,
   userId: string | null,
+  isAdmin = false,
 ): AuthState {
   const active = isSubscriptionActive(membership)
     || (membership?.status === 'active' && Boolean(membership.current_period_end));
@@ -160,6 +178,7 @@ function applyMembership(
     userId,
     status: membership?.status ?? null,
     active,
+    isAdmin,
   };
 }
 
@@ -190,6 +209,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     userId: null,
     status: null,
     active: false,
+    isAdmin: false,
   });
   const [busy, setBusy] = useState(false);
 
@@ -237,6 +257,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         userId: null,
         status: null,
         active: false,
+        isAdmin: false,
       };
       setState(next);
       publishToDom(next);
@@ -245,15 +266,33 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       return;
     }
 
+    let sessionIsAdmin = false;
+
     window.__VOISPEECH_API__ = {
+      isAdmin: false,
       listPosts: (channel: string) =>
         listCommunityPosts(client, channel, {
           userId: sessionUserId || '',
           email: sessionEmail,
         }),
-      createPost: async (channel: string, body: string) => {
+      createPost: async (channel: string, body: string, parentId?: string | null) => {
         if (!sessionUserId) throw new Error('login required');
-        return createCommunityPost(client, sessionUserId, channel, body, sessionEmail);
+        return createCommunityPost(
+          client,
+          sessionUserId,
+          channel,
+          body,
+          sessionEmail,
+          parentId,
+        );
+      },
+      deletePost: async (id: string) => {
+        if (!sessionUserId) throw new Error('login required');
+        return deleteCommunityPost(client, id);
+      },
+      toggleLike: async (postId: string) => {
+        if (!sessionUserId) throw new Error('login required');
+        return toggleCommunityLike(client, sessionUserId, postId);
       },
       listRecords: async () => {
         if (!sessionUserId) throw new Error('login required');
@@ -280,6 +319,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         lastUserId = null;
         sessionEmail = null;
         sessionUserId = null;
+        sessionIsAdmin = false;
         const next = {
           ready: true,
           configured: true,
@@ -287,6 +327,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
           userId: null,
           status: null,
           active: false,
+          isAdmin: false,
         };
         setState(next);
         publishToDom(next);
@@ -296,10 +337,11 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       lastUserId = data.user.id;
       sessionEmail = lastEmail;
       sessionUserId = lastUserId;
+      sessionIsAdmin = isVoiSpeechAdmin(data.user);
       clearLoginReturn();
 
       if (snapshot) {
-        const optimistic = applyMembership(snapshot, lastEmail, lastUserId);
+        const optimistic = applyMembership(snapshot, lastEmail, lastUserId, sessionIsAdmin);
         setState(optimistic);
         publishToDom(optimistic);
       }
@@ -332,7 +374,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         latestHandoff &&
         (isSubscriptionActive(latestHandoff) || latestHandoff.status === 'active')
       ) {
-        const next = applyMembership(latestHandoff, lastEmail, lastUserId);
+        const next = applyMembership(latestHandoff, lastEmail, lastUserId, sessionIsAdmin);
         setState(next);
         publishToDom(next);
         return;
@@ -342,7 +384,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         saveMembershipSnapshot(membership, { force: true });
         clearMembershipHandoff();
       }
-      const next = applyMembership(membership, lastEmail, lastUserId);
+      const next = applyMembership(membership, lastEmail, lastUserId, sessionIsAdmin);
       // Keep unlock if handoff said active but clock/parse edge-case tripped.
       if (!next.active && latestHandoff && latestHandoff.status === 'active') {
         next.active = true;
@@ -374,7 +416,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       } else {
         saveMembershipSnapshot(membership, { force: true });
       }
-      const next = applyMembership(membership, email, userId);
+      const next = applyMembership(membership, email, userId, sessionIsAdmin);
       if (membership.status === 'active' && !next.active) next.active = true;
       publishToDom(next);
       if (mounted) setState(next);
@@ -412,6 +454,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
           status: handoff?.status ?? prev.status ?? 'active',
           email: prev.email ?? lastEmail,
           userId: prev.userId ?? lastUserId,
+          isAdmin: prev.isAdmin || sessionIsAdmin,
         };
         publishToDom(next);
         return next;
