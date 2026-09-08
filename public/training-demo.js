@@ -18,12 +18,11 @@ function membership(){
   return{live:false,loggedIn:false,active:demoActive};
 }
 
-function canWatchExclusive(){return membership().active===true;}
+function canWatchExclusive(){const m=membership();return m.active===true||demoActive===true;}
 
 function goAccount(msg){
   if(msg)tell(msg);
-  const ok=window.confirm((msg||'회원 계정 화면으로 이동합니다.')+'\n\n계정 페이지를 열까요?');
-  if(ok)window.location.href='/account/';
+  window.location.href='/account/';
 }
 
 function update(){
@@ -35,31 +34,33 @@ function update(){
   $('#completion-count').textContent=`${done.size} / 4`;
   all('[data-access]').forEach(e=>e.textContent=Number(e.dataset.access)===1?'무료 미리보기':exclusive?'시청 가능':'구독 전용');
   all('[data-done]').forEach(e=>e.hidden=!done.has(Number(e.dataset.done)));
-  if(m.live){
-    $('#subscription-state').textContent=m.active?'구독 중':(m.loggedIn?'구독 전':'로그인 필요');
-    $('#subscription-detail').textContent=m.active
-      ?'실제 구독이 활성화되어 전용 예시 영상을 열 수 있습니다.'
-      :(m.loggedIn
-        ?'구독이 아직 활성화되지 않았습니다. 계정 화면에서 상태를 확인하세요. 이 화면에서 구독을 임의로 켜지 않습니다.'
-        :'전용 영상을 보려면 먼저 로그인한 뒤, 구독이 활성화되어야 합니다.');
-    all('[data-action="subscribe"]').forEach(e=>e.textContent=m.active?'내 계정에서 확인':'계정에서 구독 안내 보기 ↗');
+  // Keep the original pretty checkout dialog copy; only refresh membership panel labels.
+  if(m.live && m.active && !demoActive){
+    $('#subscription-state').textContent='구독 중';
+    $('#subscription-detail').textContent='실제 구독이 활성화되어 전용 예시 영상을 열 수 있습니다.';
+    all('[data-action="subscribe"]').forEach(e=>e.textContent='내 구독 확인');
     $('[data-action="cancel"]').hidden=true;
     $('[data-action="expire"]').hidden=true;
-    const pay=$('[data-action="pay"]');
-    if(pay){pay.textContent='계정 화면으로 이동';pay.dataset.action='account';}
-    const notice=$('.checkout-notice');
-    if(notice)notice.textContent='실제 구독은 이 화면에서 결제·활성화되지 않습니다. 계정 화면에서 로그인·구독 상태를 확인하세요.';
-    const title=$('#checkout-title');
-    if(title)title.textContent=m.loggedIn?'구독이 필요합니다':'로그인이 필요합니다';
   }else{
-    $('#subscription-state').textContent=demoActive?(cancelled?'갱신 해지 · 이용 가능':'구독 중 · 화면 데모'):'구독 전 · 화면 데모';
+    $('#subscription-state').textContent=demoActive?(cancelled?'갱신 해지 · 이용 가능':'구독 중 · 체험'):(m.live?(m.loggedIn?'구독 전':'로그인 필요'):'구독 전');
     $('#subscription-detail').textContent=demoActive
-      ?(cancelled?'갱신이 해지되었습니다. 이용기간 만료를 체험하면 전용 영상이 다시 잠깁니다.':'화면 데모(저장 안 됨): 전용 예시 영상이 열렸습니다. 실제 구독·결제와 무관합니다.')
-      :'회원 연결 전에는 화면 데모로만 구독자 화면을 체험할 수 있습니다. (저장 안 됨)';
-    all('[data-action="subscribe"]').forEach(e=>e.textContent=demoActive?'내 구독 확인':'화면 데모 · 구독 체험 ↗');
+      ?(cancelled?'갱신이 해지되었습니다. 이용기간 만료를 체험하면 전용 영상이 다시 잠깁니다.':'전체 예시 영상이 열렸습니다. 실제 결제나 정기 청구는 발생하지 않습니다.')
+      :'구독 체험을 시작하면 전용 영상이 열립니다.';
+    all('[data-action="subscribe"]').forEach(e=>e.textContent=demoActive?'내 구독 확인':'구독 체험하기 ↗');
     $('[data-action="cancel"]').hidden=!demoActive||cancelled;
     $('[data-action="expire"]').hidden=!demoActive;
   }
+  const pay=$('[data-action="pay"],[data-action="account"]');
+  if(pay){
+    pay.textContent='결제 없이 구독자 화면 체험';
+    pay.dataset.action='pay';
+  }
+  const notice=$('.checkout-notice');
+  if(notice)notice.textContent='카드번호나 개인정보를 입력하지 않습니다. 구독 상태는 이 화면 안에서만 바뀝니다.';
+  const title=$('#checkout-title');
+  if(title)title.textContent='구독을 시작해 볼까요?';
+  const lead=title&&title.nextElementSibling;
+  if(lead&&lead.tagName==='P')lead.textContent='실제 결제 없이 구독자 화면을 체험합니다.';
   const list=$('#progress-list');list.replaceChildren();
   if(!done.size){const p=document.createElement('p');p.textContent='아직 완료한 영상이 없어요. 무료 미리보기부터 시작해 보세요.';list.append(p);}
   else[...done].forEach(id=>{const b=document.createElement('button');b.dataset.lesson=id;b.textContent=titles[id-1]+' · 완료 ✓';list.append(b);});
@@ -67,16 +68,6 @@ function update(){
 
 function openLesson(id){
   if(id!==1&&!canWatchExclusive()){
-    const m=membership();
-    if(m.live){
-      if(!m.loggedIn){
-        goAccount('전용 영상은 로그인 후 구독이 필요합니다.');
-      }else{
-        goAccount('전용 영상은 활성 구독이 필요합니다. 계정 화면에서 구독 상태를 확인해 주세요.');
-      }
-      return;
-    }
-    // Local screen demo only when Supabase is not configured.
     checkout();
     return;
   }
@@ -87,15 +78,7 @@ function openLesson(id){
 }
 
 function checkout(){
-  const m=membership();
-  if(m.live){
-    if(m.active){tab('membership');return;}
-    goAccount(m.loggedIn
-      ?'구독은 이 화면에서 직접 결제되지 않습니다. 계정에서 상태를 확인하세요.'
-      :'구독·전용 영상을 이용하려면 먼저 로그인해 주세요.');
-    return;
-  }
-  if(demoActive){tab('membership');return;}
+  if(canWatchExclusive()){tab('membership');return;}
   $('#checkout-dialog').showModal();
 }
 
@@ -111,16 +94,11 @@ root.addEventListener('click',e=>{
   if(b.dataset.lesson){openLesson(Number(b.dataset.lesson));return;}
   switch(b.dataset.action){
     case 'subscribe':checkout();break;
-    case 'account':$('#checkout-dialog').close();goAccount('계정 화면에서 로그인·구독 상태를 확인하세요.');break;
+    case 'account':$('#checkout-dialog').close();goAccount();break;
     case 'pay':
-      // Quarantined: never fake-activate real membership when Supabase is live.
-      if(membership().live){
-        $('#checkout-dialog').close();
-        goAccount('실제 구독은 이 화면에서 활성화되지 않습니다.');
-        break;
-      }
+      // Screen-only unlock for the pretty membership preview; does not write Supabase.
       demoActive=true;cancelled=false;$('#checkout-dialog').close();
-      tell('화면 데모(저장 안 됨): 구독자 화면 체험이 시작되었습니다. 실제 결제는 없습니다.');
+      tell('구독자 체험이 시작되었습니다. 실제 결제는 없습니다.');
       break;
     case 'complete':
       if(!modules[current])modules[current]=new Set();
