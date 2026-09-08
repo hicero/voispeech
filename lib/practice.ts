@@ -12,13 +12,17 @@ export type PracticeRecord = {
 function mapRecord(raw: unknown): PracticeRecord | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
-  if (typeof r.id !== 'string' || typeof r.user_id !== 'string') return null;
-  if (typeof r.kind !== 'string' || typeof r.minutes !== 'number') return null;
+  const id = typeof r.id === 'string' || typeof r.id === 'number' ? String(r.id) : '';
+  const user_id =
+    typeof r.user_id === 'string' || typeof r.user_id === 'number' ? String(r.user_id) : '';
+  if (!id || !user_id || typeof r.kind !== 'string') return null;
+  const minutes = typeof r.minutes === 'number' ? r.minutes : Number(r.minutes);
+  if (!Number.isFinite(minutes)) return null;
   return {
-    id: r.id,
-    user_id: r.user_id,
+    id,
+    user_id,
     kind: r.kind,
-    minutes: r.minutes,
+    minutes,
     note: typeof r.note === 'string' ? r.note : '',
     created_at: typeof r.created_at === 'string' ? r.created_at : '',
   };

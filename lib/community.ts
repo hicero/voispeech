@@ -26,15 +26,17 @@ function mapPost(
 ): CommunityPost | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
-  if (typeof r.id !== 'string' || typeof r.user_id !== 'string') return null;
-  if (typeof r.body !== 'string') return null;
+  const id = typeof r.id === 'string' || typeof r.id === 'number' ? String(r.id) : '';
+  const user_id =
+    typeof r.user_id === 'string' || typeof r.user_id === 'number' ? String(r.user_id) : '';
+  if (!id || !user_id || typeof r.body !== 'string') return null;
   return {
-    id: r.id,
-    user_id: r.user_id,
+    id,
+    user_id,
     channel: typeof r.channel === 'string' ? r.channel : '',
     body: r.body,
     created_at: typeof r.created_at === 'string' ? r.created_at : '',
-    author_label: shortAuthorLabel(emailByUserId[r.user_id], r.user_id),
+    author_label: shortAuthorLabel(emailByUserId[user_id], user_id),
   };
 }
 
