@@ -8,6 +8,8 @@ import {
   expirePreviewMembership,
   fetchMembership,
   isSubscriptionActive,
+  loadMembershipSnapshot,
+  saveMembershipSnapshot,
   startPreviewMembership,
   type Membership,
 } from '@/lib/membership';
@@ -69,6 +71,10 @@ function applyMembership(membership: Membership | null, email: string | null): A
   };
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default function TrainingApp({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
     ready: false,
@@ -95,6 +101,8 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
 
     async function refresh() {
       const request = ++revision;
+      const snapshot = loadMembershipSnapshot();
+
       const { data, error } = await client!.auth.getUser();
       if (!mounted || request !== revision) return;
       if (error || !data.user) {
@@ -105,8 +113,33 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         return;
       }
       lastEmail = data.user.email ?? null;
-      const membership = await fetchMembership(client!, data.user.id);
+
+      // Handoff: paint active from sessionStorage before network fetch settles.
+      if (snapshot && isSubscriptionActive(snapshot)) {
+        const optimistic = applyMembership(snapshot, lastEmail);
+        setState(optimistic);
+        publishToDom(optimistic);
+      }
+
+      let membership = await fetchMembership(client!, data.user.id);
       if (!mounted || request !== revision) return;
+
+      // If fetch is stale-inactive but a fresh snapshot says active, retry briefly.
+      if (
+        !isSubscriptionActive(membership) &&
+        snapshot &&
+        isSubscriptionActive(snapshot)
+      ) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          await sleep(300);
+          if (!mounted || request !== revision) return;
+          membership = await fetchMembership(client!, data.user.id);
+          if (!mounted || request !== revision) return;
+          if (isSubscriptionActive(membership)) break;
+        }
+      }
+
+      saveMembershipSnapshot(membership);
       const next = applyMembership(membership, lastEmail);
       setState(next);
       publishToDom(next);
@@ -126,6 +159,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
           lastEmail = email;
         }
       }
+      saveMembershipSnapshot(membership);
       const next = applyMembership(membership, email);
       setState(next);
       publishToDom(next);

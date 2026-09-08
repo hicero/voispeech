@@ -9,6 +9,7 @@ import {
   expirePreviewMembership,
   fetchMembership,
   isSubscriptionActive,
+  saveMembershipSnapshot,
   startPreviewMembership,
   type Membership,
 } from '@/lib/membership';
@@ -45,6 +46,7 @@ export default function MemberAccount() {
       const row = await fetchMembership(client!, data.user.id);
       if (!mounted || request !== revision) return;
       setMembership(row);
+      saveMembershipSnapshot(row);
       setMessage(row ? '로그인되었습니다.' : '로그인되었습니다. 구독 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.');
       setBusy(false);
     }
@@ -103,6 +105,7 @@ export default function MemberAccount() {
             ? await cancelPreviewRenewal(client)
             : await expirePreviewMembership(client);
       setMembership(row);
+      saveMembershipSnapshot(row);
       setMessage(
         action === 'start'
           ? '결제 없이 구독 체험이 시작되었습니다. 30일간 전용 영상을 열 수 있습니다.'
@@ -154,7 +157,7 @@ export default function MemberAccount() {
             )}
           </dl>
           <div className="member-actions">
-            <Link className="btn-primary member-cta" href="/training/">온라인 훈련관 열기</Link>
+            <a className="btn-primary member-cta" href="/training/">온라인 훈련관 열기</a>
             {!active ? (
               <button
                 type="button"

@@ -7,6 +7,14 @@ export type Membership = {
   cancel_at_period_end: boolean;
 };
 
+const MEMBERSHIP_SNAPSHOT_KEY = 'voispeech_membership_snapshot';
+const MEMBERSHIP_SNAPSHOT_TTL_MS = 2 * 60 * 1000;
+
+type MembershipSnapshotPayload = {
+  savedAt: number;
+  membership: Membership | null;
+};
+
 function asIsoTimestamp(value: unknown): string | null {
   if (value == null || value === '') return null;
   if (value instanceof Date) {
@@ -34,6 +42,43 @@ function mapMembershipRow(data: unknown): Membership | null {
   };
 }
 
+/** Persist membership for a short cross-route handoff (account → training). */
+export function saveMembershipSnapshot(m: Membership | null): void {
+  if (typeof window === 'undefined' || !window.sessionStorage) return;
+  try {
+    const payload: MembershipSnapshotPayload = {
+      savedAt: Date.now(),
+      membership: m,
+    };
+    window.sessionStorage.setItem(MEMBERSHIP_SNAPSHOT_KEY, JSON.stringify(payload));
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
+/** Load handoff snapshot if younger than ~2 minutes. */
+export function loadMembershipSnapshot(): Membership | null {
+  if (typeof window === 'undefined' || !window.sessionStorage) return null;
+  try {
+    const raw = window.sessionStorage.getItem(MEMBERSHIP_SNAPSHOT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as MembershipSnapshotPayload;
+    if (!parsed || typeof parsed.savedAt !== 'number') return null;
+    if (Date.now() - parsed.savedAt > MEMBERSHIP_SNAPSHOT_TTL_MS) return null;
+    const m = parsed.membership;
+    if (m == null) return null;
+    if (!m || typeof m !== 'object' || typeof m.status !== 'string') return null;
+    return {
+      status: m.status,
+      current_period_start: asIsoTimestamp(m.current_period_start),
+      current_period_end: asIsoTimestamp(m.current_period_end),
+      cancel_at_period_end: Boolean(m.cancel_at_period_end),
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** True when status is active and the paid period covers now. */
 export function isSubscriptionActive(m: Membership | null | undefined): boolean {
   if (!m || m.status !== 'active') return false;
@@ -58,7 +103,9 @@ export async function fetchMembership(
     .eq('user_id', userId)
     .maybeSingle();
   if (error) throw error;
-  return mapMembershipRow(data);
+  const mapped = mapMembershipRow(data);
+  saveMembershipSnapshot(mapped);
+  return mapped;
 }
 
 async function callMembershipRpc(
@@ -74,6 +121,7 @@ async function callMembershipRpc(
   }
   const mapped = mapMembershipRow(data);
   if (!mapped) throw new Error(`${name} returned no membership row`);
+  saveMembershipSnapshot(mapped);
   return mapped;
 }
 
