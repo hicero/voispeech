@@ -69,6 +69,7 @@ declare global {
       sync: () => void;
     };
     __VOISPEECH_LESSONS__?: TrainingLessonDto[];
+    __VOISPEECH_LESSONS_LOADED__?: boolean;
     __VOISPEECH_API__?: {
       listPosts: (channel: string) => Promise<CommunityPost[]>;
       createPost: (channel: string, body: string) => Promise<CommunityPost>;
@@ -135,6 +136,7 @@ function sleep(ms: number): Promise<void> {
 
 function publishLessons(lessons: Lesson[]) {
   window.__VOISPEECH_LESSONS__ = lessons.map(toDto);
+  window.__VOISPEECH_LESSONS_LOADED__ = true;
   window.dispatchEvent(new CustomEvent('voispeech:lessons'));
   window.__VOISPEECH_TRAINING__?.sync?.();
 }
@@ -159,12 +161,15 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
 
     async function loadLessons() {
       if (!client) return;
-      try {
-        const rows = await listPublishedLessons(client);
-        if (!mounted) return;
-        publishLessons(rows);
-      } catch {
-        // Keep SSR fallback cards if catalog fetch fails.
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const rows = await listPublishedLessons(client);
+          if (!mounted) return;
+          publishLessons(rows);
+          return;
+        } catch {
+          if (attempt === 0) await sleep(500);
+        }
       }
     }
 

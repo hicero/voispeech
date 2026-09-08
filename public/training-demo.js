@@ -32,7 +32,8 @@ function fallbackLessons(){
 
 function lessons(){
   const fromWindow=window.__VOISPEECH_LESSONS__;
-  if(Array.isArray(fromWindow)&&fromWindow.length){
+  const loaded=window.__VOISPEECH_LESSONS_LOADED__===true;
+  if(Array.isArray(fromWindow)&&(fromWindow.length>0||loaded)){
     lessonsCache=fromWindow.map(l=>({
       id:String(l.id),
       sort_order:Number(l.sort_order)||0,
@@ -564,6 +565,7 @@ function sync(){
   const root=academy();
   if(!root)return;
   bindAcademy(root);
+  lessons();
   renderLibrary();
   update();
   filterCourses();
@@ -579,6 +581,6 @@ function sync(){
 
 window.__VOISPEECH_TRAINING__={sync};
 window.addEventListener('voispeech:membership',()=>sync());
-window.addEventListener('voispeech:lessons',()=>sync());
+window.addEventListener('voispeech:lessons',()=>{lessons();renderLibrary();sync();});
 sync();
 })();
