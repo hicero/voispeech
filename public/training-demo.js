@@ -121,12 +121,13 @@ async function startLivePreview(){
     return;
   }
   try{
-    const row=await act.startPreview();
+    await act.startPreview();
+    // Force CTA/UI unlock immediately; do not refresh() (stale fetch can clobber active).
+    if(!window.__VOISPEECH__)window.__VOISPEECH__={userEmail:null,status:null,active:false};
+    window.__VOISPEECH__.active=true;
     const root=academy();
-    const prev=window.__VOISPEECH__||{};
-    window.__VOISPEECH__={userEmail:prev.userEmail||null,status:(row&&row.status)||'active',active:true};
-    if(root){root.dataset.auth='user';root.dataset.sub='active';}
-    window.dispatchEvent(new CustomEvent('voispeech:force-membership',{detail:row||null}));
+    if(root){root.dataset.sub='active';root.dataset.auth='user';}
+    window.dispatchEvent(new Event('voispeech:force-membership'));
     if(window.__VOISPEECH_TRAINING__&&typeof window.__VOISPEECH_TRAINING__.sync==='function'){
       window.__VOISPEECH_TRAINING__.sync();
     }else{

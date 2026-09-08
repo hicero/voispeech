@@ -166,7 +166,6 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       let email = lastEmail;
       if (email == null) {
         const { data, error } = await client!.auth.getUser();
-        if (!mounted) return membership;
         if (!error && data.user) {
           email = data.user.email ?? null;
           lastEmail = email;
@@ -174,7 +173,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       }
       saveMembershipSnapshot(membership);
       const next = applyMembership(membership, email);
-      if (membership.status === 'active' && !next.active) next.active = true;
+      // Always publish so training preview CTA unlocks even if effect cleaned up.
       publishToDom(next);
       if (mounted) setState(next);
       return membership;
@@ -196,27 +195,15 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     const onVisibility = () => {
       if (document.visibilityState === 'visible') void refresh();
     };
-    const onForce = (ev: Event) => {
-      const detail = (ev as CustomEvent).detail as Membership | null;
-      if (!detail) return;
-      void (async () => {
-        let email = lastEmail;
-        if (email == null) {
-          const { data } = await client!.auth.getUser();
-          email = data.user?.email ?? null;
-          lastEmail = email;
-        }
-        saveMembershipSnapshot(detail);
-        const next = applyMembership(detail, email);
-        // Preview RPC success: trust active unlock even if clock skew trips isSubscriptionActive.
-        if (detail.status === 'active' && !next.active) {
-          next.active = true;
-        }
-        setState(next);
-        publishToDom(next);
-      })();
+    const onForceMembership = () => {
+      setState((prev) => ({
+        ...prev,
+        ready: true,
+        configured: true,
+        active: true,
+      }));
     };
-    window.addEventListener('voispeech:force-membership', onForce);
+    window.addEventListener('voispeech:force-membership', onForceMembership);
     window.addEventListener('pageshow', onPageShow);
     document.addEventListener('visibilitychange', onVisibility);
     void refresh();
@@ -225,7 +212,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       revision++;
       clearTimeout(timer);
       listener.subscription.unsubscribe();
-      window.removeEventListener('voispeech:force-membership', onForce);
+      window.removeEventListener('voispeech:force-membership', onForceMembership);
       window.removeEventListener('pageshow', onPageShow);
       document.removeEventListener('visibilitychange', onVisibility);
       delete window.__VOISPEECH_ACTIONS__;
