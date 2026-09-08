@@ -6,7 +6,7 @@ export default function Hero() {
         <p className="eyebrow">VOISPEECH · VOCAL COACHING</p>
         <h1>내 발성의<br/>어려움부터,<br/><span>연습의 방향까지.</span></h1>
         <p className="hero-description">고음에서 막히는 순간, 쉽게 힘이 들어가는 소리.<br className="hidden sm:block"/> 지금의 발성을 함께 살펴보고<br className="hidden sm:block"/> 나에게 필요한 연습을 찾아갑니다.</p>
-        <div className="hero-actions"><a href="#booking" className="btn-primary">원데이 레슨 예약 <span aria-hidden>↗</span></a><a href="#method" className="hero-link">코칭 방식 알아보기</a></div>
+        <div className="hero-actions"><a href="#booking" className="btn-primary">원데이 레슨 예약 <span aria-hidden>↗</span></a><a href="/training/" className="hero-link">온라인 훈련 둘러보기</a></div>
         <p className="hero-meta">1:1 발성 코칭 <span>/</span> 5 VOICE CHECK <span>/</span> 개인 코칭 리포트</p>
       </div>
       <div className="hero-cover" aria-label="보이스피치 코칭 소개">

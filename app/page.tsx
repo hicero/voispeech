@@ -23,7 +23,7 @@ export default function Home() {
         <Programs />
         <Coach />
         <ReportTeaser />
-        <section id="online-training" className="section-pad online-teaser"><div className="mx-auto max-w-6xl px-5 md:px-8"><p className="eyebrow">VOISPEECH ONLINE · 서비스 예시</p><h2>수업과 수업 사이,<br/>내 목소리를 위한 연습.</h2><p>구독형 발성훈련 영상관을 미리 만나보세요.<br/>결제 체험부터 영상 시청, 구독 관리까지 둘러볼 수 있습니다.</p><a className="btn-primary" href="/training">온라인 훈련관 체험하기 ↗</a><small>실제 결제 없음 · 영상과 가격은 예시입니다.</small></div></section>
+        <section id="online-training" className="section-pad online-teaser"><div className="mx-auto max-w-6xl px-5 md:px-8"><p className="eyebrow">온라인 발성훈련 · 체험 운영 중</p><h2>수업과 수업 사이,<br/>내 목소리를 위한 연습.</h2><p>발성 강의를 보고, 연습을 기록하고,<br/>궁금한 점을 커뮤니티에서 나눠보세요.</p><a className="btn-primary" href="/training">온라인 훈련 시작하기 ↗</a><small>실제 결제 없음 · 영상과 가격은 예시입니다.</small></div></section>
         <Booking />
         <FAQ />
         <ContactForm />

@@ -8,7 +8,7 @@ const navLinks = [
   { href: "/training", label: "온라인 훈련" },
   { href: "#programs", label: "수업" },
   { href: "#coach", label: "코치" },
-  { href: "#booking", label: "레슨 예약" },
+  { href: "/account/", label: "내 계정" },
 ];
 
 export default function Header() {

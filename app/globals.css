@@ -357,3 +357,37 @@ button:disabled { opacity:.45; cursor:not-allowed; }
   .community-post span{font-size:.75rem}
   .academy-dialog.player-dialog{max-height:min(94dvh,100%);padding:.9rem}
 }
+
+/* Training navigation and hierarchy — 2026-09 handoff */
+.academy-main{max-width:1240px;width:100%;min-width:0}
+.academy-heading h1{letter-spacing:-.045em;line-height:1.25}
+.feature-lesson{border-radius:18px;box-shadow:0 12px 28px rgba(32,57,79,.08)}
+.feature-lesson h2{max-width:28ch;line-height:1.4;overflow-wrap:anywhere}
+#practice-start-description{max-width:48ch;line-height:1.7}
+.learning-path button{border:1px solid transparent;min-height:76px;line-height:1.5;transition:background .15s,border-color .15s}
+.learning-path button:hover{border-color:#8eaec7}
+.learning-path button[aria-pressed="true"]{background:#20394f;color:#fff}
+.learning-path button[aria-pressed="true"] span{color:#d6e4ef}
+.lesson-card{border-radius:14px;overflow:hidden;transition:box-shadow .15s}
+.lesson-card:hover{box-shadow:0 8px 22px rgba(32,57,79,.08)}
+.lesson-copy h3{line-height:1.5;overflow-wrap:anywhere}
+.lesson-art{aspect-ratio:16/9;min-height:0}
+.lesson-art-thumb .lesson-thumb{width:100%;height:100%;object-fit:cover}
+.favorite-button{min-height:44px;padding:.5rem .15rem}
+.academy-filters button{min-height:44px}
+.academy-brand span,.eyebrow{line-height:1.6}
+.academy-description{max-width:65ch;line-height:1.75}
+@media(max-width:520px){
+ .academy-main{padding-inline:1rem}
+ .academy-heading h1{font-size:1.85rem}
+ .feature-lesson{padding:1.4rem;border-radius:12px}
+ .feature-lesson h2{font-size:1.4rem}
+ .lesson-art{min-height:0}
+ .learning-path>div{gap:.5rem}
+ .learning-path button{padding:.8rem;font-size:.9375rem}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ .animate-fade-up{animation:none}
+ .lesson-card,.learning-path button{transition:none}
+}
