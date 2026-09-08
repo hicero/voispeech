@@ -26,17 +26,6 @@ function goAccount(msg){
   if(ok)window.location.href='/account/';
 }
 
-function updateHeaderLink(){
-  const link=root.querySelector('.academy-header .academy-small');
-  if(!link)return;
-  const m=membership();
-  if(m.live){
-    link.textContent=m.loggedIn?(m.active?'내 계정 · 구독 중':'내 계정'):'로그인 · 회원가입';
-  }else{
-    link.textContent='회원가입 · 로그인';
-  }
-}
-
 function update(){
   const m=membership();
   const exclusive=canWatchExclusive();
@@ -74,7 +63,6 @@ function update(){
   const list=$('#progress-list');list.replaceChildren();
   if(!done.size){const p=document.createElement('p');p.textContent='아직 완료한 영상이 없어요. 무료 미리보기부터 시작해 보세요.';list.append(p);}
   else[...done].forEach(id=>{const b=document.createElement('button');b.dataset.lesson=id;b.textContent=titles[id-1]+' · 완료 ✓';list.append(b);});
-  updateHeaderLink();
 }
 
 function openLesson(id){
