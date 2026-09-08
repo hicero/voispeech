@@ -145,9 +145,6 @@ export async function listCommunityPosts(
     .select('id', { count: 'exact', head: true })
     .is('parent_id', null);
   if (channel) countQ = countQ.eq('channel', channel);
-  const { count, error: countError } = await countQ;
-  if (countError) throw countError;
-  const total = count ?? 0;
 
   let q = client
     .from('voispeech_community_posts')
@@ -156,8 +153,12 @@ export async function listCommunityPosts(
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
   if (channel) q = q.eq('channel', channel);
-  const { data: roots, error } = await q;
-  if (error) throw error;
+
+  const [countResult, rootsResult] = await Promise.all([countQ, q]);
+  if (countResult.error) throw countResult.error;
+  if (rootsResult.error) throw rootsResult.error;
+  const total = countResult.count ?? 0;
+  const roots = rootsResult.data;
 
   const rootRows = roots || [];
   const rootIds = rootRows

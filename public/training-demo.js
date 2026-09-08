@@ -1,5 +1,5 @@
 (()=>{
-let demoActive=false,cancelled=false,currentId=null;const done=new Set();const favorites=new Set();const modules={};let step=0;const localRecords=[];let channel="공지";const localPosts=[];let dbRecords=[];let dbPosts=[];let lessonsCache=[];const COMMUNITY_PAGE=10;let communityPage=0;let communityHasMore=false;let communityTotal=0;let communityLoading=false;let progressHydrated=false;
+let demoActive=false,cancelled=false,currentId=null;const done=new Set();const favorites=new Set();const modules={};let step=0;const localRecords=[];let channel="공지";const localPosts=[];let dbRecords=[];let dbPosts=[];let lessonsCache=[];const COMMUNITY_PAGE=10;let communityPage=0;let communityHasMore=false;let communityTotal=0;let communityLoading=false;let communityShowLoading=false;let communityFetchSeq=0;const communityCache=new Map();let progressHydrated=false;
 const FAV_KEY='voispeech_favorites';
 
 function academy(){return document.getElementById('academy');}
@@ -518,10 +518,12 @@ function onAcademyClick(e){
     const mode=pageEl.dataset.communityPage;
     if(mode==='next'&&communityHasMore){
       communityPage+=1;
-      void refreshPosts();
+      paintCommunityFromCacheOrLoading();
+      void refreshPosts({soft:true});
     }else if(mode==='prev'&&communityPage>0){
       communityPage-=1;
-      void refreshPosts();
+      paintCommunityFromCacheOrLoading();
+      void refreshPosts({soft:true});
     }
     return;
   }
@@ -543,7 +545,7 @@ function onAcademyClick(e){
   if(b.dataset.close){const d=$('#'+b.dataset.close);if(d)d.close();return;}
   if(b.dataset.tab){
     tab(b.dataset.tab);
-    if(b.dataset.tab==='community')void refreshPosts();
+    if(b.dataset.tab==='community'){paintCommunityFromCacheOrLoading();void refreshPosts({soft:true});}
     if(b.dataset.tab==='progress')void refreshRecords();
     return;
   }
@@ -555,7 +557,7 @@ function onAcademyClick(e){
     return;
   }
   if(b.dataset.path){selectLearningPath(Number(b.dataset.path));return;}
-  if(b.dataset.channel){channel=b.dataset.channel;all('[data-channel]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));communityPage=0;dbPosts=[];void refreshPosts();return;}
+  if(b.dataset.channel){channel=b.dataset.channel;all('[data-channel]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));communityPage=0;paintCommunityFromCacheOrLoading();void refreshPosts({soft:true});return;}
   if(b.dataset.module){step=Number(b.dataset.module);renderModules();return;}
   if(b.dataset.filter){all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));filterCourses();return;}
   if(b.dataset.lesson){openLesson(b.dataset.lesson);return;}
@@ -613,7 +615,7 @@ function onAcademyClick(e){
       demoActive=false;cancelled=false;tell('이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.');
       break;
     case 'reset':
-      demoActive=false;cancelled=false;done.clear();Object.keys(modules).forEach(k=>delete modules[k]);favorites.clear();saveFavorites();localRecords.length=0;localPosts.length=0;dbRecords=[];dbPosts=[];communityPage=0;communityHasMore=false;communityTotal=0;progressHydrated=false;renderRecords();renderPosts();tab('library');all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.filter==='전체')));all('[data-category]').forEach(x=>x.hidden=false);tell('체험을 초기화했습니다.');
+      demoActive=false;cancelled=false;done.clear();Object.keys(modules).forEach(k=>delete modules[k]);favorites.clear();saveFavorites();localRecords.length=0;localPosts.length=0;dbRecords=[];dbPosts=[];communityPage=0;communityHasMore=false;communityTotal=0;communityShowLoading=false;communityCache.clear();progressHydrated=false;renderRecords();renderPosts();tab('library');all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.filter==='전체')));all('[data-category]').forEach(x=>x.hidden=false);tell('체험을 초기화했습니다.');
       if(membership().live&&membership().loggedIn)void refreshProgress();
       break;
   }
@@ -942,6 +944,35 @@ function renderCommunityPager(feed){
   pager.append(actions);
 }
 
+
+function communityCacheKey(ch,page){return String(ch)+'|'+String(page);}
+function applyCommunityCached(cached){
+  dbPosts=cached.posts;
+  communityTotal=cached.total;
+  communityHasMore=cached.hasMore;
+  communityShowLoading=false;
+}
+function clearCommunityChannelCache(ch){
+  const prefix=String(ch)+'|';
+  for(const k of [...communityCache.keys()]){
+    if(k.startsWith(prefix))communityCache.delete(k);
+  }
+}
+function paintCommunityFromCacheOrLoading(){
+  const cached=communityCache.get(communityCacheKey(channel,communityPage));
+  if(cached){
+    applyCommunityCached(cached);
+    renderPosts();
+    return true;
+  }
+  communityShowLoading=true;
+  dbPosts=[];
+  communityTotal=0;
+  communityHasMore=false;
+  renderPosts();
+  return false;
+}
+
 function renderPosts(){
   const feed=$('#community-feed');if(!feed)return;
   feed.replaceChildren();
@@ -959,7 +990,7 @@ function renderPosts(){
   if(!rows.length){
     const p=document.createElement('p');
     p.className='community-post';
-    p.textContent=channel+' · 아직 글이 없습니다. 첫 글을 남겨 보세요.';
+    p.textContent=communityShowLoading?'불러오는 중…':channel+' · 아직 글이 없습니다. 첫 글을 남겨 보세요.';
     feed.append(p);
     renderCommunityPager(feed);
     updateCommunityHint();
@@ -970,35 +1001,50 @@ function renderPosts(){
   updateCommunityHint();
 }
 
-async function refreshPosts(){
+async function refreshPosts(opts){
+  const soft=!!(opts&&opts.soft);
   const m=membership();
   const a=api();
   if(m.live&&m.loggedIn&&a&&typeof a.listPosts==='function'){
-    if(communityLoading)return;
+    if(communityLoading&&!soft)return;
+    const seq=++communityFetchSeq;
+    const reqChannel=channel;
+    const reqPage=communityPage;
     communityLoading=true;
     try{
-      const offset=communityPage*COMMUNITY_PAGE;
-      const page=await a.listPosts(channel,{limit:COMMUNITY_PAGE,offset});
+      const offset=reqPage*COMMUNITY_PAGE;
+      const page=await a.listPosts(reqChannel,{limit:COMMUNITY_PAGE,offset});
+      if(seq!==communityFetchSeq)return;
       const posts=Array.isArray(page&&page.posts)?page.posts:(Array.isArray(page)?page:[]);
-      communityTotal=typeof(page&&page.total)==='number'?page.total:posts.length;
-      communityHasMore=!!(page&&page.hasMore);
+      const total=typeof(page&&page.total)==='number'?page.total:posts.length;
+      const hasMore=!!(page&&page.hasMore);
+      communityCache.set(communityCacheKey(reqChannel,reqPage),{posts,total,hasMore});
+      if(channel!==reqChannel||communityPage!==reqPage)return;
+      communityTotal=total;
+      communityHasMore=hasMore;
       dbPosts=posts;
+      communityShowLoading=false;
       if(!posts.length&&communityPage>0){
         communityPage-=1;
         communityLoading=false;
-        await refreshPosts();
+        await refreshPosts({soft:true});
         return;
       }
     }catch(_){
+      if(seq!==communityFetchSeq)return;
       tell('커뮤니티 글을 불러오지 못했습니다.');
-      dbPosts=[];communityHasMore=false;communityTotal=0;
+      if(communityShowLoading){
+        dbPosts=[];communityHasMore=false;communityTotal=0;
+      }
+      communityShowLoading=false;
     }finally{
-      communityLoading=false;
+      if(seq===communityFetchSeq)communityLoading=false;
     }
   }else{
     communityHasMore=false;
     communityTotal=0;
     communityPage=0;
+    communityShowLoading=false;
   }
   renderPosts();
 }
@@ -1022,6 +1068,8 @@ async function onCommunitySubmit(e){
       await a.createPost(channel,text);
       e.target.reset();
       communityPage=0;
+      clearCommunityChannelCache(channel);
+      await refreshPosts({soft:true});
       tell('커뮤니티에 글을 등록했습니다.');
     }catch(_){
       tell(channel==='공지'&&!isAdmin()
@@ -1046,7 +1094,8 @@ async function onCommunityLike(id){
       btn.setAttribute('aria-pressed',String(!!res.liked));
       btn.textContent='추천 '+(Number(res.like_count)||0);
     }
-    await refreshPosts();
+    clearCommunityChannelCache(channel);
+    await refreshPosts({soft:true});
   }catch(_){
     tell('추천을 처리하지 못했습니다.');
   }
@@ -1059,7 +1108,8 @@ async function onCommunityDelete(id){
   try{
     await a.deletePost(id);
     communityPage=0;
-    await refreshPosts();
+    clearCommunityChannelCache(channel);
+    await refreshPosts({soft:true});
     tell('글을 삭제했습니다.');
   }catch(_){
     tell('글을 삭제하지 못했습니다.');
@@ -1076,7 +1126,8 @@ async function onCommunityReplySubmit(form){
     await a.createPost(channel,text,id);
     form.reset();
     form.hidden=true;
-    await refreshPosts();
+    clearCommunityChannelCache(channel);
+    await refreshPosts({soft:true});
     tell('답글을 등록했습니다.');
   }catch(_){
     tell('답글을 등록하지 못했습니다.');
@@ -1114,7 +1165,7 @@ function sync(){
   filterCourses();
   const m=membership();
   if(m.live&&m.loggedIn){
-    communityPage=0;void refreshPosts();
+    communityPage=0;paintCommunityFromCacheOrLoading();void refreshPosts({soft:true});
     void refreshRecords();
     if(!progressHydrated)void refreshProgress();
   }else{
