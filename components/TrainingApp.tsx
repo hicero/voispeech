@@ -43,6 +43,16 @@ type AuthState = {
   active: boolean;
 };
 
+export type TrainingLessonSessionDto = {
+  id: string;
+  sort_order: number;
+  title: string;
+  description: string;
+  storage_path: string | null;
+  video_url: string;
+  duration_label: string;
+};
+
 export type TrainingLessonDto = {
   id: string;
   sort_order: number;
@@ -54,6 +64,7 @@ export type TrainingLessonDto = {
   video_url: string;
   duration_label: string;
   tag: string;
+  sessions: TrainingLessonSessionDto[];
 };
 
 declare global {
@@ -96,6 +107,15 @@ function toDto(lesson: Lesson): TrainingLessonDto {
     video_url: lessonVideoSrc(lesson),
     duration_label: lesson.duration_label,
     tag: lesson.access === 'free' ? '무료 미리보기' : '구독 전용',
+    sessions: (lesson.sessions || []).map((session) => ({
+      id: session.id,
+      sort_order: session.sort_order,
+      title: session.title,
+      description: session.description,
+      storage_path: session.storage_path,
+      video_url: lessonVideoSrc(session),
+      duration_label: session.duration_label,
+    })),
   };
 }
 
