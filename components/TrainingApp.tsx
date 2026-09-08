@@ -13,19 +13,49 @@ import {
   startPreviewMembership,
   type Membership,
 } from '@/lib/membership';
+import {
+  lessonVideoSrc,
+  listPublishedLessons,
+  type Lesson,
+} from '@/lib/lessons';
+import {
+  createCommunityPost,
+  listCommunityPosts,
+  type CommunityPost,
+} from '@/lib/community';
+import {
+  createPracticeRecord,
+  listPracticeRecords,
+  type PracticeRecord,
+} from '@/lib/practice';
 
 type AuthState = {
   ready: boolean;
   configured: boolean;
   email: string | null;
+  userId: string | null;
   status: string | null;
   active: boolean;
+};
+
+export type TrainingLessonDto = {
+  id: string;
+  sort_order: number;
+  category: string;
+  title: string;
+  description: string;
+  access: 'free' | 'subscribers';
+  storage_path: string | null;
+  video_url: string;
+  duration_label: string;
+  tag: string;
 };
 
 declare global {
   interface Window {
     __VOISPEECH__?: {
       userEmail: string | null;
+      userId: string | null;
       status: string | null;
       active: boolean;
     };
@@ -38,7 +68,29 @@ declare global {
     __VOISPEECH_TRAINING__?: {
       sync: () => void;
     };
+    __VOISPEECH_LESSONS__?: TrainingLessonDto[];
+    __VOISPEECH_API__?: {
+      listPosts: (channel: string) => Promise<CommunityPost[]>;
+      createPost: (channel: string, body: string) => Promise<CommunityPost>;
+      listRecords: () => Promise<PracticeRecord[]>;
+      createRecord: (kind: string, minutes: number, note: string) => Promise<PracticeRecord>;
+    };
   }
+}
+
+function toDto(lesson: Lesson): TrainingLessonDto {
+  return {
+    id: lesson.id,
+    sort_order: lesson.sort_order,
+    category: lesson.category,
+    title: lesson.title,
+    description: lesson.description,
+    access: lesson.access,
+    storage_path: lesson.storage_path,
+    video_url: lessonVideoSrc(lesson),
+    duration_label: lesson.duration_label,
+    tag: lesson.access === 'free' ? '무료 미리보기' : '구독 전용',
+  };
 }
 
 function publishToDom(next: AuthState) {
@@ -54,6 +106,7 @@ function publishToDom(next: AuthState) {
   }
   window.__VOISPEECH__ = {
     userEmail: next.email,
+    userId: next.userId,
     status: next.status,
     active: next.active,
   };
@@ -61,11 +114,16 @@ function publishToDom(next: AuthState) {
   window.__VOISPEECH_TRAINING__?.sync?.();
 }
 
-function applyMembership(membership: Membership | null, email: string | null): AuthState {
+function applyMembership(
+  membership: Membership | null,
+  email: string | null,
+  userId: string | null,
+): AuthState {
   return {
     ready: true,
     configured: true,
     email,
+    userId,
     status: membership?.status ?? null,
     active: isSubscriptionActive(membership),
   };
@@ -75,11 +133,18 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function publishLessons(lessons: Lesson[]) {
+  window.__VOISPEECH_LESSONS__ = lessons.map(toDto);
+  window.dispatchEvent(new CustomEvent('voispeech:lessons'));
+  window.__VOISPEECH_TRAINING__?.sync?.();
+}
+
 export default function TrainingApp({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
     ready: false,
     configured: false,
     email: null,
+    userId: null,
     status: null,
     active: false,
   });
@@ -87,17 +152,63 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const client = getMemberClient();
+
+    let mounted = true;
+    let sessionUserId: string | null = null;
+    let sessionEmail: string | null = null;
+
+    async function loadLessons() {
+      if (!client) return;
+      try {
+        const rows = await listPublishedLessons(client);
+        if (!mounted) return;
+        publishLessons(rows);
+      } catch {
+        // Keep SSR fallback cards if catalog fetch fails.
+      }
+    }
+
+    void loadLessons();
+
     if (!client) {
-      const next = { ready: true, configured: false, email: null, status: null, active: false };
+      const next = {
+        ready: true,
+        configured: false,
+        email: null,
+        userId: null,
+        status: null,
+        active: false,
+      };
       setState(next);
       publishToDom(next);
       delete window.__VOISPEECH_ACTIONS__;
+      delete window.__VOISPEECH_API__;
       return;
     }
 
-    let mounted = true;
+    window.__VOISPEECH_API__ = {
+      listPosts: (channel: string) =>
+        listCommunityPosts(client, channel, {
+          userId: sessionUserId || '',
+          email: sessionEmail,
+        }),
+      createPost: async (channel: string, body: string) => {
+        if (!sessionUserId) throw new Error('login required');
+        return createCommunityPost(client, sessionUserId, channel, body, sessionEmail);
+      },
+      listRecords: async () => {
+        if (!sessionUserId) throw new Error('login required');
+        return listPracticeRecords(client, sessionUserId);
+      },
+      createRecord: async (kind: string, minutes: number, note: string) => {
+        if (!sessionUserId) throw new Error('login required');
+        return createPracticeRecord(client, sessionUserId, kind, minutes, note);
+      },
+    };
+
     let revision = 0;
     let lastEmail: string | null = null;
+    let lastUserId: string | null = null;
 
     async function refresh() {
       const request = ++revision;
@@ -107,16 +218,28 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       if (!mounted || request !== revision) return;
       if (error || !data.user) {
         lastEmail = null;
-        const next = { ready: true, configured: true, email: null, status: null, active: false };
+        lastUserId = null;
+        sessionEmail = null;
+        sessionUserId = null;
+        const next = {
+          ready: true,
+          configured: true,
+          email: null,
+          userId: null,
+          status: null,
+          active: false,
+        };
         setState(next);
         publishToDom(next);
         return;
       }
       lastEmail = data.user.email ?? null;
+      lastUserId = data.user.id;
+      sessionEmail = lastEmail;
+      sessionUserId = lastUserId;
 
-      // Handoff: paint active from sessionStorage before network fetch settles.
       if (snapshot && isSubscriptionActive(snapshot)) {
-        const optimistic = applyMembership(snapshot, lastEmail);
+        const optimistic = applyMembership(snapshot, lastEmail, lastUserId);
         setState(optimistic);
         publishToDom(optimistic);
       }
@@ -124,12 +247,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       let membership = await fetchMembership(client!, data.user.id);
       if (!mounted || request !== revision) return;
 
-      // If fetch is stale-inactive but a fresh snapshot says active, retry briefly.
-      if (
-        !isSubscriptionActive(membership) &&
-        snapshot &&
-        isSubscriptionActive(snapshot)
-      ) {
+      if (!isSubscriptionActive(membership) && snapshot && isSubscriptionActive(snapshot)) {
         for (let attempt = 0; attempt < 2; attempt++) {
           await sleep(300);
           if (!mounted || request !== revision) return;
@@ -139,22 +257,20 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
         }
       }
 
-      // Prefer an active session snapshot over a still-stale inactive fetch
-      // (RPC may have activated membership while this refresh was in flight).
       const latestSnapshot = loadMembershipSnapshot();
       if (
         !isSubscriptionActive(membership) &&
         latestSnapshot &&
         isSubscriptionActive(latestSnapshot)
       ) {
-        const next = applyMembership(latestSnapshot, lastEmail);
+        const next = applyMembership(latestSnapshot, lastEmail, lastUserId);
         setState(next);
         publishToDom(next);
         return;
       }
 
       saveMembershipSnapshot(membership);
-      const next = applyMembership(membership, lastEmail);
+      const next = applyMembership(membership, lastEmail, lastUserId);
       setState(next);
       publishToDom(next);
     }
@@ -164,16 +280,20 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     ): Promise<Membership> {
       const membership = await fn(client!);
       let email = lastEmail;
-      if (email == null) {
+      let userId = lastUserId;
+      if (email == null || userId == null) {
         const { data, error } = await client!.auth.getUser();
         if (!error && data.user) {
           email = data.user.email ?? null;
+          userId = data.user.id;
           lastEmail = email;
+          lastUserId = userId;
+          sessionEmail = email;
+          sessionUserId = userId;
         }
       }
       saveMembershipSnapshot(membership);
-      const next = applyMembership(membership, email);
-      // Always publish so training preview CTA unlocks even if effect cleaned up.
+      const next = applyMembership(membership, email, userId);
       publishToDom(next);
       if (mounted) setState(next);
       return membership;
@@ -189,9 +309,13 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     let timer: ReturnType<typeof setTimeout> | undefined;
     const { data: listener } = client.auth.onAuthStateChange(() => {
       clearTimeout(timer);
-      timer = setTimeout(() => { void refresh(); }, 0);
+      timer = setTimeout(() => {
+        void refresh();
+      }, 0);
     });
-    const onPageShow = () => { void refresh(); };
+    const onPageShow = () => {
+      void refresh();
+    };
     const onVisibility = () => {
       if (document.visibilityState === 'visible') void refresh();
     };
@@ -216,6 +340,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       window.removeEventListener('pageshow', onPageShow);
       document.removeEventListener('visibilitychange', onVisibility);
       delete window.__VOISPEECH_ACTIONS__;
+      delete window.__VOISPEECH_API__;
     };
   }, []);
 
@@ -243,7 +368,9 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
   return (
     <>
       <div className="member-topbar" role="region" aria-label="회원 상태">
-        <p className="member-topbar-status" aria-live="polite">{label}</p>
+        <p className="member-topbar-status" aria-live="polite">
+          {label}
+        </p>
         <div className="member-topbar-actions">
           <Link href="/account/" className="member-topbar-link">
             {state.email ? '내 계정' : '로그인 · 회원가입'}
