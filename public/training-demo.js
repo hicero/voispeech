@@ -65,25 +65,65 @@ function lessons(){
 }
 
 
+function lessonHasBaseVideo(lesson){
+  if(!lesson)return false;
+  const path=lesson.storage_path;
+  if(typeof path==='string'&&path.trim())return true;
+  const src=lesson.video_url||'';
+  return Boolean(src&&src!=='/training-sample.mp4');
+}
+
+function lessonHasSessions(lesson){
+  return !!(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0);
+}
+
+function lessonIncludesBaseChip(lesson){
+  return lessonHasSessions(lesson)&&lessonHasBaseVideo(lesson);
+}
+
 function lessonStepCount(lesson){
-  if(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0)return lesson.sessions.length;
+  if(lessonHasSessions(lesson)){
+    const n=lesson.sessions.length;
+    return lessonHasBaseVideo(lesson)?1+n:n;
+  }
   return 1;
 }
 
 function lessonSessionTitles(lesson){
-  if(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0){
-    return lesson.sessions.map(s=>s.title||'세션');
-  }
-  return [];
+  if(!lessonHasSessions(lesson))return[];
+  const sessionTitles=lesson.sessions.map(s=>s.title||'세션');
+  if(lessonHasBaseVideo(lesson))return['강의',...sessionTitles];
+  return sessionTitles;
 }
 
 function lessonVideoForStep(lesson,stepIndex){
   if(!lesson)return'/training-sample.mp4';
-  if(Array.isArray(lesson.sessions)&&lesson.sessions.length>0){
+  if(lessonHasSessions(lesson)){
+    if(lessonHasBaseVideo(lesson)){
+      if(stepIndex<=0)return lesson.video_url||'/training-sample.mp4';
+      const s=lesson.sessions[stepIndex-1]||lesson.sessions[0];
+      return(s&&s.video_url)||'/training-sample.mp4';
+    }
     const s=lesson.sessions[stepIndex]||lesson.sessions[0];
     return(s&&s.video_url)||'/training-sample.mp4';
   }
   return lesson.video_url||'/training-sample.mp4';
+}
+
+function lessonStepMeta(lesson,stepIndex){
+  if(!lesson)return{kind:'base',label:'강의',duration_label:'',description:''};
+  if(lessonHasSessions(lesson)){
+    if(lessonHasBaseVideo(lesson)){
+      if(stepIndex<=0){
+        return{kind:'base',label:'강의',duration_label:lesson.duration_label||'',description:lesson.description||''};
+      }
+      const s=lesson.sessions[stepIndex-1]||lesson.sessions[0];
+      return{kind:'session',label:(s&&s.title)||'세션',duration_label:(s&&s.duration_label)||'',description:(s&&s.description)||''};
+    }
+    const s=lesson.sessions[stepIndex]||lesson.sessions[0];
+    return{kind:'session',label:(s&&s.title)||'세션',duration_label:(s&&s.duration_label)||'',description:(s&&s.description)||''};
+  }
+  return{kind:'base',label:'강의',duration_label:lesson.duration_label||'',description:lesson.description||''};
 }
 
 function lessonById(id){
@@ -257,6 +297,12 @@ function openLesson(id){
   }
   currentId=lesson.id;step=0;renderModules();
   const playerTitle=$('#player-title');if(playerTitle)playerTitle.textContent=lesson.title;
+  const playerDesc=$('#player-description');
+  if(playerDesc){
+    const desc=(lesson.description||'').trim();
+    playerDesc.textContent=desc;
+    playerDesc.hidden=!desc;
+  }
   const dialog=$('#player-dialog');if(dialog)dialog.showModal();
 }
 
@@ -382,13 +428,13 @@ function onAcademyClick(e){
         if(modules[currentId].size>=total){
           done.add(String(currentId));
           const pd=$('#player-dialog');if(pd)pd.close();
-          tell(total>1?'코스의 모든 세션을 완료했습니다.':'강의를 완료했습니다.');
+          tell(total>1?'코스의 모든 단계를 완료했습니다.':'강의를 완료했습니다.');
         }else{
           const remaining=[];
           for(let n=0;n<total;n++){if(!modules[currentId].has(n))remaining.push(n);}
           step=remaining[0];
           renderModules();
-          tell('세션을 완료했습니다. 다음 세션을 확인하세요.');
+          tell('이 단계를 완료했습니다. 다음 단계를 확인하세요.');
         }
       }
       break;
@@ -432,12 +478,20 @@ function renderModules(){
   list.replaceChildren();
   const lesson=currentId?lessonById(currentId):null;
   const titles=lessonSessionTitles(lesson);
-  const hasRealSessions=!!(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0);
+  const hasRealSessions=lessonHasSessions(lesson);
+  const includeBase=lessonIncludesBaseChip(lesson);
+  const watched=modules[currentId]||new Set();
   if(hasRealSessions){
     titles.forEach((title,i)=>{
       const b=document.createElement('button');
       b.dataset.module=i;
-      b.textContent=`${i+1}. ${title} ${(modules[currentId]||new Set()).has(i)?'✓':''}`;
+      const mark=watched.has(i)?' ✓':'';
+      if(includeBase&&i===0){
+        b.textContent=`「강의」${mark}`;
+      }else{
+        const sessionIndex=includeBase?i:i+1;
+        b.textContent=`${sessionIndex}. ${title}${mark}`;
+      }
       b.setAttribute('aria-pressed',String(i===step));
       list.append(b);
     });
@@ -445,20 +499,35 @@ function renderModules(){
   }else{
     list.hidden=true;
   }
-  const hint=$('#player-dialog > p');
-  if(hint){
+  const playerDesc=$('#player-description');
+  if(playerDesc&&lesson){
+    const desc=(lesson.description||'').trim();
+    playerDesc.textContent=desc;
+    playerDesc.hidden=!desc;
+  }
+  const hintEl=$('#player-hint');
+  if(hintEl){
+    const total=lessonStepCount(lesson);
+    const meta=lessonStepMeta(lesson,step);
+    const dur=meta.duration_label?` · ${meta.duration_label}`:'';
     if(hasRealSessions){
-      const cur=lesson.sessions[step];
-      const label=cur&&cur.duration_label?` · ${cur.duration_label}`:'';
-      hint.textContent=`세션 ${step+1}/${titles.length}${label} · 선택한 세션 영상을 재생합니다.`;
+      if(meta.kind==='base'){
+        const src=lesson?(lesson.video_url||''):'';
+        const isDemo=!lesson||(!lesson.storage_path&&(!src||src==='/training-sample.mp4'));
+        hintEl.textContent=isDemo
+          ?`강의 · ${step+1}/${total} · 10초 재생 테스트 · 무음 · 실제 강의가 아닙니다.`
+          :`강의 영상 재생 · ${step+1}/${total}${dur}`;
+      }else{
+        hintEl.textContent=`${meta.label} · ${step+1}/${total}${dur} · 선택한 세션 영상을 재생합니다.`;
+      }
     }else{
       const src=lesson?(lesson.video_url||''):'';
       const isDemo=!lesson||(!lesson.storage_path&&(!src||src==='/training-sample.mp4'));
       if(isDemo){
-        hint.textContent='10초 재생 테스트 · 무음 · 실제 강의가 아닙니다.';
+        hintEl.textContent='10초 재생 테스트 · 무음 · 실제 강의가 아닙니다.';
       }else{
-        const label=lesson.duration_label?` · ${lesson.duration_label}`:'';
-        hint.textContent=`강의 영상 재생${label}`;
+        const label=lesson&&lesson.duration_label?` · ${lesson.duration_label}`:'';
+        hintEl.textContent=`강의 영상 재생${label}`;
       }
     }
   }
