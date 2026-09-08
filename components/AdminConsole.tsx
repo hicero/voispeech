@@ -14,10 +14,13 @@ import {
   createLesson,
   deleteLesson,
   listAllLessons,
+  syncLessonSessions,
   updateLesson,
   uploadLessonVideo,
+  uploadSessionVideo,
   type Lesson,
   type LessonAccess,
+  type SessionDraft,
 } from '@/lib/lessons';
 import { TOSS_STATUS } from '@/lib/toss';
 
@@ -42,6 +45,12 @@ type LessonFormState = {
   published: boolean;
 };
 
+type SessionFormRow = SessionDraft & {
+  file: File | null;
+};
+
+const SESSION_PRESETS = ['안내', '루틴', '노래에 적용'] as const;
+
 const EMPTY_FORM: LessonFormState = {
   id: null,
   title: '',
@@ -52,6 +61,43 @@ const EMPTY_FORM: LessonFormState = {
   duration_label: '',
   published: true,
 };
+
+function newSessionKey(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return `s-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function blankSession(sortOrder: number, title = ''): SessionFormRow {
+  return {
+    id: null,
+    key: newSessionKey(),
+    sort_order: sortOrder,
+    title,
+    description: '',
+    duration_label: '',
+    published: true,
+    storage_path: null,
+    file: null,
+  };
+}
+
+function sessionsFromLesson(l: Lesson): SessionFormRow[] {
+  return (l.sessions || []).map((s) => ({
+    id: s.id,
+    key: s.id,
+    sort_order: s.sort_order,
+    title: s.title,
+    description: s.description,
+    duration_label: s.duration_label,
+    published: s.published,
+    storage_path: s.storage_path,
+    file: null,
+  }));
+}
+
+function renumberSessions(rows: SessionFormRow[]): SessionFormRow[] {
+  return rows.map((s, i) => ({ ...s, sort_order: i }));
+}
 
 function nextSortOrder(lessons: Lesson[]): number {
   if (!lessons.length) return 1;
@@ -94,6 +140,7 @@ export default function AdminConsole() {
   const [message, setMessage] = useState('로그인 상태를 확인하고 있습니다.');
   const [tab, setTab] = useState<AdminTab>('subscriptions');
   const [form, setForm] = useState<LessonFormState>(EMPTY_FORM);
+  const [sessionRows, setSessionRows] = useState<SessionFormRow[]>([]);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadPct, setUploadPct] = useState<number | null>(null);
   const [lessonError, setLessonError] = useState<string | null>(null);
@@ -278,6 +325,12 @@ export default function AdminConsole() {
       setLessonError('제목을 입력해 주세요.');
       return;
     }
+    for (const s of sessionRows) {
+      if (!s.title.trim()) {
+        setLessonError('세션 제목을 입력해 주세요. (비우려면 세션을 삭제하세요)');
+        return;
+      }
+    }
     setActionBusy(true);
     setLessonError(null);
     setUploadPct(null);
@@ -304,15 +357,46 @@ export default function AdminConsole() {
           throw new Error('mp4 또는 webm 파일만 업로드할 수 있습니다.');
         }
         setUploadPct(0);
-        setMessage('영상을 업로드하는 중입니다…');
+        setMessage('강의 영상을 업로드하는 중입니다…');
         lesson = await uploadLessonVideo(client, lesson.id, uploadFile, (pct) => {
           setUploadPct(pct);
         });
         setUploadFile(null);
       }
 
+      const drafts: SessionDraft[] = renumberSessions(sessionRows).map((s) => ({
+        id: s.id,
+        key: s.key,
+        sort_order: s.sort_order,
+        title: s.title,
+        description: s.description,
+        duration_label: s.duration_label,
+        published: s.published,
+        storage_path: s.storage_path,
+      }));
+      setMessage('세션을 저장하는 중입니다…');
+      const synced = await syncLessonSessions(client, lesson.id, drafts);
+
+      // Upload per-session videos (match by order after sync)
+      const orderedDrafts = renumberSessions(sessionRows);
+      for (let i = 0; i < orderedDrafts.length; i++) {
+        const draft = orderedDrafts[i];
+        const row = synced[i];
+        if (!draft?.file || !row) continue;
+        const mime = draft.file.type || '';
+        if (mime && mime !== 'video/mp4' && mime !== 'video/webm') {
+          throw new Error(`세션 「${draft.title}」: mp4 또는 webm만 업로드할 수 있습니다.`);
+        }
+        setUploadPct(0);
+        setMessage(`세션 영상 업로드 중: ${draft.title}`);
+        await uploadSessionVideo(client, lesson.id, row.id, draft.file, (pct) => {
+          setUploadPct(pct);
+        });
+      }
+
       const rows = (await loadLessons()) || [];
       setForm(blankForm(rows));
+      setSessionRows([]);
       setUploadFile(null);
       setUploadPct(null);
       setMessage(form.id ? '강의를 저장했습니다.' : '강의를 만들고 저장했습니다.');
@@ -337,6 +421,7 @@ export default function AdminConsole() {
       const rows = (await loadLessons()) || [];
       if (form.id === lesson.id) {
         setForm(blankForm(rows));
+        setSessionRows([]);
         setUploadFile(null);
       }
       setMessage('강의를 삭제했습니다.');
@@ -545,6 +630,7 @@ export default function AdminConsole() {
                   disabled={busy || actionBusy}
                   onClick={() => {
                     setForm(blankForm(lessons));
+                    setSessionRows([]);
                     setUploadFile(null);
                     setLessonError(null);
                   }}
@@ -601,7 +687,11 @@ export default function AdminConsole() {
                           </td>
                           <td>
                             <div className="admin-period">
-                              {l.storage_path ? l.storage_path : '미업로드 · 샘플 재생'}
+                              {(l.sessions?.length || 0) > 0
+                                ? `세션 ${l.sessions.length}개`
+                                : l.storage_path
+                                  ? l.storage_path
+                                  : '미업로드 · 샘플 재생'}
                             </div>
                           </td>
                           <td>
@@ -612,6 +702,7 @@ export default function AdminConsole() {
                                 disabled={busy || actionBusy}
                                 onClick={() => {
                                   setForm(formFromLesson(l));
+                                  setSessionRows(sessionsFromLesson(l));
                                   setUploadFile(null);
                                   setLessonError(null);
                                 }}
@@ -714,7 +805,7 @@ export default function AdminConsole() {
                     게시(훈련관에 표시)
                   </label>
                   <label className="admin-form-span">
-                    영상 파일 (mp4 / webm)
+                    모듈 영상 (세션 0개일 때 사용 · mp4 / webm)
                     <input
                       type="file"
                       accept="video/mp4,video/webm,.mp4,.webm"
@@ -727,11 +818,164 @@ export default function AdminConsole() {
                     <span className="admin-period">
                       {uploadFile
                         ? `선택됨: ${uploadFile.name} (${Math.round(uploadFile.size / 1024 / 1024)}MB)`
-                        : form.id
-                          ? '저장 시 새 파일이 있으면 업로드 후 storage_path를 갱신합니다.'
-                          : '새 강의는 먼저 메타데이터를 만든 뒤, 같은 양식에서 영상을 올릴 수 있습니다.'}
+                        : sessionRows.length > 0
+                          ? '세션이 있으면 세션별 영상이 우선입니다. 모듈 영상은 선택 사항입니다.'
+                          : form.id
+                            ? '세션이 없을 때 이 파일이 훈련관 재생에 사용됩니다.'
+                            : '세션 없이 단일 영상 강의로 저장할 수 있습니다.'}
                     </span>
                   </label>
+
+                  <div className="admin-form-span admin-sessions">
+                    <div className="admin-sessions-head">
+                      <h3>세션 (선택)</h3>
+                      <p className="admin-period">
+                        비우면 기존처럼 모듈 영상 하나만 재생합니다. 프리셋으로 빠르게 추가할 수 있습니다.
+                      </p>
+                    </div>
+                    <div className="admin-session-presets">
+                      {SESSION_PRESETS.map((label) => (
+                        <button
+                          key={label}
+                          type="button"
+                          className="btn-outline admin-action"
+                          disabled={actionBusy}
+                          onClick={() => {
+                            setSessionRows((rows) =>
+                              renumberSessions([...rows, blankSession(rows.length, label)]),
+                            );
+                          }}
+                        >
+                          + {label}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="btn-outline admin-action"
+                        disabled={actionBusy}
+                        onClick={() => {
+                          setSessionRows((rows) =>
+                            renumberSessions([...rows, blankSession(rows.length, '')]),
+                          );
+                        }}
+                      >
+                        + 직접 입력
+                      </button>
+                    </div>
+                    {sessionRows.length === 0 ? (
+                      <p className="admin-period">등록된 세션이 없습니다.</p>
+                    ) : (
+                      <ul className="admin-session-list">
+                        {sessionRows.map((s, idx) => (
+                          <li key={s.key} className="admin-session-item">
+                            <div className="admin-session-toolbar">
+                              <span className="admin-session-index">#{idx + 1}</span>
+                              <button
+                                type="button"
+                                className="btn-outline admin-action"
+                                disabled={actionBusy || idx === 0}
+                                onClick={() => {
+                                  setSessionRows((rows) => {
+                                    const next = [...rows];
+                                    const tmp = next[idx - 1];
+                                    next[idx - 1] = next[idx];
+                                    next[idx] = tmp;
+                                    return renumberSessions(next);
+                                  });
+                                }}
+                              >
+                                위로
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-outline admin-action"
+                                disabled={actionBusy || idx === sessionRows.length - 1}
+                                onClick={() => {
+                                  setSessionRows((rows) => {
+                                    const next = [...rows];
+                                    const tmp = next[idx + 1];
+                                    next[idx + 1] = next[idx];
+                                    next[idx] = tmp;
+                                    return renumberSessions(next);
+                                  });
+                                }}
+                              >
+                                아래로
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-outline admin-action"
+                                disabled={actionBusy}
+                                onClick={() => {
+                                  setSessionRows((rows) =>
+                                    renumberSessions(rows.filter((r) => r.key !== s.key)),
+                                  );
+                                }}
+                              >
+                                삭제
+                              </button>
+                            </div>
+                            <div className="admin-session-fields">
+                              <label>
+                                제목
+                                <input
+                                  value={s.title}
+                                  maxLength={80}
+                                  disabled={actionBusy}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    setSessionRows((rows) =>
+                                      rows.map((r) => (r.key === s.key ? { ...r, title: v } : r)),
+                                    );
+                                  }}
+                                  placeholder="예: 안내"
+                                  required
+                                />
+                              </label>
+                              <label>
+                                길이 표기
+                                <input
+                                  value={s.duration_label}
+                                  maxLength={40}
+                                  disabled={actionBusy}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    setSessionRows((rows) =>
+                                      rows.map((r) =>
+                                        r.key === s.key ? { ...r, duration_label: v } : r,
+                                      ),
+                                    );
+                                  }}
+                                  placeholder="예: 3분"
+                                />
+                              </label>
+                              <label className="admin-form-span">
+                                세션 영상 (mp4 / webm)
+                                <input
+                                  type="file"
+                                  accept="video/mp4,video/webm,.mp4,.webm"
+                                  disabled={actionBusy}
+                                  onChange={(e) => {
+                                    const f = e.target.files?.[0] || null;
+                                    setSessionRows((rows) =>
+                                      rows.map((r) => (r.key === s.key ? { ...r, file: f } : r)),
+                                    );
+                                  }}
+                                />
+                                <span className="admin-period">
+                                  {s.file
+                                    ? `선택됨: ${s.file.name}`
+                                    : s.storage_path
+                                      ? `저장됨: ${s.storage_path}`
+                                      : '미업로드 · 샘플 재생'}
+                                </span>
+                              </label>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
                 {uploadPct != null ? (
                   <p className="admin-upload-progress" aria-live="polite">
@@ -748,6 +992,7 @@ export default function AdminConsole() {
                     disabled={actionBusy}
                     onClick={() => {
                       setForm(blankForm(lessons));
+                      setSessionRows([]);
                       setUploadFile(null);
                       setLessonError(null);
                     }}

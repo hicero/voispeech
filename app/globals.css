@@ -292,6 +292,18 @@ button:disabled { opacity:.45; cursor:not-allowed; }
 .admin-check{flex-direction:row!important;align-items:center;gap:.55rem!important;margin-top:1.4rem}
 .admin-check input{width:auto;accent-color:#20394f}
 .admin-upload-progress{margin:.75rem 0;font-weight:650;color:#1f4b73}
+.admin-sessions{margin-top:.35rem;padding:1rem;border:1px solid #d4e1ee;border-radius:12px;background:#f3f8fc}
+.admin-sessions-head h3{margin:0 0 .35rem;font-size:1rem;color:#20394f}
+.admin-session-presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0 1rem}
+.admin-session-list{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
+.admin-session-item{padding:1rem;border:1px solid #cfe0ec;border-radius:10px;background:#fff}
+.admin-session-toolbar{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-bottom:.75rem}
+.admin-session-index{font-weight:700;color:#355874;margin-right:.25rem}
+.admin-session-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem 1rem}
+.admin-session-fields label{display:flex;flex-direction:column;gap:.35rem;font-size:.875rem;color:#52647a}
+.admin-session-fields input{padding:.65rem .8rem;border:1px solid #c8d9e5;border-radius:8px;font:inherit;color:#142d49;background:#fff}
+@media(max-width:720px){.admin-session-fields{grid-template-columns:1fr}}
+
 .admin-row-selected td{background:#eef6ff}
 @media(max-width:720px){.admin-form-grid{grid-template-columns:1fr}}
 

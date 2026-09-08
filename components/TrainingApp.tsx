@@ -5,10 +5,15 @@ import Link from 'next/link';
 import { getMemberClient } from '@/lib/member-client';
 import {
   cancelPreviewRenewal,
+  clearLoginReturn,
+  clearMembershipHandoff,
+  clearMembershipSnapshot,
   expirePreviewMembership,
   fetchMembership,
   isSubscriptionActive,
+  loadMembershipHandoff,
   loadMembershipSnapshot,
+  markMembershipHandoff,
   saveMembershipSnapshot,
   startPreviewMembership,
   type Membership,
@@ -120,13 +125,15 @@ function applyMembership(
   email: string | null,
   userId: string | null,
 ): AuthState {
+  const active = isSubscriptionActive(membership)
+    || (membership?.status === 'active' && Boolean(membership.current_period_end));
   return {
     ready: true,
     configured: true,
     email,
     userId,
     status: membership?.status ?? null,
-    active: isSubscriptionActive(membership),
+    active,
   };
 }
 
@@ -139,6 +146,14 @@ function publishLessons(lessons: Lesson[]) {
   window.__VOISPEECH_LESSONS_LOADED__ = true;
   window.dispatchEvent(new CustomEvent('voispeech:lessons'));
   window.__VOISPEECH_TRAINING__?.sync?.();
+}
+
+function pickHandoffMembership(): Membership | null {
+  const handoff = loadMembershipHandoff();
+  if (handoff && (isSubscriptionActive(handoff) || handoff.status === 'active')) return handoff;
+  const snapshot = loadMembershipSnapshot();
+  if (snapshot && (isSubscriptionActive(snapshot) || snapshot.status === 'active')) return snapshot;
+  return null;
 }
 
 export default function TrainingApp({ children }: { children: React.ReactNode }) {
@@ -158,6 +173,14 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     let mounted = true;
     let sessionUserId: string | null = null;
     let sessionEmail: string | null = null;
+
+    // Apply account→training handoff immediately so unlock works before async fetch.
+    const early = pickHandoffMembership();
+    if (early) {
+      const optimistic = applyMembership(early, null, null);
+      setState(optimistic);
+      publishToDom(optimistic);
+    }
 
     async function loadLessons() {
       if (!client) return;
@@ -217,7 +240,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
 
     async function refresh() {
       const request = ++revision;
-      const snapshot = loadMembershipSnapshot();
+      const snapshot = pickHandoffMembership();
 
       const { data, error } = await client!.auth.getUser();
       if (!mounted || request !== revision) return;
@@ -242,40 +265,58 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       lastUserId = data.user.id;
       sessionEmail = lastEmail;
       sessionUserId = lastUserId;
+      clearLoginReturn();
 
-      if (snapshot && isSubscriptionActive(snapshot)) {
+      if (snapshot) {
         const optimistic = applyMembership(snapshot, lastEmail, lastUserId);
         setState(optimistic);
         publishToDom(optimistic);
       }
 
-      let membership = await fetchMembership(client!, data.user.id);
+      let membership: Membership | null = null;
+      try {
+        membership = await fetchMembership(client!, data.user.id);
+      } catch {
+        membership = null;
+      }
       if (!mounted || request !== revision) return;
 
-      if (!isSubscriptionActive(membership) && snapshot && isSubscriptionActive(snapshot)) {
-        for (let attempt = 0; attempt < 2; attempt++) {
-          await sleep(300);
+      if (!isSubscriptionActive(membership) && snapshot) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+          await sleep(250);
           if (!mounted || request !== revision) return;
-          membership = await fetchMembership(client!, data.user.id);
+          try {
+            membership = await fetchMembership(client!, data.user.id);
+          } catch {
+            membership = null;
+          }
           if (!mounted || request !== revision) return;
           if (isSubscriptionActive(membership)) break;
         }
       }
 
-      const latestSnapshot = loadMembershipSnapshot();
+      const latestHandoff = pickHandoffMembership();
       if (
         !isSubscriptionActive(membership) &&
-        latestSnapshot &&
-        isSubscriptionActive(latestSnapshot)
+        latestHandoff &&
+        (isSubscriptionActive(latestHandoff) || latestHandoff.status === 'active')
       ) {
-        const next = applyMembership(latestSnapshot, lastEmail, lastUserId);
+        const next = applyMembership(latestHandoff, lastEmail, lastUserId);
         setState(next);
         publishToDom(next);
         return;
       }
 
-      saveMembershipSnapshot(membership);
+      if (isSubscriptionActive(membership) && membership) {
+        saveMembershipSnapshot(membership, { force: true });
+        clearMembershipHandoff();
+      }
       const next = applyMembership(membership, lastEmail, lastUserId);
+      // Keep unlock if handoff said active but clock/parse edge-case tripped.
+      if (!next.active && latestHandoff && latestHandoff.status === 'active') {
+        next.active = true;
+        next.status = latestHandoff.status;
+      }
       setState(next);
       publishToDom(next);
     }
@@ -297,8 +338,13 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
           sessionUserId = userId;
         }
       }
-      saveMembershipSnapshot(membership);
+      if (membership.status === 'active') {
+        markMembershipHandoff(membership);
+      } else {
+        saveMembershipSnapshot(membership, { force: true });
+      }
       const next = applyMembership(membership, email, userId);
+      if (membership.status === 'active' && !next.active) next.active = true;
       publishToDom(next);
       if (mounted) setState(next);
       return membership;
@@ -325,12 +371,20 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       if (document.visibilityState === 'visible') void refresh();
     };
     const onForceMembership = () => {
-      setState((prev) => ({
-        ...prev,
-        ready: true,
-        configured: true,
-        active: true,
-      }));
+      const handoff = pickHandoffMembership();
+      setState((prev) => {
+        const next: AuthState = {
+          ...prev,
+          ready: true,
+          configured: true,
+          active: true,
+          status: handoff?.status ?? prev.status ?? 'active',
+          email: prev.email ?? lastEmail,
+          userId: prev.userId ?? lastUserId,
+        };
+        publishToDom(next);
+        return next;
+      });
     };
     window.addEventListener('voispeech:force-membership', onForceMembership);
     window.addEventListener('pageshow', onPageShow);
@@ -354,6 +408,8 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     if (!client) return;
     setBusy(true);
     try {
+      clearMembershipSnapshot();
+      clearLoginReturn();
       await client.auth.signOut();
     } finally {
       setBusy(false);
