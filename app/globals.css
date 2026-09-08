@@ -242,3 +242,19 @@ button:disabled { opacity:.45; cursor:not-allowed; }
 .member-google:focus-visible,.member-card button:focus-visible{outline:3px solid #348cd9;outline-offset:4px}
 .member-card button:disabled{opacity:.6;cursor:not-allowed}.member-card .member-note{font-size:14px;color:#52647a;border-top:1px solid #e0e8f0;padding-top:20px;margin-top:28px}
 @media(max-width:480px){.member-page{padding:28px 16px}.member-card{padding:28px 22px}}
+
+/* Member topbar + account CTA */
+.member-topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;background:#20394f;color:#eef5fa;padding:.7rem 3vw;font-size:.875rem}
+.member-topbar-status{margin:0;color:#d5e4ef;overflow-wrap:anywhere}
+.member-topbar-actions{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.member-topbar-link{color:#fff;border:1px solid #8fb0c9;border-radius:6px;padding:.45rem .9rem;font-weight:600;text-decoration:none}
+.member-topbar-link:hover{background:#3b5b75}
+.member-topbar-logout{background:#fff;color:#20394f;border:0;border-radius:6px;padding:.45rem 1rem;font-weight:700;cursor:pointer;min-height:40px}
+.member-topbar-logout:hover{background:#e8f0f6}
+.member-topbar-logout:disabled{opacity:.55;cursor:not-allowed}
+.member-actions{display:flex;flex-wrap:wrap;gap:.85rem;margin:1.5rem 0 1rem}
+.member-cta{text-decoration:none}
+.member-logout{min-width:8rem}
+.member-access-note{font-size:.9375rem;color:#3d5a73;background:#eaf2f8;border-radius:8px;padding:1rem 1.1rem;margin:0 0 1rem}
+.member-home-link{display:inline-block;margin-top:.5rem;font-size:.9375rem;color:#3d5a73;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:520px){.member-topbar{padding:.65rem 1rem}.member-topbar-status{font-size:.8125rem}}

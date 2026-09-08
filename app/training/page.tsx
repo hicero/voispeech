@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
+import TrainingApp from "@/components/TrainingApp";
 export const metadata: Metadata = {title:"온라인 발성훈련 | VoiSpeech",robots:{index:false,follow:false}};
 const lessons=[{id:1,category:"기초",title:"연습을 시작하기 전에",desc:"목표와 연습 환경을 정리하는 첫 시간",tag:"무료 미리보기"},{id:2,category:"SOVT",title:"빨대 발성, 연습의 출발점",desc:"수업에서 배운 연습을 다시 확인하기",tag:"구독 전용"},{id:3,category:"기초",title:"작은 소리에서 연결 찾기",desc:"소리의 크기와 연결을 살펴보는 시간",tag:"구독 전용"},{id:4,category:"노래 적용",title:"한 구절로 옮겨보기",desc:"연습과 노래를 연결하는 과정",tag:"구독 전용"}];
-export default function Training(){return <div className="academy" id="academy">
+export default function Training(){return <TrainingApp><div className="academy" id="academy">
  <div className="demo-ribbon">체험용 예시 · 실제 결제 없음 · 강의·가격은 기획 예시입니다</div>
  <header className="academy-header"><Link className="academy-brand" href="/">VoiSpeech <span>ONLINE STUDIO</span></Link><div><Link href="/account/" className="academy-small">회원가입 · 로그인</Link></div></header>
  <div className="academy-shell"><aside className="academy-sidebar"><p className="eyebrow">MY VOICE PRACTICE</p><nav aria-label="온라인 훈련 메뉴"><button data-tab="library" aria-pressed="true">훈련 <span>↗</span></button><button data-tab="community" aria-pressed="false">커뮤니티</button><button data-tab="progress" aria-pressed="false">연습 기록</button><button data-tab="membership" aria-pressed="false">마이</button></nav><div className="sidebar-note"><span>수업과 수업 사이에도</span><p>나의 속도로,<br/>다시 연습하는 시간.</p></div><Link href="/#booking">1:1 레슨 예약 ↗</Link><button data-action="reset" className="academy-reset">체험 처음부터</button></aside>
@@ -23,4 +24,4 @@ export default function Training(){return <div className="academy" id="academy">
  <dialog id="player-dialog" className="academy-dialog player-dialog" aria-labelledby="player-title"><div className="dialog-heading"><span className="eyebrow">VIDEO PREVIEW</span><button data-close="player-dialog" aria-label="영상 닫기">✕</button></div><h2 id="player-title">연습을 시작하기 전에</h2><div id="module-list" className="module-list"/><video id="lesson-video" controls playsInline preload="none" src="/training-sample.mp4" aria-label="실제 강의가 아닌 재생 확인용 10초 무음 영상"/><p>10초 재생 테스트 · 무음 · 실제 강의가 아닙니다.</p><button data-action="complete" className="btn-primary">이 단계 완료 · 다음 단계</button></dialog>
  <dialog id="cancel-dialog" className="academy-dialog" aria-labelledby="cancel-title"><div className="dialog-heading"><span className="eyebrow">SUBSCRIPTION</span><button data-close="cancel-dialog" aria-label="닫기">✕</button></div><h2 id="cancel-title">자동 갱신을 해지할까요?</h2><p>이 예시에서는 자동 갱신을 해지해도 이용기간이 끝나기 전까지 전용 영상이 열려 있습니다.</p><button className="btn-primary" data-action="confirm-cancel">해지 체험하기</button></dialog>
  <nav className="academy-bottom" aria-label="하단 메뉴">{[["library","훈련"],["community","커뮤니티"],["progress","기록"],["membership","마이"]].map(([id,t])=><button key={id} data-tab={id} aria-pressed={id==="library"}>{t}</button>)}</nav><Script src="/training-demo.js" strategy="afterInteractive"/>
- </div>}
+ </div></TrainingApp>}
