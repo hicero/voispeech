@@ -93,10 +93,34 @@ function api(){
   return window.__VOISPEECH_API__||null;
 }
 
+function renderFilters(){
+  const wrap=$('.academy-filters');
+  if(!wrap)return;
+  const pressed=$('[data-filter][aria-pressed="true"]');
+  const current=pressed?pressed.dataset.filter:'전체';
+  const cats=[];
+  const seen=new Set();
+  lessons().forEach(l=>{
+    const c=(l.category||'').trim();
+    if(c&&!seen.has(c)){seen.add(c);cats.push(c);}
+  });
+  const filters=['전체',...cats];
+  const keep=filters.includes(current)?current:'전체';
+  wrap.replaceChildren();
+  filters.forEach(c=>{
+    const b=document.createElement('button');
+    b.dataset.filter=c;
+    b.textContent=c;
+    b.setAttribute('aria-pressed',String(c===keep));
+    wrap.append(b);
+  });
+}
+
 function renderLibrary(){
   const grid=$('.lesson-grid');
   if(!grid)return;
   const list=lessons();
+  renderFilters();
   grid.replaceChildren();
   list.forEach((l,idx)=>{
     const artClass=`lesson-art lesson-art-${(idx%4)+1}`;
