@@ -118,6 +118,59 @@ function formatSeoul(iso: string | null): string {
   return d.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
 }
 
+
+/** Surface Supabase/storage upload failures in Korean for admins. */
+function formatUploadError(err: unknown, context: 'lesson' | 'session' = 'lesson'): string {
+  const raw =
+    err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string'
+      ? (err as { message: string }).message
+      : err instanceof Error
+        ? err.message
+        : typeof err === 'string'
+          ? err
+          : '';
+  const msg = raw.trim();
+  const lower = msg.toLowerCase();
+  const prefix = context === 'session' ? '세션 영상' : '강의 영상';
+
+  if (!msg) return `${prefix} 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.`;
+  if (
+    lower.includes('payload too large') ||
+    lower.includes('maximum allowed size') ||
+    lower.includes('file size') ||
+    lower.includes('entity too large') ||
+    lower.includes('413')
+  ) {
+    return `${prefix} 파일이 너무 큽니다. 용량을 줄이거나 짧은 영상으로 나눠 올려 주세요.`;
+  }
+  if (
+    lower.includes('mime') ||
+    lower.includes('not allowed') ||
+    lower.includes('invalid content') ||
+    lower.includes('content-type') ||
+    lower.includes('unsupported')
+  ) {
+    return `${prefix}은 mp4 또는 webm 형식만 업로드할 수 있습니다.`;
+  }
+  if (
+    lower.includes('row-level security') ||
+    lower.includes('permission') ||
+    lower.includes('not authorized') ||
+    lower.includes('jwt') ||
+    lower.includes('401') ||
+    lower.includes('403')
+  ) {
+    return '업로드 권한이 없습니다. 관리자 계정으로 다시 로그인한 뒤 시도해 주세요.';
+  }
+  if (lower.includes('network') || lower.includes('failed to fetch') || lower.includes('timeout')) {
+    return '네트워크 오류로 업로드에 실패했습니다. 연결을 확인한 뒤 다시 시도해 주세요.';
+  }
+  if (lower.includes('bucket') || lower.includes('storage')) {
+    return `저장소 오류로 ${prefix} 업로드에 실패했습니다. (${msg})`;
+  }
+  return `${prefix} 업로드 실패: ${msg}`;
+}
+
 function formFromLesson(l: Lesson): LessonFormState {
   return {
     id: l.id,
@@ -360,12 +413,19 @@ export default function AdminConsole() {
         if (mime && mime !== 'video/mp4' && mime !== 'video/webm') {
           throw new Error('mp4 또는 webm 파일만 업로드할 수 있습니다.');
         }
+        const label = uploadFile.name || '강의 영상';
         setUploadPct(0);
-        setMessage('강의 영상을 업로드하는 중입니다…');
-        lesson = await uploadLessonVideo(client, lesson.id, uploadFile, (pct) => {
-          setUploadPct(pct);
-        });
+        setMessage(`강의 영상 업로드 준비 중… (${label})`);
+        try {
+          lesson = await uploadLessonVideo(client, lesson.id, uploadFile, (pct) => {
+            setUploadPct(pct);
+            setMessage(`강의 영상 업로드 중… ${pct}% (${label})`);
+          });
+        } catch (upErr) {
+          throw new Error(formatUploadError(upErr, 'lesson'));
+        }
         setUploadFile(null);
+        setMessage('강의 영상 업로드가 완료되었습니다. 세션을 저장합니다…');
       }
 
       const drafts: SessionDraft[] = renumberSessions(sessionRows).map((s) => ({
@@ -391,11 +451,17 @@ export default function AdminConsole() {
         if (mime && mime !== 'video/mp4' && mime !== 'video/webm') {
           throw new Error(`세션 「${draft.title}」: mp4 또는 webm만 업로드할 수 있습니다.`);
         }
+        const label = draft.file.name || draft.title || '세션 영상';
         setUploadPct(0);
-        setMessage(`세션 영상 업로드 중: ${draft.title}`);
-        await uploadSessionVideo(client, lesson.id, row.id, draft.file, (pct) => {
-          setUploadPct(pct);
-        });
+        setMessage(`세션 「${draft.title}」 영상 업로드 준비 중… (${label})`);
+        try {
+          await uploadSessionVideo(client, lesson.id, row.id, draft.file, (pct) => {
+            setUploadPct(pct);
+            setMessage(`세션 「${draft.title}」 업로드 중… ${pct}% (${label})`);
+          });
+        } catch (upErr) {
+          throw new Error(formatUploadError(upErr, 'session'));
+        }
       }
 
       const rows = (await loadLessons()) || [];
@@ -405,10 +471,42 @@ export default function AdminConsole() {
       setUploadPct(null);
       setMessage(form.id ? '강의를 저장했습니다.' : '강의를 만들고 저장했습니다.');
     } catch (err) {
-      const detail = err instanceof Error && err.message ? err.message : '저장에 실패했습니다.';
+      const detail =
+        err instanceof Error && err.message
+          ? err.message
+          : '저장에 실패했습니다. 잠시 후 다시 시도해 주세요.';
       setLessonError(detail);
       setMessage(`강의 저장 실패: ${detail}`);
       setUploadPct(null);
+    } finally {
+      setActionBusy(false);
+    }
+  }
+
+
+  async function moveLesson(lesson: Lesson, direction: -1 | 1) {
+    const client = getMemberClient();
+    if (!client) return;
+    const idx = lessons.findIndex((l) => l.id === lesson.id);
+    const swapIdx = idx + direction;
+    if (idx < 0 || swapIdx < 0 || swapIdx >= lessons.length) return;
+    const other = lessons[swapIdx];
+    setActionBusy(true);
+    setLessonError(null);
+    try {
+      const aOrder = Number(lesson.sort_order) || 0;
+      const bOrder = Number(other.sort_order) || 0;
+      // Swap sort_order; if equal, nudge so order actually changes.
+      const nextA = aOrder === bOrder ? bOrder + direction : bOrder;
+      const nextB = aOrder === bOrder ? aOrder : aOrder;
+      await updateLesson(client, lesson.id, { sort_order: nextA });
+      await updateLesson(client, other.id, { sort_order: nextB });
+      await loadLessons();
+      setMessage(`「${lesson.title}」 순서를 ${direction < 0 ? '위로' : '아래로'} 옮겼습니다.`);
+    } catch (err) {
+      const detail = err instanceof Error && err.message ? err.message : '순서 변경 실패';
+      setLessonError(detail);
+      setMessage(`강의 순서 변경 실패: ${detail}`);
     } finally {
       setActionBusy(false);
     }
@@ -700,6 +798,34 @@ export default function AdminConsole() {
                           </td>
                           <td>
                             <div className="admin-row-actions">
+                              <button
+                                type="button"
+                                className="btn-outline admin-action admin-reorder"
+                                disabled={busy || actionBusy || lessons[0]?.id === l.id}
+                                aria-label="위로"
+                                title="위로"
+                                onClick={() => {
+                                  void moveLesson(l, -1);
+                                }}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-outline admin-action admin-reorder"
+                                disabled={
+                                  busy ||
+                                  actionBusy ||
+                                  lessons[lessons.length - 1]?.id === l.id
+                                }
+                                aria-label="아래로"
+                                title="아래로"
+                                onClick={() => {
+                                  void moveLesson(l, 1);
+                                }}
+                              >
+                                ↓
+                              </button>
                               <button
                                 type="button"
                                 className="btn-primary admin-action"
@@ -994,9 +1120,13 @@ export default function AdminConsole() {
                   </div>
                 </div>
                 {uploadPct != null ? (
-                  <p className="admin-upload-progress" aria-live="polite">
-                    업로드 진행 {uploadPct}%
-                  </p>
+                  <div className="admin-upload-progress" aria-live="polite">
+                    <p>업로드 진행 {uploadPct}%</p>
+                    <div className="admin-upload-bar" role="progressbar" aria-valuenow={uploadPct} aria-valuemin={0} aria-valuemax={100}>
+                      <span style={{ width: `${Math.max(0, Math.min(100, uploadPct))}%` }} />
+                    </div>
+                    <p className="admin-period">저장소 오류가 나면 아래에 한국어로 표시됩니다.</p>
+                  </div>
                 ) : null}
                 <div className="admin-row-actions">
                   <button type="submit" className="btn-primary" disabled={busy || actionBusy}>

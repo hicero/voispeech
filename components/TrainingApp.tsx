@@ -28,6 +28,7 @@ import {
   deleteCommunityPost,
   listCommunityPosts,
   toggleCommunityLike,
+  type CommunityListResult,
   type CommunityPost,
   type LikeToggleResult,
 } from '@/lib/community';
@@ -37,6 +38,11 @@ import {
   listPracticeRecords,
   type PracticeRecord,
 } from '@/lib/practice';
+import {
+  listLessonProgress,
+  upsertLessonProgress,
+  type LessonProgress,
+} from '@/lib/progress';
 
 type AuthState = {
   ready: boolean;
@@ -97,7 +103,10 @@ declare global {
     __VOISPEECH_LESSONS_LOADED__?: boolean;
     __VOISPEECH_API__?: {
       isAdmin: boolean;
-      listPosts: (channel: string) => Promise<CommunityPost[]>;
+      listPosts: (
+        channel: string,
+        opts?: { limit?: number; offset?: number },
+      ) => Promise<CommunityListResult>;
       createPost: (
         channel: string,
         body: string,
@@ -107,6 +116,12 @@ declare global {
       toggleLike: (postId: string) => Promise<LikeToggleResult>;
       listRecords: () => Promise<PracticeRecord[]>;
       createRecord: (kind: string, minutes: number, note: string) => Promise<PracticeRecord>;
+      listProgress: () => Promise<LessonProgress[]>;
+      saveProgress: (
+        lessonId: string,
+        completedSteps: number[],
+        completed: boolean,
+      ) => Promise<LessonProgress>;
     };
   }
 }
@@ -270,11 +285,16 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
 
     window.__VOISPEECH_API__ = {
       isAdmin: false,
-      listPosts: (channel: string) =>
-        listCommunityPosts(client, channel, {
-          userId: sessionUserId || '',
-          email: sessionEmail,
-        }),
+      listPosts: (channel: string, opts?: { limit?: number; offset?: number }) =>
+        listCommunityPosts(
+          client,
+          channel,
+          {
+            userId: sessionUserId || '',
+            email: sessionEmail,
+          },
+          opts,
+        ),
       createPost: async (channel: string, body: string, parentId?: string | null) => {
         if (!sessionUserId) throw new Error('login required');
         return createCommunityPost(
@@ -301,6 +321,14 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       createRecord: async (kind: string, minutes: number, note: string) => {
         if (!sessionUserId) throw new Error('login required');
         return createPracticeRecord(client, sessionUserId, kind, minutes, note);
+      },
+      listProgress: async () => {
+        if (!sessionUserId) throw new Error('login required');
+        return listLessonProgress(client, sessionUserId);
+      },
+      saveProgress: async (lessonId: string, completedSteps: number[], completed: boolean) => {
+        if (!sessionUserId) throw new Error('login required');
+        return upsertLessonProgress(client, sessionUserId, lessonId, completedSteps, completed);
       },
     };
 

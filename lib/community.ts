@@ -112,40 +112,96 @@ function nestPosts(flat: CommunityPost[]): CommunityPost[] {
   return roots;
 }
 
+export type CommunityListOptions = {
+  limit?: number;
+  offset?: number;
+};
+
+export type CommunityListResult = {
+  posts: CommunityPost[];
+  hasMore: boolean;
+  total: number;
+};
+
+const DEFAULT_PAGE_SIZE = 10;
+
 export async function listCommunityPosts(
   client: SupabaseClient,
   channel: string,
   viewer?: { userId: string; email: string | null },
-): Promise<CommunityPost[]> {
+  opts?: CommunityListOptions,
+): Promise<CommunityListResult> {
+  const limit =
+    opts?.limit != null && Number.isFinite(opts.limit) && opts.limit > 0
+      ? Math.min(Math.floor(opts.limit), 50)
+      : DEFAULT_PAGE_SIZE;
+  const offset =
+    opts?.offset != null && Number.isFinite(opts.offset) && opts.offset > 0
+      ? Math.floor(opts.offset)
+      : 0;
+
+  let countQ = client
+    .from('voispeech_community_posts')
+    .select('id', { count: 'exact', head: true })
+    .is('parent_id', null);
+  if (channel) countQ = countQ.eq('channel', channel);
+  const { count, error: countError } = await countQ;
+  if (countError) throw countError;
+  const total = count ?? 0;
+
   let q = client
     .from('voispeech_community_posts')
     .select('id,user_id,channel,body,created_at,parent_id')
+    .is('parent_id', null)
     .order('created_at', { ascending: false })
-    .limit(120);
+    .range(offset, offset + limit - 1);
   if (channel) q = q.eq('channel', channel);
-  const { data, error } = await q;
+  const { data: roots, error } = await q;
   if (error) throw error;
 
-  const emailByUserId: Record<string, string | undefined> = {};
-  if (viewer?.userId) emailByUserId[viewer.userId] = viewer.email ?? undefined;
-
-  const rows = data || [];
-  const ids = rows
+  const rootRows = roots || [];
+  const rootIds = rootRows
     .map((row) =>
       typeof row.id === 'string' || typeof row.id === 'number' ? String(row.id) : '',
     )
     .filter(Boolean);
+
+  let replyRows: unknown[] = [];
+  if (rootIds.length) {
+    let rq = client
+      .from('voispeech_community_posts')
+      .select('id,user_id,channel,body,created_at,parent_id')
+      .in('parent_id', rootIds)
+      .order('created_at', { ascending: true });
+    if (channel) rq = rq.eq('channel', channel);
+    const { data: replies, error: replyError } = await rq;
+    if (replyError) throw replyError;
+    replyRows = replies || [];
+  }
+
+  const emailByUserId: Record<string, string | undefined> = {};
+  if (viewer?.userId) emailByUserId[viewer.userId] = viewer.email ?? undefined;
+
+  const allRows = [...rootRows, ...replyRows];
+  const ids = allRows
+    .map((row) => {
+      const r = row as { id?: string | number };
+      return typeof r.id === 'string' || typeof r.id === 'number' ? String(r.id) : '';
+    })
+    .filter(Boolean);
   const { counts, liked } = await loadLikeMeta(client, ids, viewer?.userId);
 
-  const flat = rows
+  const flat = allRows
     .map((row) => {
-      const id =
-        typeof row.id === 'string' || typeof row.id === 'number' ? String(row.id) : '';
+      const r = row as { id?: string | number };
+      const id = typeof r.id === 'string' || typeof r.id === 'number' ? String(r.id) : '';
       return mapPost(row, emailByUserId, counts[id] || 0, liked.has(id));
     })
     .filter((x): x is CommunityPost => x != null);
 
-  return nestPosts(flat);
+  const posts = nestPosts(flat);
+  const hasMore = offset + rootRows.length < total;
+  return { posts, hasMore, total };
 }
 
 export async function createCommunityPost(
