@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import { getMemberClient } from '@/lib/member-client';
-import { fetchMembership, isSubscriptionActive, type Membership } from '@/lib/membership';
+import {
+  cancelPreviewRenewal,
+  expirePreviewMembership,
+  fetchMembership,
+  isSubscriptionActive,
+  startPreviewMembership,
+  type Membership,
+} from '@/lib/membership';
 
 export default function MemberAccount() {
   const [ready, setReady] = useState(false);
@@ -82,6 +89,34 @@ export default function MemberAccount() {
     } finally { setBusy(false); }
   }
 
+  async function runPreview(
+    action: 'start' | 'cancel' | 'expire',
+  ) {
+    const client = getMemberClient();
+    if (!client || !user) return;
+    setBusy(true);
+    try {
+      const row =
+        action === 'start'
+          ? await startPreviewMembership(client)
+          : action === 'cancel'
+            ? await cancelPreviewRenewal(client)
+            : await expirePreviewMembership(client);
+      setMembership(row);
+      setMessage(
+        action === 'start'
+          ? '결제 없이 구독 체험이 시작되었습니다. 30일간 전용 영상을 열 수 있습니다.'
+          : action === 'cancel'
+            ? '자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.'
+            : '이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.',
+      );
+    } catch {
+      setMessage('구독 체험 상태를 바꾸지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const statusLabels: Record<string, string> = {
     inactive: '구독 전',
     active: '구독 중',
@@ -120,13 +155,47 @@ export default function MemberAccount() {
           </dl>
           <div className="member-actions">
             <Link className="btn-primary member-cta" href="/training/">온라인 훈련관 열기</Link>
+            {!active ? (
+              <button
+                type="button"
+                className="btn-outline"
+                disabled={busy}
+                onClick={() => { void runPreview('start'); }}
+              >
+                결제 없이 구독 체험 시작
+              </button>
+            ) : null}
             <button className="btn-outline member-logout" disabled={busy} onClick={signOut}>로그아웃</button>
           </div>
-          <p className="member-access-note">
-            {active
-              ? '구독이 활성화되어 전용 영상 라이브러리가 열려 있습니다.'
-              : '전체 라이브러리는 구독이 필요합니다. 구독은 운영자가 등록한 뒤 이용할 수 있습니다.'}
-          </p>
+          {active ? (
+            <div className="member-actions" style={{ marginTop: '0.75rem' }}>
+              <p className="member-access-note" style={{ margin: 0, flex: '1 1 100%' }}>
+                구독이 활성화되어 전용 영상 라이브러리가 열려 있습니다.
+              </p>
+              {!membership?.cancel_at_period_end ? (
+                <button
+                  type="button"
+                  className="btn-outline"
+                  disabled={busy}
+                  onClick={() => { void runPreview('cancel'); }}
+                >
+                  자동 갱신 해지 체험
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="btn-outline"
+                disabled={busy}
+                onClick={() => { void runPreview('expire'); }}
+              >
+                이용기간 만료 체험
+              </button>
+            </div>
+          ) : (
+            <p className="member-access-note">
+              전체 라이브러리는 구독이 필요합니다. 훈련관에서 잠긴 영상을 열거나 위 버튼으로 결제 없이 구독 체험을 시작할 수 있습니다.
+            </p>
+          )}
         </>
       ) : (
         <button className="member-google" disabled={!ready || busy} onClick={signIn}>

@@ -7,6 +7,20 @@ export type Membership = {
   cancel_at_period_end: boolean;
 };
 
+function mapMembershipRow(data: unknown): Membership | null {
+  if (!data || typeof data !== 'object') return null;
+  const row = data as Record<string, unknown>;
+  if (typeof row.status !== 'string') return null;
+  return {
+    status: row.status,
+    current_period_start:
+      typeof row.current_period_start === 'string' ? row.current_period_start : null,
+    current_period_end:
+      typeof row.current_period_end === 'string' ? row.current_period_end : null,
+    cancel_at_period_end: Boolean(row.cancel_at_period_end),
+  };
+}
+
 /** True when status is active and the paid period covers now. */
 export function isSubscriptionActive(m: Membership | null | undefined): boolean {
   if (!m || m.status !== 'active') return false;
@@ -31,4 +45,30 @@ export async function fetchMembership(
     .eq('user_id', userId)
     .maybeSingle();
   return data;
+}
+
+async function callMembershipRpc(
+  client: SupabaseClient,
+  name: string,
+): Promise<Membership> {
+  const { data, error } = await client.rpc(name);
+  if (error) throw error;
+  const mapped = mapMembershipRow(data);
+  if (!mapped) throw new Error(`${name} returned no membership row`);
+  return mapped;
+}
+
+/** Sets the caller's subscription active for 30 days (payment-free preview). */
+export function startPreviewMembership(client: SupabaseClient): Promise<Membership> {
+  return callMembershipRpc(client, 'voispeech_start_preview_membership');
+}
+
+/** Marks cancel_at_period_end on the caller's subscription. */
+export function cancelPreviewRenewal(client: SupabaseClient): Promise<Membership> {
+  return callMembershipRpc(client, 'voispeech_cancel_preview_renewal');
+}
+
+/** Expires the caller's preview membership immediately. */
+export function expirePreviewMembership(client: SupabaseClient): Promise<Membership> {
+  return callMembershipRpc(client, 'voispeech_expire_preview_membership');
 }

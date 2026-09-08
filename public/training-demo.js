@@ -18,11 +18,19 @@ function membership(){
   return{live:false,loggedIn:false,active:demoActive};
 }
 
-function canWatchExclusive(){const m=membership();return m.active===true||demoActive===true;}
+function canWatchExclusive(){
+  const m=membership();
+  if(m.live)return m.active===true;
+  return demoActive===true;
+}
 
 function goAccount(msg){
   if(msg)tell(msg);
   window.location.href='/account/';
+}
+
+function actions(){
+  return window.__VOISPEECH_ACTIONS__||null;
 }
 
 function update(){
@@ -34,15 +42,25 @@ function update(){
   $('#completion-count').textContent=`${done.size} / 4`;
   all('[data-access]').forEach(e=>e.textContent=Number(e.dataset.access)===1?'무료 미리보기':exclusive?'시청 가능':'구독 전용');
   all('[data-done]').forEach(e=>e.hidden=!done.has(Number(e.dataset.done)));
-  // Keep the original pretty checkout dialog copy; only refresh membership panel labels.
-  if(m.live && m.active && !demoActive){
-    $('#subscription-state').textContent='구독 중';
-    $('#subscription-detail').textContent='실제 구독이 활성화되어 전용 예시 영상을 열 수 있습니다.';
-    all('[data-action="subscribe"]').forEach(e=>e.textContent='내 구독 확인');
-    $('[data-action="cancel"]').hidden=true;
-    $('[data-action="expire"]').hidden=true;
+  // Membership panel reflects live/demo status; checkout dialog copy stays pretty below.
+  if(m.live){
+    if(m.active){
+      $('#subscription-state').textContent='구독 중';
+      $('#subscription-detail').textContent='실제 구독이 활성화되어 전용 예시 영상을 열 수 있습니다.';
+      all('[data-action="subscribe"]').forEach(e=>e.textContent='내 구독 확인');
+      $('[data-action="cancel"]').hidden=false;
+      $('[data-action="expire"]').hidden=false;
+    }else{
+      $('#subscription-state').textContent=m.loggedIn?'구독 전':'로그인 필요';
+      $('#subscription-detail').textContent=m.loggedIn
+        ?'구독 체험을 시작하면 전용 영상이 열립니다. 실제 결제는 없습니다.'
+        :'전용 영상을 열려면 먼저 로그인한 뒤 구독 체험을 시작하세요.';
+      all('[data-action="subscribe"]').forEach(e=>e.textContent=m.loggedIn?'구독 체험하기 ↗':'로그인 후 구독 체험');
+      $('[data-action="cancel"]').hidden=true;
+      $('[data-action="expire"]').hidden=true;
+    }
   }else{
-    $('#subscription-state').textContent=demoActive?(cancelled?'갱신 해지 · 이용 가능':'구독 중 · 체험'):(m.live?(m.loggedIn?'구독 전':'로그인 필요'):'구독 전');
+    $('#subscription-state').textContent=demoActive?(cancelled?'갱신 해지 · 이용 가능':'구독 중 · 체험'):'구독 전';
     $('#subscription-detail').textContent=demoActive
       ?(cancelled?'갱신이 해지되었습니다. 이용기간 만료를 체험하면 전용 영상이 다시 잠깁니다.':'전체 예시 영상이 열렸습니다. 실제 결제나 정기 청구는 발생하지 않습니다.')
       :'구독 체험을 시작하면 전용 영상이 열립니다.';
@@ -50,6 +68,7 @@ function update(){
     $('[data-action="cancel"]').hidden=!demoActive||cancelled;
     $('[data-action="expire"]').hidden=!demoActive;
   }
+  // Keep the original pretty checkout dialog copy.
   const pay=$('[data-action="pay"],[data-action="account"]');
   if(pay){
     pay.textContent='결제 없이 구독자 화면 체험';
@@ -79,7 +98,55 @@ function openLesson(id){
 
 function checkout(){
   if(canWatchExclusive()){tab('membership');return;}
+  // Live + locked: open pretty checkout dialog (no window.confirm).
   $('#checkout-dialog').showModal();
+}
+
+async function startLivePreview(){
+  const act=actions();
+  if(!act||typeof act.startPreview!=='function'){
+    tell('구독 체험을 시작할 수 없습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요.');
+    return;
+  }
+  try{
+    await act.startPreview();
+    update();
+    tell('구독 체험이 시작되었습니다. 전용 영상을 열 수 있습니다.');
+  }catch(err){
+    tell('구독 체험을 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+  }
+}
+
+async function liveCancelRenewal(){
+  const act=actions();
+  if(!act||typeof act.cancelRenewal!=='function'){
+    tell('자동 갱신 해지를 처리하지 못했습니다. 페이지를 새로고침해 주세요.');
+    return;
+  }
+  try{
+    await act.cancelRenewal();
+    if(typeof act.refresh==='function')await act.refresh();
+    update();
+    tell('자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.');
+  }catch(err){
+    tell('자동 갱신 해지를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+  }
+}
+
+async function liveExpire(){
+  const act=actions();
+  if(!act||typeof act.expirePreview!=='function'){
+    tell('이용기간 만료를 처리하지 못했습니다. 페이지를 새로고침해 주세요.');
+    return;
+  }
+  try{
+    await act.expirePreview();
+    if(typeof act.refresh==='function')await act.refresh();
+    update();
+    tell('이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.');
+  }catch(err){
+    tell('이용기간 만료를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+  }
 }
 
 root.addEventListener('click',e=>{
@@ -93,13 +160,26 @@ root.addEventListener('click',e=>{
   if(b.dataset.filter){all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));filterCourses();return;}
   if(b.dataset.lesson){openLesson(Number(b.dataset.lesson));return;}
   switch(b.dataset.action){
-    case 'subscribe':checkout();break;
-    case 'account':$('#checkout-dialog').close();goAccount();break;
-    case 'pay':
-      // Screen-only unlock for the pretty membership preview; does not write Supabase.
-      demoActive=true;cancelled=false;$('#checkout-dialog').close();
-      tell('구독자 체험이 시작되었습니다. 실제 결제는 없습니다.');
+    case 'subscribe':
+      if(canWatchExclusive()){tab('membership');break;}
+      checkout();
       break;
+    case 'account':$('#checkout-dialog').close();goAccount();break;
+    case 'pay':{
+      const m=membership();
+      if(!m.live){
+        demoActive=true;cancelled=false;$('#checkout-dialog').close();
+        tell('구독자 체험이 시작되었습니다. 실제 결제는 없습니다.');
+        break;
+      }
+      $('#checkout-dialog').close();
+      if(!m.loggedIn){
+        goAccount('로그인 후 구독 체험을 시작할 수 있습니다.');
+        break;
+      }
+      void startLivePreview();
+      break;
+    }
     case 'complete':
       if(!modules[current])modules[current]=new Set();
       modules[current].add(step);
@@ -108,11 +188,12 @@ root.addEventListener('click',e=>{
       break;
     case 'cancel':$('#cancel-dialog').showModal();break;
     case 'confirm-cancel':
-      if(membership().live){$('#cancel-dialog').close();tell('실제 구독 해지는 이 화면에서 처리되지 않습니다.');break;}
-      cancelled=true;$('#cancel-dialog').close();tell('자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.');
+      $('#cancel-dialog').close();
+      if(membership().live){void liveCancelRenewal();break;}
+      cancelled=true;tell('자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.');
       break;
     case 'expire':
-      if(membership().live){tell('실제 구독 만료는 이 화면에서 처리되지 않습니다.');break;}
+      if(membership().live){void liveExpire();break;}
       demoActive=false;cancelled=false;tell('이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.');
       break;
     case 'reset':

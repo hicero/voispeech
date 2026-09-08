@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getMemberClient } from '@/lib/member-client';
-import { fetchMembership, isSubscriptionActive } from '@/lib/membership';
+import {
+  cancelPreviewRenewal,
+  expirePreviewMembership,
+  fetchMembership,
+  isSubscriptionActive,
+  startPreviewMembership,
+  type Membership,
+} from '@/lib/membership';
 
 type AuthState = {
   ready: boolean;
@@ -19,6 +26,12 @@ declare global {
       userEmail: string | null;
       status: string | null;
       active: boolean;
+    };
+    __VOISPEECH_ACTIONS__?: {
+      startPreview: () => Promise<Membership>;
+      cancelRenewal: () => Promise<Membership>;
+      expirePreview: () => Promise<Membership>;
+      refresh: () => Promise<void>;
     };
   }
 }
@@ -42,6 +55,16 @@ function publishToDom(next: AuthState) {
   window.dispatchEvent(new CustomEvent('voispeech:membership'));
 }
 
+function applyMembership(membership: Membership | null, email: string | null): AuthState {
+  return {
+    ready: true,
+    configured: true,
+    email,
+    status: membership?.status ?? null,
+    active: isSubscriptionActive(membership),
+  };
+}
+
 export default function TrainingApp({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
     ready: false,
@@ -58,34 +81,50 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       const next = { ready: true, configured: false, email: null, status: null, active: false };
       setState(next);
       publishToDom(next);
+      delete window.__VOISPEECH_ACTIONS__;
       return;
     }
 
     let mounted = true;
     let revision = 0;
+    let lastEmail: string | null = null;
 
     async function refresh() {
       const request = ++revision;
       const { data, error } = await client!.auth.getUser();
       if (!mounted || request !== revision) return;
       if (error || !data.user) {
+        lastEmail = null;
         const next = { ready: true, configured: true, email: null, status: null, active: false };
         setState(next);
         publishToDom(next);
         return;
       }
+      lastEmail = data.user.email ?? null;
       const membership = await fetchMembership(client!, data.user.id);
       if (!mounted || request !== revision) return;
-      const next = {
-        ready: true,
-        configured: true,
-        email: data.user.email ?? null,
-        status: membership?.status ?? null,
-        active: isSubscriptionActive(membership),
-      };
+      const next = applyMembership(membership, lastEmail);
       setState(next);
       publishToDom(next);
     }
+
+    async function runRpc(
+      fn: (c: NonNullable<ReturnType<typeof getMemberClient>>) => Promise<Membership>,
+    ): Promise<Membership> {
+      const membership = await fn(client!);
+      if (!mounted) return membership;
+      const next = applyMembership(membership, lastEmail);
+      setState(next);
+      publishToDom(next);
+      return membership;
+    }
+
+    window.__VOISPEECH_ACTIONS__ = {
+      startPreview: () => runRpc(startPreviewMembership),
+      cancelRenewal: () => runRpc(cancelPreviewRenewal),
+      expirePreview: () => runRpc(expirePreviewMembership),
+      refresh: () => refresh(),
+    };
 
     let timer: ReturnType<typeof setTimeout> | undefined;
     const { data: listener } = client.auth.onAuthStateChange(() => {
@@ -98,6 +137,7 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
       revision++;
       clearTimeout(timer);
       listener.subscription.unsubscribe();
+      delete window.__VOISPEECH_ACTIONS__;
     };
   }, []);
 
