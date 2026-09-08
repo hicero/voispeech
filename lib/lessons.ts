@@ -33,10 +33,11 @@ const LESSON_COLS =
 function mapLesson(raw: unknown): Lesson | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
-  if (typeof r.id !== 'string' || typeof r.title !== 'string') return null;
+  const id = typeof r.id === 'string' || typeof r.id === 'number' ? String(r.id) : '';
+  if (!id || typeof r.title !== 'string') return null;
   const access = r.access === 'free' || r.access === 'subscribers' ? r.access : 'subscribers';
   return {
-    id: r.id,
+    id,
     sort_order: typeof r.sort_order === 'number' ? r.sort_order : 0,
     category: typeof r.category === 'string' ? r.category : '',
     title: r.title,
