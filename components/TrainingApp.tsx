@@ -19,6 +19,7 @@ import {
   type Membership,
 } from '@/lib/membership';
 import {
+  lessonPublicUrl,
   lessonVideoSrc,
   listPublishedLessons,
   type Lesson,
@@ -75,6 +76,8 @@ export type TrainingLessonDto = {
   body: string;
   access: 'free' | 'subscribers';
   storage_path: string | null;
+  thumbnail_path: string | null;
+  thumbnail_url: string | null;
   video_url: string;
   duration_label: string;
   tag: string;
@@ -136,6 +139,8 @@ function toDto(lesson: Lesson): TrainingLessonDto {
     body: lesson.body || '',
     access: lesson.access,
     storage_path: lesson.storage_path,
+    thumbnail_path: lesson.thumbnail_path,
+    thumbnail_url: lessonPublicUrl(lesson.thumbnail_path),
     video_url: lessonVideoSrc(lesson),
     duration_label: lesson.duration_label,
     tag: lesson.access === 'free' ? '무료 미리보기' : '구독 전용',

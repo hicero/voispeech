@@ -26,6 +26,8 @@ export type Lesson = {
   body: string;
   access: LessonAccess;
   storage_path: string | null;
+  /** Optional library-card thumbnail inside voispeech-lessons bucket */
+  thumbnail_path: string | null;
   duration_label: string;
   published: boolean;
   created_at?: string;
@@ -43,6 +45,7 @@ export type LessonInput = {
   duration_label?: string;
   published: boolean;
   storage_path?: string | null;
+  thumbnail_path?: string | null;
 };
 
 export type LessonSessionInput = {
@@ -55,7 +58,7 @@ export type LessonSessionInput = {
 };
 
 const LESSON_COLS =
-  'id,sort_order,category,title,description,body,access,storage_path,duration_label,published,created_at,updated_at';
+  'id,sort_order,category,title,description,body,access,storage_path,thumbnail_path,duration_label,published,created_at,updated_at';
 
 const SESSION_COLS =
   'id,lesson_id,sort_order,title,description,storage_path,duration_label,published,created_at,updated_at';
@@ -96,6 +99,7 @@ function mapLesson(raw: unknown, sessions: LessonSession[] = []): Lesson | null 
     body: typeof r.body === 'string' ? r.body : '',
     access,
     storage_path: typeof r.storage_path === 'string' ? r.storage_path : null,
+    thumbnail_path: typeof r.thumbnail_path === 'string' ? r.thumbnail_path : null,
     duration_label: typeof r.duration_label === 'string' ? r.duration_label : '',
     published: Boolean(r.published),
     created_at: typeof r.created_at === 'string' ? r.created_at : undefined,
@@ -215,6 +219,7 @@ export async function createLesson(
     duration_label: (input.duration_label || '').trim(),
     published: input.published,
     storage_path: input.storage_path ?? null,
+    thumbnail_path: input.thumbnail_path ?? null,
     updated_at: new Date().toISOString(),
   };
   const { data, error } = await client
@@ -231,7 +236,7 @@ export async function createLesson(
 export async function updateLesson(
   client: SupabaseClient,
   id: string,
-  input: Partial<LessonInput> & { storage_path?: string | null },
+  input: Partial<LessonInput> & { storage_path?: string | null; thumbnail_path?: string | null },
 ): Promise<Lesson> {
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (input.sort_order != null) patch.sort_order = input.sort_order;
@@ -243,6 +248,7 @@ export async function updateLesson(
   if (input.duration_label != null) patch.duration_label = input.duration_label.trim();
   if (input.published != null) patch.published = input.published;
   if ('storage_path' in input) patch.storage_path = input.storage_path ?? null;
+  if ('thumbnail_path' in input) patch.thumbnail_path = input.thumbnail_path ?? null;
 
   const { data, error } = await client
     .from('voispeech_lessons')
@@ -261,12 +267,14 @@ export async function deleteLesson(
   client: SupabaseClient,
   id: string,
   storagePath?: string | null,
+  thumbnailPath?: string | null,
 ): Promise<void> {
   const sessions = await listSessionsForLesson(client, id).catch(() => [] as LessonSession[]);
   for (const s of sessions) {
     await removeStoragePath(client, s.storage_path);
   }
   await removeStoragePath(client, storagePath);
+  await removeStoragePath(client, thumbnailPath);
   const { error } = await client.from('voispeech_lessons').delete().eq('id', id);
   if (error) throw error;
 }
@@ -296,6 +304,65 @@ export async function uploadLessonVideo(
   const updated = await updateLesson(client, lessonId, { storage_path: path });
   onProgress?.(100);
   return updated;
+}
+
+/**
+ * Upload jpeg/png/webp to voispeech-lessons/{lessonId}/thumb/{filename}
+ * and save thumbnail_path. Replaces any previous thumbnail object.
+ */
+export async function uploadLessonThumbnail(
+  client: SupabaseClient,
+  lessonId: string,
+  file: File,
+  previousPath?: string | null,
+  onProgress?: (pct: number) => void,
+): Promise<Lesson> {
+  const extFromName = (file.name.split('.').pop() || '').toLowerCase();
+  const mime = (file.type || '').toLowerCase();
+  const ext =
+    mime === 'image/png' || extFromName === 'png'
+      ? 'png'
+      : mime === 'image/webp' || extFromName === 'webp'
+        ? 'webp'
+        : 'jpg';
+  const safeBase = file.name.replace(/[^\w.\-()+ ]+/g, '_').replace(/\.[^.]+$/, '').slice(0, 80) || 'thumb';
+  const path = `${lessonId}/thumb/${safeBase}.${ext}`;
+  onProgress?.(5);
+
+  const contentType =
+    mime === 'image/png' || mime === 'image/webp' || mime === 'image/jpeg'
+      ? mime
+      : ext === 'png'
+        ? 'image/png'
+        : ext === 'webp'
+          ? 'image/webp'
+          : 'image/jpeg';
+
+  const { error: upErr } = await client.storage.from('voispeech-lessons').upload(path, file, {
+    upsert: true,
+    contentType,
+    cacheControl: '3600',
+  });
+  if (upErr) throw upErr;
+  onProgress?.(90);
+
+  if (previousPath && previousPath !== path) {
+    await removeStoragePath(client, previousPath);
+  }
+
+  const updated = await updateLesson(client, lessonId, { thumbnail_path: path });
+  onProgress?.(100);
+  return updated;
+}
+
+/** Clear thumbnail_path and best-effort remove the storage object. */
+export async function clearLessonThumbnail(
+  client: SupabaseClient,
+  lessonId: string,
+  thumbnailPath?: string | null,
+): Promise<Lesson> {
+  await removeStoragePath(client, thumbnailPath);
+  return updateLesson(client, lessonId, { thumbnail_path: null });
 }
 
 export async function createSession(

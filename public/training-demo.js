@@ -65,10 +65,10 @@ async function persistProgress(lessonId){
 
 function fallbackLessons(){
   return [
-    {id:'1',sort_order:1,category:'기초',title:'연습을 시작하기 전에',description:'목표와 연습 환경을 정리하는 첫 시간',body:'',access:'free',storage_path:null,video_url:'/training-sample.mp4',duration_label:'미리보기',tag:'무료 미리보기',sessions:[]},
-    {id:'2',sort_order:2,category:'SOVT',title:'빨대 발성, 연습의 출발점',description:'수업에서 배운 연습을 다시 확인하기',body:'',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
-    {id:'3',sort_order:3,category:'기초',title:'작은 소리에서 연결 찾기',description:'소리의 크기와 연결을 살펴보는 시간',body:'',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
-    {id:'4',sort_order:4,category:'노래 적용',title:'한 구절로 옮겨보기',description:'연습과 노래를 연결하는 과정',body:'',access:'subscribers',storage_path:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
+    {id:'1',sort_order:1,category:'기초',title:'연습을 시작하기 전에',description:'목표와 연습 환경을 정리하는 첫 시간',body:'',access:'free',storage_path:null,thumbnail_path:null,thumbnail_url:null,video_url:'/training-sample.mp4',duration_label:'미리보기',tag:'무료 미리보기',sessions:[]},
+    {id:'2',sort_order:2,category:'SOVT',title:'빨대 발성, 연습의 출발점',description:'수업에서 배운 연습을 다시 확인하기',body:'',access:'subscribers',storage_path:null,thumbnail_path:null,thumbnail_url:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
+    {id:'3',sort_order:3,category:'기초',title:'작은 소리에서 연결 찾기',description:'소리의 크기와 연결을 살펴보는 시간',body:'',access:'subscribers',storage_path:null,thumbnail_path:null,thumbnail_url:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
+    {id:'4',sort_order:4,category:'노래 적용',title:'한 구절로 옮겨보기',description:'연습과 노래를 연결하는 과정',body:'',access:'subscribers',storage_path:null,thumbnail_path:null,thumbnail_url:null,video_url:'/training-sample.mp4',duration_label:'',tag:'구독 전용',sessions:[]},
   ];
 }
 
@@ -95,6 +95,8 @@ function lessons(){
         body:l.body||'',
         access:l.access==='free'?'free':'subscribers',
         storage_path:l.storage_path||null,
+        thumbnail_path:l.thumbnail_path||null,
+        thumbnail_url:l.thumbnail_url||null,
         video_url:l.video_url||'/training-sample.mp4',
         duration_label:l.duration_label||'',
         tag:l.access==='free'?'무료 미리보기':(l.tag||'구독 전용'),
@@ -216,6 +218,37 @@ function api(){
   return window.__VOISPEECH_API__||null;
 }
 
+function normalizeSearch(value){
+  return String(value||'')
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function lessonSearchHaystack(lesson){
+  return normalizeSearch([
+    lesson.title,
+    lesson.description,
+    lesson.category,
+    lesson.body,
+    lesson.tag,
+    lesson.duration_label,
+  ].filter(Boolean).join(' '));
+}
+
+function escapeHtml(value){
+  return String(value||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/'/g,'&#39;');
+}
+
 function renderFilters(){
   const wrap=$('.academy-filters');
   if(!wrap)return;
@@ -246,15 +279,30 @@ function renderLibrary(){
   renderFilters();
   grid.replaceChildren();
   list.forEach((l,idx)=>{
-    const artClass=`lesson-art lesson-art-${(idx%4)+1}`;
+    const thumb=l.thumbnail_url||'';
+    const artClass=thumb
+      ? 'lesson-art lesson-art-thumb'
+      : `lesson-art lesson-art-${(idx%4)+1}`;
     const article=document.createElement('article');
     article.className='lesson-card';
     article.dataset.category=l.category;
     article.dataset.lessonId=l.id;
+    article.dataset.search=lessonSearchHaystack(l);
     const steps=lessonStepCount(l);
-    article.innerHTML=`<button class="${artClass}" data-lesson="${l.id}" aria-label="${l.title} 열기"><span>${l.category}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">▷</span></button><div class="lesson-copy"><span class="lesson-tag" data-access="${l.id}">${l.tag}</span><h3><button data-lesson="${l.id}">${l.title}</button></h3><p>${l.description}</p><button class="favorite-button" data-favorite="${l.id}" aria-pressed="false" aria-label="${l.title} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${l.id}">0 / ${steps}</span><span class="lesson-done" data-done="${l.id}" hidden>학습 완료 ✓</span></div>`;
+    const artInner=thumb
+      ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">▷</span></span>`
+      : `<span>${escapeHtml(l.category)}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">▷</span>`;
+    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${escapeAttr(l.id)}">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>학습 완료 ✓</span></div>`;
     grid.append(article);
   });
+  let empty=$('.library-empty');
+  if(!empty){
+    empty=document.createElement('p');
+    empty.className='library-empty';
+    empty.hidden=true;
+    empty.textContent='검색 결과가 없습니다. 다른 키워드나 분류를 시도해 보세요.';
+    grid.after(empty);
+  }
   const featureTitle=$('.feature-lesson h2');
   const free=list.find(l=>l.access==='free')||list[0];
   if(featureTitle&&free){
@@ -264,6 +312,7 @@ function renderLibrary(){
   }
   const completion=$('#completion-count');
   if(completion)completion.textContent=`${done.size} / ${list.length||4}`;
+  filterCourses();
 }
 
 function update(){
@@ -549,9 +598,27 @@ function filterCourses(){
   const search=$('#course-search');
   const pressed=$('[data-filter][aria-pressed="true"]');
   if(!search||!pressed)return;
-  const query=search.value.trim().toLowerCase();
-  const category=pressed.dataset.filter;
-  all('[data-category]').forEach(x=>x.hidden=(category!=='전체'&&x.dataset.category!==category)||!x.textContent.toLowerCase().includes(query));
+  const query=normalizeSearch(search.value);
+  const category=pressed.dataset.filter||'전체';
+  let visible=0;
+  all('.lesson-grid .lesson-card').forEach(card=>{
+    const catOk=category==='전체'||card.dataset.category===category;
+    const hay=card.dataset.search||normalizeSearch(card.textContent);
+    const textOk=!query||hay.includes(query);
+    const show=catOk&&textOk;
+    card.hidden=!show;
+    if(show)visible+=1;
+  });
+  const empty=$('.library-empty');
+  if(empty){
+    empty.hidden=visible!==0;
+  }
+}
+
+let courseSearchTimer=null;
+function onCourseSearchInput(){
+  clearTimeout(courseSearchTimer);
+  courseSearchTimer=setTimeout(filterCourses,180);
 }
 
 function renderModules(){
@@ -983,7 +1050,7 @@ function bindAcademy(root){
   if(player)player.addEventListener('close',onPlayerClose);
   all('dialog').forEach(d=>d.addEventListener('click',onDialogBackdrop));
   const search=$('#course-search');
-  if(search)search.addEventListener('input',filterCourses);
+  if(search)search.addEventListener('input',onCourseSearchInput);
   const practice=$('#practice-form');
   if(practice)practice.addEventListener('submit',(e)=>{void onPracticeSubmit(e);});
   const community=$('#community-form');

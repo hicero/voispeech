@@ -11,11 +11,14 @@ import {
   type AdminMemberRow,
 } from '@/lib/admin';
 import {
+  clearLessonThumbnail,
   createLesson,
   deleteLesson,
+  lessonPublicUrl,
   listAllLessons,
   syncLessonSessions,
   updateLesson,
+  uploadLessonThumbnail,
   uploadLessonVideo,
   uploadSessionVideo,
   type Lesson,
@@ -120,7 +123,7 @@ function formatSeoul(iso: string | null): string {
 
 
 /** Surface Supabase/storage upload failures in Korean for admins. */
-function formatUploadError(err: unknown, context: 'lesson' | 'session' = 'lesson'): string {
+function formatUploadError(err: unknown, context: 'lesson' | 'session' | 'thumb' = 'lesson'): string {
   const raw =
     err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string'
       ? (err as { message: string }).message
@@ -131,7 +134,8 @@ function formatUploadError(err: unknown, context: 'lesson' | 'session' = 'lesson
           : '';
   const msg = raw.trim();
   const lower = msg.toLowerCase();
-  const prefix = context === 'session' ? '세션 영상' : '강의 영상';
+  const prefix =
+    context === 'session' ? '세션 영상' : context === 'thumb' ? '썸네일' : '강의 영상';
 
   if (!msg) return `${prefix} 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.`;
   if (
@@ -150,6 +154,9 @@ function formatUploadError(err: unknown, context: 'lesson' | 'session' = 'lesson
     lower.includes('content-type') ||
     lower.includes('unsupported')
   ) {
+    if (context === 'thumb') {
+      return '썸네일은 jpeg, png, webp 형식만 업로드할 수 있습니다.';
+    }
     return `${prefix}은 mp4 또는 webm 형식만 업로드할 수 있습니다.`;
   }
   if (
@@ -198,6 +205,11 @@ export default function AdminConsole() {
   const [form, setForm] = useState<LessonFormState>(EMPTY_FORM);
   const [sessionRows, setSessionRows] = useState<SessionFormRow[]>([]);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [thumbFile, setThumbFile] = useState<File | null>(null);
+  const [thumbPreviewUrl, setThumbPreviewUrl] = useState<string | null>(null);
+  const [currentThumbPath, setCurrentThumbPath] = useState<string | null>(null);
+  const [clearThumb, setClearThumb] = useState(false);
+  const [lessonQuery, setLessonQuery] = useState('');
   const [uploadPct, setUploadPct] = useState<number | null>(null);
   const [lessonError, setLessonError] = useState<string | null>(null);
 
@@ -292,6 +304,34 @@ export default function AdminConsole() {
       return hay.includes(q);
     });
   }, [members, query]);
+
+  const filteredLessons = useMemo(() => {
+    const q = lessonQuery.trim().toLowerCase();
+    if (!q) return lessons;
+    return lessons.filter((l) => {
+      const hay = [l.title, l.description, l.category, l.body || '']
+        .join(' ')
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [lessons, lessonQuery]);
+
+  useEffect(() => {
+    if (!thumbFile) {
+      setThumbPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(thumbFile);
+    setThumbPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [thumbFile]);
+
+  function resetThumbState(lesson?: Lesson | null) {
+    setThumbFile(null);
+    setClearThumb(false);
+    setCurrentThumbPath(lesson?.thumbnail_path ?? null);
+  }
+
 
   async function signIn() {
     const client = getMemberClient();
@@ -428,6 +468,48 @@ export default function AdminConsole() {
         setMessage('강의 영상 업로드가 완료되었습니다. 세션을 저장합니다…');
       }
 
+      if (thumbFile) {
+        const mime = (thumbFile.type || '').toLowerCase();
+        if (
+          mime &&
+          mime !== 'image/jpeg' &&
+          mime !== 'image/png' &&
+          mime !== 'image/webp' &&
+          mime !== 'image/jpg'
+        ) {
+          throw new Error('썸네일은 jpeg, png, webp만 업로드할 수 있습니다.');
+        }
+        const label = thumbFile.name || '썸네일';
+        setUploadPct(0);
+        setMessage(`썸네일 업로드 준비 중… (${label})`);
+        try {
+          lesson = await uploadLessonThumbnail(
+            client,
+            lesson.id,
+            thumbFile,
+            currentThumbPath || lesson.thumbnail_path,
+            (pct) => {
+              setUploadPct(pct);
+              setMessage(`썸네일 업로드 중… ${pct}% (${label})`);
+            },
+          );
+        } catch (upErr) {
+          throw new Error(formatUploadError(upErr, 'thumb'));
+        }
+        setThumbFile(null);
+        setClearThumb(false);
+        setCurrentThumbPath(lesson.thumbnail_path);
+        setMessage('썸네일 업로드가 완료되었습니다. 세션을 저장합니다…');
+      } else if (clearThumb && (currentThumbPath || lesson.thumbnail_path)) {
+        lesson = await clearLessonThumbnail(
+          client,
+          lesson.id,
+          currentThumbPath || lesson.thumbnail_path,
+        );
+        setClearThumb(false);
+        setCurrentThumbPath(null);
+      }
+
       const drafts: SessionDraft[] = renumberSessions(sessionRows).map((s) => ({
         id: s.id,
         key: s.key,
@@ -468,6 +550,7 @@ export default function AdminConsole() {
       setForm(blankForm(rows));
       setSessionRows([]);
       setUploadFile(null);
+      resetThumbState(null);
       setUploadPct(null);
       setMessage(form.id ? '강의를 저장했습니다.' : '강의를 만들고 저장했습니다.');
     } catch (err) {
@@ -519,12 +602,13 @@ export default function AdminConsole() {
     setActionBusy(true);
     setLessonError(null);
     try {
-      await deleteLesson(client, lesson.id, lesson.storage_path);
+      await deleteLesson(client, lesson.id, lesson.storage_path, lesson.thumbnail_path);
       const rows = (await loadLessons()) || [];
       if (form.id === lesson.id) {
         setForm(blankForm(rows));
         setSessionRows([]);
         setUploadFile(null);
+        resetThumbState(null);
       }
       setMessage('강의를 삭제했습니다.');
     } catch (err) {
@@ -726,6 +810,16 @@ export default function AdminConsole() {
           ) : (
             <div role="tabpanel" className="admin-lessons-panel">
               <div className="admin-toolbar">
+                <label className="admin-search">
+                  <span>강의 검색</span>
+                  <input
+                    type="search"
+                    value={lessonQuery}
+                    onChange={(e) => setLessonQuery(e.target.value)}
+                    placeholder="제목 · 소제목 · 카테고리"
+                    disabled={busy || actionBusy}
+                  />
+                </label>
                 <button
                   type="button"
                   className="btn-outline"
@@ -734,6 +828,7 @@ export default function AdminConsole() {
                     setForm(blankForm(lessons));
                     setSessionRows([]);
                     setUploadFile(null);
+                    resetThumbState(null);
                     setLessonError(null);
                   }}
                 >
@@ -768,16 +863,23 @@ export default function AdminConsole() {
                     </tr>
                   </thead>
                   <tbody>
-                    {lessons.length === 0 ? (
+                    {filteredLessons.length === 0 ? (
                       <tr>
-                        <td colSpan={4}>{busy ? '불러오는 중…' : '등록된 강의가 없습니다.'}</td>
+                        <td colSpan={4}>
+                          {busy
+                            ? '불러오는 중…'
+                            : lessonQuery.trim()
+                              ? '검색 결과가 없습니다.'
+                              : '등록된 강의가 없습니다.'}
+                        </td>
                       </tr>
                     ) : (
-                      lessons.map((l) => (
+                      filteredLessons.map((l) => (
                         <tr key={l.id} className={form.id === l.id ? 'admin-row-selected' : undefined}>
                           <td>
                             <div className="admin-member-email">
                               #{l.sort_order} · {l.title}
+                              {l.thumbnail_path ? ' · 🖼' : ''}
                             </div>
                             <div className="admin-member-name">
                               {l.category} · {l.description || '소제목 없음'}
@@ -834,6 +936,7 @@ export default function AdminConsole() {
                                   setForm(formFromLesson(l));
                                   setSessionRows(sessionsFromLesson(l));
                                   setUploadFile(null);
+                                  resetThumbState(l);
                                   setLessonError(null);
                                 }}
                               >
@@ -935,6 +1038,72 @@ export default function AdminConsole() {
                     />
                     게시(훈련관에 표시)
                   </label>
+                  <div className="admin-form-span admin-thumb-field">
+                    <span className="admin-thumb-label">라이브러리 썸네일 (jpeg / png / webp)</span>
+                    {(thumbPreviewUrl ||
+                      (!clearThumb &&
+                        (currentThumbPath ? lessonPublicUrl(currentThumbPath) : null))) && (
+                      <div className="admin-thumb-preview">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={
+                            thumbPreviewUrl ||
+                            lessonPublicUrl(currentThumbPath) ||
+                            ''
+                          }
+                          alt="썸네일 미리보기"
+                        />
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                      disabled={actionBusy}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0] || null;
+                        setThumbFile(f);
+                        if (f) setClearThumb(false);
+                      }}
+                    />
+                    <span className="admin-period">
+                      {thumbFile
+                        ? `선택됨: ${thumbFile.name} (${Math.round(thumbFile.size / 1024)}KB)`
+                        : clearThumb
+                          ? '저장 시 썸네일을 제거합니다.'
+                          : currentThumbPath
+                            ? `저장됨: ${currentThumbPath}`
+                            : '없으면 훈련관에서 색상 카드 아트가 표시됩니다.'}
+                    </span>
+                    <div className="admin-row-actions">
+                      <button
+                        type="button"
+                        className="btn-outline admin-action"
+                        disabled={
+                          actionBusy ||
+                          (!currentThumbPath && !thumbFile && !clearThumb)
+                        }
+                        onClick={() => {
+                          setThumbFile(null);
+                          setClearThumb(true);
+                        }}
+                      >
+                        썸네일 제거
+                      </button>
+                      {(thumbFile || clearThumb) && (
+                        <button
+                          type="button"
+                          className="btn-outline admin-action"
+                          disabled={actionBusy}
+                          onClick={() => {
+                            setThumbFile(null);
+                            setClearThumb(false);
+                          }}
+                        >
+                          선택 취소
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   <label className="admin-form-span">
                     모듈 영상 (세션 0개일 때 사용 · mp4 / webm)
                     <input
@@ -1140,6 +1309,7 @@ export default function AdminConsole() {
                       setForm(blankForm(lessons));
                       setSessionRows([]);
                       setUploadFile(null);
+                      resetThumbState(null);
                       setLessonError(null);
                     }}
                   >
