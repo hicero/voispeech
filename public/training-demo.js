@@ -729,7 +729,7 @@ function appendPostArticle(feed,x,opts){
       replyBox.className='community-reply-form';
       replyBox.hidden=true;
       replyBox.dataset.replyForm=String(x.id);
-      replyBox.innerHTML='<label>답글<textarea name="reply" required maxlength="500" placeholder="답글을 적어 주세요."></textarea></label><button class="btn-primary" type="submit">답글 등록</button>';
+      replyBox.innerHTML='<label>답글<textarea name="reply" required maxlength="500" rows="5" placeholder="답글을 적어 주세요."></textarea></label><button class="btn-primary" type="submit">답글 등록</button>';
       a.append(replyBox);
     }
   }
