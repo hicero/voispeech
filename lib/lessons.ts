@@ -156,7 +156,11 @@ async function attachSessions(
     .order('created_at', { ascending: true });
   if (opts?.publishedOnly) q = q.eq('published', true);
   const { data, error } = await q;
-  if (error) throw error;
+  if (error) {
+    // Catalog must not die if sessions RLS glitches (e.g. anon cannot execute is_admin).
+    console.warn('[voispeech] attachSessions failed; returning lessons with empty sessions', error);
+    return lessons.map((l) => ({ ...l, sessions: [] }));
+  }
   const byLesson = new Map<string, LessonSession[]>();
   for (const raw of data || []) {
     const s = mapSession(raw);

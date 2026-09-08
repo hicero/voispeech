@@ -196,6 +196,11 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
           if (attempt === 0) await sleep(500);
         }
       }
+      // Final failure: mark loaded so UI settles on fallback samples instead of waiting forever.
+      if (mounted) {
+        window.__VOISPEECH_LESSONS_LOADED__ = true;
+        window.dispatchEvent(new CustomEvent('voispeech:lessons'));
+      }
     }
 
     void loadLessons();
