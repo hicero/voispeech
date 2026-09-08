@@ -67,14 +67,14 @@ function lessons(){
 
 function lessonStepCount(lesson){
   if(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0)return lesson.sessions.length;
-  return 3;
+  return 1;
 }
 
 function lessonSessionTitles(lesson){
   if(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0){
     return lesson.sessions.map(s=>s.title||'세션');
   }
-  return ['안내','루틴','노래에 적용'];
+  return [];
 }
 
 function lessonVideoForStep(lesson,stepIndex){
@@ -433,14 +433,18 @@ function renderModules(){
   const lesson=currentId?lessonById(currentId):null;
   const titles=lessonSessionTitles(lesson);
   const hasRealSessions=!!(lesson&&Array.isArray(lesson.sessions)&&lesson.sessions.length>0);
-  titles.forEach((title,i)=>{
-    const b=document.createElement('button');
-    b.dataset.module=i;
-    b.textContent=`${i+1}. ${title} ${(modules[currentId]||new Set()).has(i)?'✓':''}`;
-    b.setAttribute('aria-pressed',String(i===step));
-    list.append(b);
-  });
-  list.hidden=false;
+  if(hasRealSessions){
+    titles.forEach((title,i)=>{
+      const b=document.createElement('button');
+      b.dataset.module=i;
+      b.textContent=`${i+1}. ${title} ${(modules[currentId]||new Set()).has(i)?'✓':''}`;
+      b.setAttribute('aria-pressed',String(i===step));
+      list.append(b);
+    });
+    list.hidden=false;
+  }else{
+    list.hidden=true;
+  }
   const hint=$('#player-dialog > p');
   if(hint){
     if(hasRealSessions){
@@ -448,7 +452,14 @@ function renderModules(){
       const label=cur&&cur.duration_label?` · ${cur.duration_label}`:'';
       hint.textContent=`세션 ${step+1}/${titles.length}${label} · 선택한 세션 영상을 재생합니다.`;
     }else{
-      hint.textContent='10초 재생 테스트 · 무음 · 실제 강의가 아닙니다.';
+      const src=lesson?(lesson.video_url||''):'';
+      const isDemo=!lesson||(!lesson.storage_path&&(!src||src==='/training-sample.mp4'));
+      if(isDemo){
+        hint.textContent='10초 재생 테스트 · 무음 · 실제 강의가 아닙니다.';
+      }else{
+        const label=lesson.duration_label?` · ${lesson.duration_label}`:'';
+        hint.textContent=`강의 영상 재생${label}`;
+      }
     }
   }
   const v=$('#lesson-video');
