@@ -103,8 +103,10 @@ function publishToDom(next: AuthState) {
   const academy = document.getElementById('academy');
   if (academy) {
     if (next.configured) {
-      academy.dataset.auth = next.email ? 'user' : 'anon';
-      academy.dataset.sub = next.active ? 'active' : next.email ? 'inactive' : 'none';
+      // Handoff can arrive before getUser resolves; keep user+active so locks unlock.
+      const treatAsUser = Boolean(next.email) || next.active;
+      academy.dataset.auth = treatAsUser ? 'user' : 'anon';
+      academy.dataset.sub = next.active ? 'active' : treatAsUser ? 'inactive' : 'none';
     } else {
       delete academy.dataset.auth;
       delete academy.dataset.sub;

@@ -1,14 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import { getMemberClient } from '@/lib/member-client';
 import {
   cancelPreviewRenewal,
+  clearLoginReturn,
+  clearMembershipSnapshot,
   expirePreviewMembership,
   fetchMembership,
   isSubscriptionActive,
+  loadLoginReturn,
+  markMembershipHandoff,
   saveMembershipSnapshot,
   startPreviewMembership,
   type Membership,
@@ -21,6 +25,7 @@ export default function MemberAccount() {
   const [user, setUser] = useState<User | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [message, setMessage] = useState('로그인 상태를 확인하고 있습니다.');
+  const [loginIntent, setLoginIntent] = useState<string | null>(null);
 
   useEffect(() => {
     const client = getMemberClient();
@@ -37,18 +42,31 @@ export default function MemberAccount() {
       const { data, error } = await client!.auth.getUser();
       if (!mounted || request !== revision) return;
       setUser(error ? null : data.user);
-      setMembership(null);
       if (error || !data.user) {
         const params = new URLSearchParams(window.location.search);
+        setMembership(null);
         setMessage(params.has('error') ? '로그인이 완료되지 않았습니다. 다시 시도해 주세요.' : '구글 계정으로 가입하고 로그인하세요.');
         setBusy(false);
         return;
       }
-      const row = await fetchMembership(client!, data.user.id);
+      const returned = loadLoginReturn();
+      if (returned.intent) setLoginIntent(returned.intent);
+      let row: Membership | null = null;
+      try {
+        row = await fetchMembership(client!, data.user.id);
+      } catch {
+        row = null;
+      }
       if (!mounted || request !== revision) return;
       setMembership(row);
-      saveMembershipSnapshot(row);
-      setMessage(row ? '로그인되었습니다.' : '로그인되었습니다. 구독 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.');
+      if (row) saveMembershipSnapshot(row);
+      if (returned.next === '/training/' && returned.intent === 'subscribe' && !isSubscriptionActive(row)) {
+        setMessage('로그인되었습니다. 아래에서 구독 체험을 시작한 뒤 온라인 훈련관으로 돌아가 주세요.');
+      } else if (isSubscriptionActive(row) && returned.next === '/training/') {
+        setMessage('로그인되었습니다. 구독이 활성화되어 있습니다. 온라인 훈련관을 열어 주세요.');
+      } else {
+        setMessage(row ? '로그인되었습니다.' : '로그인되었습니다. 구독 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.');
+      }
       setBusy(false);
     }
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -84,8 +102,11 @@ export default function MemberAccount() {
     try {
       const { error } = await client.auth.signOut();
       if (error) throw error;
+      clearMembershipSnapshot();
+      clearLoginReturn();
       setUser(null);
       setMembership(null);
+      setLoginIntent(null);
       setMessage('로그아웃되었습니다.');
     } catch {
       setMessage('로그아웃하지 못했습니다. 다시 시도해 주세요.');
@@ -106,18 +127,37 @@ export default function MemberAccount() {
             ? await cancelPreviewRenewal(client)
             : await expirePreviewMembership(client);
       setMembership(row);
-      saveMembershipSnapshot(row);
-      setMessage(
-        action === 'start'
-          ? '결제 없이 구독 체험이 시작되었습니다. 30일간 전용 영상을 열 수 있습니다.'
-          : action === 'cancel'
+      if (action === 'start') {
+        markMembershipHandoff(row);
+        const returned = loadLoginReturn();
+        if (returned.next === '/training/') {
+          setMessage('결제 없이 구독 체험이 시작되었습니다. 온라인 훈련관으로 이동합니다.');
+          clearLoginReturn();
+          window.location.assign('/training/');
+          return;
+        }
+        setMessage('결제 없이 구독 체험이 시작되었습니다. 30일간 전용 영상을 열 수 있습니다.');
+      } else {
+        saveMembershipSnapshot(row, { force: true });
+        setMessage(
+          action === 'cancel'
             ? '자동 갱신 해지를 체험했습니다. 이용기간 동안 영상은 계속 열려 있습니다.'
             : '이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.',
-      );
+        );
+      }
     } catch {
       setMessage('구독 체험 상태를 바꾸지 못했습니다. 잠시 후 다시 시도해 주세요.');
     } finally {
       setBusy(false);
+    }
+  }
+
+  function openTraining(e: MouseEvent<HTMLAnchorElement>) {
+    if (membership && (isSubscriptionActive(membership) || membership.status === 'active')) {
+      e.preventDefault();
+      markMembershipHandoff(membership);
+      clearLoginReturn();
+      window.location.assign('/training/');
     }
   }
 
@@ -158,7 +198,7 @@ export default function MemberAccount() {
             )}
           </dl>
           <div className="member-actions">
-            <a className="btn-primary member-cta" href="/training/">온라인 훈련관 열기</a>
+            <a className="btn-primary member-cta" href="/training/" onClick={openTraining}>온라인 훈련관 열기</a>
             {isVoiSpeechAdmin(user) ? (
               <Link className="btn-outline member-cta" href="/admin/">운영자 구독 관리</Link>
             ) : null}
@@ -169,7 +209,7 @@ export default function MemberAccount() {
                 disabled={busy}
                 onClick={() => { void runPreview('start'); }}
               >
-                결제 없이 구독 체험 시작
+                {loginIntent === 'subscribe' ? '구독 체험 시작' : '결제 없이 구독 체험 시작'}
               </button>
             ) : null}
             <button className="btn-outline member-logout" disabled={busy} onClick={signOut}>로그아웃</button>
