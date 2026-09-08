@@ -270,7 +270,8 @@ export async function toggleCommunityLike(
   userId: string,
   postId: string,
 ): Promise<LikeToggleResult> {
-  const pid = String(postId);
+  const pidNum = Number(postId);
+  const pid = Number.isFinite(pidNum) ? pidNum : postId;
   const { data: existing, error: findError } = await client
     .from('voispeech_community_likes')
     .select('post_id')

@@ -1005,8 +1005,13 @@ async function onCommunityLike(id){
   const a=api();
   if(!a||typeof a.toggleLike!=='function')return;
   try{
-    await a.toggleLike(id);
-    ;
+    const res=await a.toggleLike(id);
+    const btn=document.querySelector('[data-like="'+String(id)+'"]');
+    if(btn&&res){
+      btn.setAttribute('aria-pressed',String(!!res.liked));
+      btn.textContent='추천 '+(Number(res.like_count)||0);
+    }
+    await refreshPosts();
   }catch(_){
     tell('추천을 처리하지 못했습니다.');
   }
@@ -1019,6 +1024,7 @@ async function onCommunityDelete(id){
   try{
     await a.deletePost(id);
     communityPage=0;
+    await refreshPosts();
     tell('글을 삭제했습니다.');
   }catch(_){
     tell('글을 삭제하지 못했습니다.');
@@ -1035,7 +1041,7 @@ async function onCommunityReplySubmit(form){
     await a.createPost(channel,text,id);
     form.reset();
     form.hidden=true;
-    ;
+    await refreshPosts();
     tell('답글을 등록했습니다.');
   }catch(_){
     tell('답글을 등록하지 못했습니다.');
