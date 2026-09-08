@@ -13,6 +13,7 @@ import {
   startPreviewMembership,
   type Membership,
 } from '@/lib/membership';
+import { isVoiSpeechAdmin } from '@/lib/admin';
 
 export default function MemberAccount() {
   const [ready, setReady] = useState(false);
@@ -158,6 +159,9 @@ export default function MemberAccount() {
           </dl>
           <div className="member-actions">
             <a className="btn-primary member-cta" href="/training/">온라인 훈련관 열기</a>
+            {isVoiSpeechAdmin(user) ? (
+              <Link className="btn-outline member-cta" href="/admin/">운영자 구독 관리</Link>
+            ) : null}
             {!active ? (
               <button
                 type="button"
