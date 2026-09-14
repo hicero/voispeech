@@ -1,6 +1,85 @@
 const programs = [
- {num:"01",name:"처음 시작하는 발성",tag:"기초 · 입문",desc:"어떻게 소리를 내야 할지 막막하다면, 현재 편하게 낼 수 있는 소리부터 시작합니다.",points:["숨과 소리의 연결","음정과 리듬의 기초","반복할 수 있는 연습 찾기"]},
- {num:"02",name:"막히는 구간 살펴보기",tag:"고음 · 성구 연결",desc:"특정 음에서 끊기거나 힘이 들어간다면, 조건을 바꿔보며 차이를 확인합니다.",points:["음높이에 따른 변화 관찰","소리의 크기와 무게 조절","모음을 바꿔 연결 연습"]},
- {num:"03",name:"내 노래에 적용하기",tag:"취미 · 표현",desc:"연습할 때 찾은 소리를 좋아하는 곡의 한 구절에 옮겨봅니다.",points:["어려운 구절 나누기","발음과 프레이징 조절","곡 안에서 반복해 확인"]}
+  {
+    num: "01",
+    name: "ONE-DAY",
+    tag: "Entry · 50 min",
+    desc: "하루로 내 발성 상태를 살펴보고, 다음에 무엇을 연습할지 방향을 잡습니다.",
+    points: [
+      "5 Voice Check로 현재 패턴 관찰",
+      "막히는 지점과 가능한 조절 확인",
+      "개인 발성 코칭 리포트 PDF",
+    ],
+    href: "#booking",
+    cta: "원데이 예약하기",
+  },
+  {
+    num: "02",
+    name: "PRIVATE",
+    tag: "1:1 · Ongoing",
+    desc: "목표와 연습 여건에 맞춰 꾸준히 이어가는 개인 레슨입니다. 연결·긴장·곡 적용까지 한 흐름으로 갑니다.",
+    points: [
+      "성구 연결 · 고음 · 긴장 완화",
+      "찾은 소리를 노래 구절에 적용",
+      "수업마다 다음 연습 우선순위 정리",
+    ],
+    href: "#contact",
+    cta: "정규 레슨 문의",
+  },
+  {
+    num: "03",
+    name: "ONLINE",
+    tag: "Self-paced · Membership",
+    desc: "수업과 수업 사이, 강의·기록·커뮤니티로 혼자 연습을 이어가는 온라인 훈련관입니다.",
+    points: [
+      "발성 강의 시청 · 세션별 연습",
+      "연습 기록과 진도 남기기",
+      "커뮤니티에서 질문 · 나눔",
+    ],
+    href: "/training",
+    cta: "온라인 훈련 둘러보기",
+  },
 ];
-export default function Programs(){return <section id="programs" className="section-pad bg-page"><div className="mx-auto max-w-6xl px-5 md:px-8"><div className="section-heading"><div><p className="eyebrow">YOUR STARTING POINT</p><h2>지금, 어디서 막히나요?</h2></div><p>정해진 틀에 나를 맞추기보다,<br/>내 목표와 현재 발성에서 출발합니다.</p></div><div className="program-grid">{programs.map(p=><article className="program-card" key={p.num}><div className="program-top"><span>{p.num}</span><span>{p.tag}</span></div><h3>{p.name}</h3><p>{p.desc}</p><ul>{p.points.map(t=><li key={t}>{t}</li>)}</ul><a href="#booking">원데이 예약 안내 <span aria-hidden>↗</span></a></article>)}</div><p className="section-note">위 내용은 수업에서 다룰 수 있는 주제입니다. 세부 구성과 비용은 상담 시 안내합니다.</p></div></section>}
+
+export default function Programs() {
+  return (
+    <section id="programs" className="section-pad bg-page">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">PROGRAMS</p>
+            <h2>One-Day, Private, Online.</h2>
+          </div>
+          <p>
+            학원식 반 나누기 대신,
+            <br />
+            시작 · 꾸준한 1:1 · 사이 연습으로 구성합니다.
+          </p>
+        </div>
+        <div className="program-grid">
+          {programs.map((p) => (
+            <article className="program-card" key={p.num}>
+              <div className="program-top">
+                <span>{p.num}</span>
+                <span>{p.tag}</span>
+              </div>
+              <h3>{p.name}</h3>
+              <p>{p.desc}</p>
+              <ul>
+                {p.points.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+              <a href={p.href}>
+                {p.cta} <span aria-hidden>↗</span>
+              </a>
+            </article>
+          ))}
+        </div>
+        <p className="section-note">
+          세부 구성과 비용은 상담 시 안내합니다. ONLINE은 멤버십으로 이용할 수
+          있습니다.
+        </p>
+      </div>
+    </section>
+  );
+}
