@@ -17,8 +17,8 @@ export default function ReportTeaser() {
   return (
     <section id="report" className="section-pad bg-page">
       <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-5">
+        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
+          <div className="lg:col-span-5 lg:sticky lg:top-28">
             <p className="eyebrow">COACHING REPORT</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
               원데이 수업 후,
@@ -47,8 +47,23 @@ export default function ReportTeaser() {
             </ul>
           </div>
 
-          <div className="lg:col-span-7" aria-hidden="true">
+          <div className="space-y-6 lg:col-span-7">
             <div className="card overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]">
+              <img
+                src="/report/coaching-report.jpg"
+                alt="VoiSpeech 발성 코칭 리포트 PDF 미리보기"
+                width={1400}
+                height={1279}
+                className="h-auto w-full object-cover object-center"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            <div
+              className="card overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]"
+              aria-hidden="true"
+            >
               <div className="flex items-center justify-between border-b border-line-soft px-5 py-4 md:px-6">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="text-sm font-semibold text-navy">VoiSpeech</span>
