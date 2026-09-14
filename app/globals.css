@@ -391,3 +391,17 @@ button:disabled { opacity:.45; cursor:not-allowed; }
  .animate-fade-up{animation:none}
  .lesson-card,.learning-path button{transition:none}
 }
+
+/* Coach portraits */
+.coach-photo {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-sky-muted);
+}
+.coach-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}

@@ -1,56 +1,120 @@
+const coaches = [
+  {
+    id: "jae-woo",
+    photo: "/coaches/jae-woo.jpg",
+    photoAlt: "Jae Woo 재우 코치 프로필",
+    nameEn: "JAE WOO",
+    nameKo: "재우",
+    role: "VOCAL DIRECTOR",
+    tagline: "18년의 발성 연구, 한 사람의 목소리까지 정확하게 설계합니다.",
+    affiliation: "The Voice Foundation 한국챕터 조직위원장 / 임시회장",
+    career: [
+      "VoiSpeech 대표",
+      "Justin Vocal Studio & Find Your Voice 대표",
+      "18년 경력 성악 전공 · 전 대한발성학회 이사",
+      "홍대 실용음악학원 발성 메인 강사",
+      "「발성학과 보컬」 저서 공동 집필",
+      "SLS Instructor Level 1 자격 보유",
+      "한국발성교정협회 정회원",
+      "강남 세브란스 병원 워크샵 수료",
+    ],
+    secondaryTitle: "멘토 사사",
+    secondaryNote: "해외 마스터 사사",
+    secondaryItems: [
+      "Spencer Welch",
+      "Greg Enriquez",
+      "SLS",
+      "Kenny Nah",
+      "최성용",
+      "장정우",
+      "양준영",
+      "남도현",
+    ],
+  },
+  {
+    id: "jae-ho",
+    photo: "/coaches/jae-ho.jpg",
+    photoAlt: "Jae Ho 재호 코치 프로필",
+    nameEn: "JAE HO",
+    nameKo: "재호",
+    role: "음성검사 파트",
+    tagline:
+      "임상과 학회, 무대를 잇는 발성교정의 흐름, 음성검사의 기준을 설계합니다.",
+    affiliation: "김재호 발성교정소 대표 · 남스타보컬스튜디오 실장 · VoiSpeech 실장",
+    career: [
+      "김재호 발성교정소 대표",
+      "남스타보컬스튜디오 실장 · VoiSpeech 실장",
+      "전 대한발성학회(SKVA) 이사 · 발성교정협회 정회원",
+      "서경대 실용음악과 졸업 · NDH발성교정아카데미 2기",
+      "도서 「발성학과 보컬」 집필 참여 (2026)",
+      "발성교정사 초·중·고급 과정 수료",
+      "한양대 · 강남세브란스 · 분당제생 · 보아스이비인후과 실습",
+      "스피치지도사 1급 · 음악심리상담사 1급",
+    ],
+    secondaryTitle: "연수 · 학회",
+    secondaryNote: "연수 · 학술 활동",
+    secondaryItems: [
+      "강남세브란스 발성이론 워크숍",
+      "IVA 한국 보컬 세미나",
+      "제1~8회 한국발성교정학회 학술대회",
+      "Rob Gray CLA International Webinar",
+      "Yonsei Laser Voice Workshop",
+      "4개 병원 연계 발성교정 실습 수료",
+    ],
+  },
+] as const;
+
 export default function Coach() {
   return (
     <section id="coach" className="section-pad bg-surface">
       <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-stretch lg:gap-12">
-          <div className="lg:col-span-5">
-            <p className="eyebrow">COACH</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
-              함께하는 코치
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-              소리와 연습 과정을 함께 살펴보고,
-              직접 시도할 수 있는 방법으로 풀어갑니다.
-            </p>
-          </div>
+        <div className="max-w-2xl">
+          <p className="eyebrow">COACH</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
+            함께하는 코치
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
+            소리와 연습 과정을 함께 살펴보고,
+            직접 시도할 수 있는 방법으로 풀어갑니다.
+          </p>
+        </div>
 
-          <article className="card overflow-hidden lg:col-span-7">
-            <div className="border-b border-line-soft bg-sky-muted/50 px-6 py-5 md:px-8">
-              <p className="eyebrow">VOCAL DIRECTOR</p>
-              <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h3 className="text-2xl font-bold text-navy">김재우</h3>
-                  <p className="mt-1 text-sm text-muted">
-                    VoiSpeech 대표 · 발성 코치
-                  </p>
-                </div>
-                <span className="rounded-md border border-line bg-surface px-2.5 py-1 text-xs text-muted">
-                  VoiSpeech
-                </span>
+        <div className="mt-10 grid gap-6 md:grid-cols-2 md:gap-8">
+          {coaches.map((coach) => (
+            <article key={coach.id} className="card overflow-hidden">
+              <div className="coach-photo bg-sky-muted">
+                <img
+                  src={coach.photo}
+                  alt={coach.photoAlt}
+                  width={720}
+                  height={900}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
-            </div>
 
-            <div className="grid gap-6 px-6 py-6 md:grid-cols-2 md:px-8 md:py-8">
-              <div>
-                <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-                  APPROACH
+              <div className="border-b border-line-soft bg-sky-muted/50 px-5 py-5 md:px-6">
+                <p className="eyebrow">{coach.role}</p>
+                <h3 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+                  {coach.nameEn}
+                  <span className="ml-2 text-lg font-semibold text-navy-soft">
+                    {coach.nameKo}
+                  </span>
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-navy-soft">
+                  {coach.tagline}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-navy-soft">
-                  소리의 변화와 발성할 때 느끼는 어려움을 함께 듣습니다.
-                  모음·음높이·소리 크기 등 조건을 바꿔보며,
-                  어떤 조정이 도움이 되는지 확인합니다.
+                <p className="mt-3 inline-flex rounded-md border border-line bg-surface px-2.5 py-1 text-xs leading-snug text-muted">
+                  {coach.affiliation}
                 </p>
               </div>
-              <div>
+
+              <div className="px-5 py-5 md:px-6 md:py-6">
                 <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-                  FOCUS
+                  주요 이력
                 </p>
-                <ul className="mt-2 space-y-2">
-                  {[
-                    "1:1 발성 관찰 · 5 VOICE CHECK",
-                    "기초 발성 · 성구 연결 · 노래 적용",
-                    "원데이 수업 후 개인 코칭 리포트",
-                  ].map((item) => (
+                <ul className="mt-3 space-y-2">
+                  {coach.career.map((item) => (
                     <li
                       key={item}
                       className="flex items-start gap-2 text-sm text-navy-soft"
@@ -63,17 +127,23 @@ export default function Coach() {
                     </li>
                   ))}
                 </ul>
-              </div>
-            </div>
 
-            <div className="border-t border-line-soft bg-page px-6 py-4 md:px-8">
-              <p className="text-sm text-muted">
-                <span className="font-semibold text-navy">김재우 · VoiSpeech</span>
-                {" · "}
-                발성을 알아가는 시간을 함께합니다.
-              </p>
-            </div>
-          </article>
+                <div className="mt-6 border-t border-line-soft pt-5">
+                  <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
+                    {coach.secondaryTitle}
+                  </p>
+                  <p className="mt-2">
+                    <span className="inline-flex rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-xs font-medium text-navy">
+                      {coach.secondaryNote}
+                    </span>
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-navy-soft">
+                    {coach.secondaryItems.join(" · ")}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
