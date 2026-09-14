@@ -32,66 +32,21 @@ export default function ReportTeaser() {
             </ul>
           </div>
 
-          {/* Mini report UI nod */}
           <div className="lg:col-span-7">
-            <div className="card overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]">
-              <div className="flex items-center justify-between border-b border-line-soft px-5 py-4 md:px-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-navy">VoiSpeech</span>
-                  <span className="hidden text-[0.625rem] tracking-[0.14em] text-faint sm:inline">
-                    VOCAL COACHING REPORT
-                  </span>
-                </div>
-                <span className="text-xs text-muted">작성 예시</span>
-              </div>
-
-              <div className="bg-page px-5 py-6 md:px-8 md:py-8">
-                <p className="dot-label text-sm">나의 목소리를 알아가는 시간</p>
-                <p className="mt-3 text-2xl font-bold text-navy md:text-3xl">
-                  발성 코칭 리포트
-                  <span className="text-sky" aria-hidden>
-                    .
-                  </span>
-                </p>
-                <p className="mt-2 text-sm text-muted">
-                  오늘의 발성 한눈에 보기
-                </p>
-
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  {[
-                    { label: "주요 목표", value: "성구 연결 · 긴장 완화" },
-                    { label: "관찰 조건", value: "작은 소리 · 모음 변경" },
-                    { label: "다음 연습", value: "짧은 구절에 적용" },
-                  ].map((card) => (
-                    <div
-                      key={card.label}
-                      className="rounded-lg border border-line bg-surface px-4 py-3"
-                    >
-                      <p className="text-[0.6875rem] text-faint">{card.label}</p>
-                      <p className="mt-1 text-sm font-semibold text-navy">
-                        {card.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-4 rounded-lg border border-line border-l-[3px] border-l-sky bg-surface px-4 py-3">
-                  <p className="text-[0.6875rem] tracking-[0.1em] text-muted">
-                    MOST IMPORTANT TODAY
-                  </p>
-                  <p className="mt-1 text-sm text-navy-soft">
-                    모음을 바꿨을 때 연결이 편해졌다고 느꼈습니다. 같은 구절에서 다시 확인해 봅니다.
-                  </p>
-                </div>
-
-                <div className="mt-6 flex flex-wrap gap-4 border-t border-line-soft pt-5 text-[0.6875rem] tracking-[0.08em] text-faint">
-                  <span>01 CHECK</span>
-                  <span>02 INTERPRET</span>
-                  <span>03 TRAIN</span>
-                  <span>04 SONG</span>
-                </div>
-              </div>
-            </div>
+            <figure className="card overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]">
+              <img
+                src="/report/coaching-report.jpg"
+                alt="VoiSpeech 발성 코칭 리포트 예시 — 오늘의 발성 요약, 5 Voice Check, 연습 가이드"
+                width={1400}
+                height={933}
+                className="h-auto w-full object-cover object-center"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption className="border-t border-line-soft bg-surface px-5 py-3 text-xs text-muted md:px-6">
+                발성 코칭 리포트 예시 · 개인 맞춤 PDF
+              </figcaption>
+            </figure>
           </div>
         </div>
       </div>
