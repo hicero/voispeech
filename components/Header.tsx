@@ -6,7 +6,7 @@ import Logo from "./Logo";
 const navLinks = [
   { href: "#method", label: "코칭 방식" },
   { href: "#programs", label: "수업" },
-  { href: "#results", label: "전후" },
+  { href: "#results", label: "Before & After" },
   { href: "#coach", label: "코치" },
   { href: "#research", label: "연구" },
   { href: "/training", label: "온라인 훈련" },
