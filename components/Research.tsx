@@ -47,6 +47,19 @@ const papers = [
         "Figure 1. Glottal shapes (convergent · rectangular · divergent), Journal of the Acoustical Society of America / Titze 2014",
     },
   },
+  {
+    title: "Professional Opera Tenors' Vocal Tract Configurations in Registers",
+    authors: "Matthias Echternach, Johan Sundberg, Michael Markl, Bernhard Richter",
+    venue: "Folia Phoniatrica et Logopaedica, 2010, 62:278–287",
+    doi: "https://doi.org/10.1159/000312668",
+    why: "테너가 falsetto로 넘길 때와 voix mixte로 넘길 때 성도(인두·입·턱) 형태가 MRI에서 어떻게 다른지 보여 줍니다.",
+    figure: {
+      src: "/research/figures/echternach-2010-fig-mri.png",
+      alt: "Echternach et al. Figure 3 — tenor MRI vocal-tract profiles: modal→falsetto vs voix mixte (D4/G4)",
+      caption:
+        "Figure 3. MRI vocal-tract profiles (modal → falsetto vs voix mixte), Folia Phoniatr Logop / Echternach et al. 2010",
+    },
+  },
 ] as const;
 
 const mediaSlots = [
