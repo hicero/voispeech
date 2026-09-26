@@ -18,6 +18,11 @@ const papers = [
     venue: "Journal of Voice, 2023 (online 2021)",
     doi: "https://doi.org/10.1016/j.jvoice.2020.12.028",
     why: "믹스·체스트·팔세토를 고속촬영·EGG·공기역학으로 비교해, 믹스가 별도 발성 기전을 갖는다는 점을 보여 줍니다.",
+    figure: {
+      src: "/research/figures/lee-2021-fig5-hsdi.png",
+      alt: "Lee et al. Figure 5 — chest, falsetto, mix 성대 고속촬영(HSDI) 연속 이미지",
+      caption: "Figure 5. HSDI glottal sequences (chest · falsetto · mix), Journal of Voice",
+    },
   },
   {
     title:
@@ -26,6 +31,7 @@ const papers = [
     venue: "Journal of Voice, 2012",
     doi: "https://doi.org/10.1016/j.jvoice.2010.11.002",
     why: "chestmix에서 성대근(TA) 활성과 성대 접촉이 head보다 커진다는 근전도·내시경 관찰입니다.",
+    figure: null as null | { src: string; alt: string; caption: string },
   },
 ] as const;
 
@@ -133,35 +139,62 @@ export default function Research() {
             워크숍 · 논문 · 영상
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-            믹스(레지스터 연결) 관련 논문부터 올렸습니다. 피겨·워크숍 사진·영상은
+            믹스(레지스터 연결) 관련 논문과 피겨를 올렸습니다. 워크숍 사진·영상은
             공개 가능한 자료를 주시면 이어서 붙입니다.
           </p>
         </div>
 
         <ul className="mt-6 grid gap-4 lg:grid-cols-2">
           {papers.map((paper) => (
-            <li key={paper.doi} className="card flex flex-col p-5 md:p-6">
-              <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
-                PAPER
-              </span>
-              <h4 className="mt-4 text-base font-bold leading-snug text-navy">
-                {paper.title}
-              </h4>
-              <p className="mt-2 text-xs leading-relaxed text-muted">
-                {paper.authors}
-              </p>
-              <p className="mt-1 text-xs font-medium text-sky">{paper.venue}</p>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
-                {paper.why}
-              </p>
-              <a
-                className="mt-4 inline-flex text-sm font-semibold text-navy underline-offset-4 hover:underline"
-                href={paper.doi}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                DOI에서 보기 ↗
-              </a>
+            <li key={paper.doi} className="card flex flex-col overflow-hidden">
+              {paper.figure ? (
+                <figure className="border-b border-line bg-white">
+                  <img
+                    src={paper.figure.src}
+                    alt={paper.figure.alt}
+                    width={1200}
+                    height={700}
+                    className="h-auto w-full object-contain object-center"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <figcaption className="px-4 py-2 text-xs leading-relaxed text-muted">
+                    {paper.figure.caption}
+                  </figcaption>
+                </figure>
+              ) : (
+                <div className="flex aspect-[16/10] items-center justify-center border-b border-dashed border-line bg-sky-muted/50 px-4">
+                  <p className="text-center text-sm text-muted">
+                    논문 피겨
+                    <span className="mt-1 block text-xs text-faint">
+                      캡처 준비 중
+                    </span>
+                  </p>
+                </div>
+              )}
+              <div className="flex flex-1 flex-col p-5 md:p-6">
+                <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
+                  PAPER
+                </span>
+                <h4 className="mt-4 text-base font-bold leading-snug text-navy">
+                  {paper.title}
+                </h4>
+                <p className="mt-2 text-xs leading-relaxed text-muted">
+                  {paper.authors}
+                </p>
+                <p className="mt-1 text-xs font-medium text-sky">{paper.venue}</p>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
+                  {paper.why}
+                </p>
+                <a
+                  className="mt-4 inline-flex text-sm font-semibold text-navy underline-offset-4 hover:underline"
+                  href={paper.doi}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  DOI에서 보기 ↗
+                </a>
+              </div>
             </li>
           ))}
         </ul>
@@ -250,8 +283,9 @@ export default function Research() {
         </ul>
 
         <p className="section-note mt-6">
-          논문 피겨는 저널·저자 허용 범위의 이미지만 올립니다. 워크숍 사진·영상
-          링크는 자료를 주시면 바로 연결합니다.
+          논문 피겨는 출처를 밝히고 DOI로 원문을 연결합니다. 상업적 재사용이
+          제한될 수 있으니, 장기적으로는 저널·저자 허용 이미지를 쓰는 편이
+          안전합니다. 워크숍 사진·영상 링크는 자료를 주시면 바로 연결합니다.
         </p>
       </div>
     </section>
