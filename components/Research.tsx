@@ -33,6 +33,20 @@ const papers = [
     why: "chestmix에서 성대근(TA) 활성과 성대 접촉이 head보다 커진다는 근전도·내시경 관찰입니다.",
     figure: null as null | { src: string; alt: string; caption: string },
   },
+  {
+    title:
+      "Bi-stable vocal fold adduction: A mechanism of modal-falsetto register shifts and mixed registration",
+    authors: "Ingo R. Titze",
+    venue: "Journal of the Acoustical Society of America, 2014, 135(4), 2091–2101",
+    doi: "https://doi.org/10.1121/1.4868355",
+    why: "mixed registration을 성문의 거의 직사각형(평행) 형태와 상·하부 강성 균형으로 설명하는 이론·시뮬레이션 논문입니다.",
+    figure: {
+      src: "/research/figures/titze-2014-fig-mixed.png",
+      alt: "Titze Figure 1 — convergent · rectangular · divergent 성문 형태 모식도",
+      caption:
+        "Figure 1. Glottal shapes (convergent · rectangular · divergent), Journal of the Acoustical Society of America / Titze 2014",
+    },
+  },
 ] as const;
 
 const mediaSlots = [
