@@ -35,6 +35,20 @@ const papers = [
   },
   {
     title:
+      "Cricothyroid Muscle and Thyroarytenoid Muscle Dominance in Vocal Register Control: Preliminary Results",
+    authors: "Kochis-Jennings KA, Finnegan EM, Hoffman HT, Jaiswal S, Hull D",
+    venue: "Journal of Voice, 2014",
+    doi: "https://doi.org/10.1016/j.jvoice.2014.01.017",
+    why: "CT·TA 근전도로 chest/chestmix/headmix/head를 비교했을 때, 근육 ‘우세’가 레지스터보다 피치에 더 크게 영향을 받는다는 예비 결과입니다.",
+    figure: {
+      src: "/research/figures/kochis-2014-fig1-ct-ta.png",
+      alt: "Kochis-Jennings et al. Figure 1 — CT:TA ratio vs fundamental frequency across subjects and registers",
+      caption:
+        "Figure 1. CT:TA muscle activity ratios during pitch glides (chest · head), Journal of Voice / Kochis-Jennings et al. 2014",
+    },
+  },
+  {
+    title:
       "Bi-stable vocal fold adduction: A mechanism of modal-falsetto register shifts and mixed registration",
     authors: "Ingo R. Titze",
     venue: "Journal of the Acoustical Society of America, 2014, 135(4), 2091–2101",
