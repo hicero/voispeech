@@ -1,10 +1,5 @@
 const items = [
   {
-    type: "BOOK" as const,
-    title: "「발성학과 보컬」",
-    why: "발성학을 보컬 현장에 연결한 공동 집필·집필 참여 도서입니다.",
-  },
-  {
     type: "ASSOCIATION" as const,
     title: "The Voice Foundation 한국챕터",
     why: "음성·발성 분야의 국제 네트워크와 국내 활동을 잇는 조직입니다.",
@@ -27,7 +22,6 @@ const items = [
 ] as const;
 
 const typeStyle: Record<(typeof items)[number]["type"], string> = {
-  BOOK: "border-sky bg-sky-muted text-navy",
   ASSOCIATION: "border-line bg-page text-navy-soft",
   WORKSHOP: "border-sky/50 bg-surface text-navy",
 };
@@ -45,12 +39,55 @@ export default function Research() {
             </span>
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-            학회·연수·출판을 바탕으로 코칭합니다. 아래에서 다루는 항목은
-            코치 이력에 이미 공개된 사실만 모았습니다.
+            학회·연수·출판을 바탕으로 코칭합니다. 확인된 자료부터 올려 두고,
+            논문·영상은 공개 가능한 것을 추가로 연결합니다.
           </p>
         </div>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <article className="card mt-12 overflow-hidden md:grid md:grid-cols-12">
+          <div className="bg-sky-muted md:col-span-5">
+            <img
+              src="/research/vocology-and-vocal.jpg"
+              alt="도서 「발성학과 보컬」 Vocology and Vocal 표지"
+              width={900}
+              height={1200}
+              className="mx-auto h-auto w-full max-w-sm object-contain object-center md:max-w-none"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div className="flex flex-col justify-center p-6 md:col-span-7 md:p-10">
+            <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
+              BOOK
+            </span>
+            <h3 className="mt-4 text-2xl font-bold tracking-tight text-navy md:text-3xl">
+              발성학과 보컬
+            </h3>
+            <p className="mt-1 text-sm font-medium tracking-wide text-sky">
+              Vocology and Vocal
+            </p>
+            <dl className="mt-5 space-y-2 text-sm text-muted">
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="font-semibold text-navy-soft">지은이</dt>
+                <dd>손대명</dd>
+              </div>
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="font-semibold text-navy-soft">출판</dt>
+                <dd>군자출판사</dd>
+              </div>
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="font-semibold text-navy-soft">소개</dt>
+                <dd>발성학(Vocology) 입문을 위한 기본서</dd>
+              </div>
+            </dl>
+            <p className="mt-5 text-sm leading-relaxed text-muted">
+              발성학을 보컬 현장에 연결한 도서입니다. VoiSpeech 코치진이 집필에
+              참여했습니다.
+            </p>
+          </div>
+        </article>
+
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <li key={item.title} className="card flex flex-col p-5 md:p-6">
               <span
@@ -86,7 +123,7 @@ export default function Research() {
             </span>
           </li>
 
-          <li className="card flex flex-col border-dashed p-5 md:p-6">
+          <li className="card flex flex-col border-dashed p-5 md:p-6 sm:col-span-2 lg:col-span-1">
             <span className="inline-flex w-fit rounded-full border border-line bg-sky-muted/40 px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-muted">
               VIDEO
             </span>
