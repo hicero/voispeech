@@ -40,9 +40,9 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`site-header fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled || open
-          ? "border-b border-line bg-page/95 backdrop-blur-md"
+          ? "is-scrolled border-b border-line bg-page/95 backdrop-blur-md"
           : "bg-page/95 backdrop-blur-md"
       }`}
     >
