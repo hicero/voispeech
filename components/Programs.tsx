@@ -1,3 +1,5 @@
+import { isHttpsUrl, onedayPlatforms } from "./siteConfig";
+
 const programs = [
   {
     num: "01",
@@ -72,6 +74,27 @@ export default function Programs() {
               <a href={p.href}>
                 {p.cta} <span aria-hidden>↗</span>
               </a>
+              {p.num === "01" && (
+                <div className="oneday-platforms">
+                  <p className="oneday-platforms-label">다른 곳에서 신청</p>
+                  <div className="oneday-platforms-list">
+                    {onedayPlatforms.map((platform) =>
+                      isHttpsUrl(platform.url) ? (
+                        <a
+                          key={platform.name}
+                          href={platform.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {platform.name}
+                        </a>
+                      ) : (
+                        <span key={platform.name}>{platform.name}</span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
             </article>
           ))}
         </div>
