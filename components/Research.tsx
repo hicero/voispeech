@@ -62,7 +62,14 @@ export default function Research() {
           </p>
         </div>
 
-        <article className="card mt-12 overflow-hidden md:grid md:grid-cols-12">
+        <div className="mt-12">
+          <p className="eyebrow">PUBLICATION</p>
+          <h3 className="mt-2 text-xl font-bold tracking-tight text-navy md:text-2xl">
+            출판
+          </h3>
+        </div>
+
+        <article className="card mt-6 overflow-hidden md:grid md:grid-cols-12">
           <div className="flex items-center justify-center bg-sky-muted px-6 py-8 md:col-span-5 md:px-8 md:py-10">
             <img
               src="/research/vocology-and-vocal.jpg"
