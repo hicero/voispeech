@@ -46,18 +46,18 @@ export default function Research() {
         </div>
 
         <article className="card mt-12 overflow-hidden md:grid md:grid-cols-12">
-          <div className="bg-sky-muted md:col-span-5">
+          <div className="flex items-center justify-center bg-sky-muted px-6 py-8 md:col-span-4 md:px-8 md:py-10">
             <img
               src="/research/vocology-and-vocal.jpg"
               alt="도서 「발성학과 보컬」 Vocology and Vocal 표지"
               width={900}
               height={1200}
-              className="mx-auto h-auto w-full max-w-sm object-contain object-center md:max-w-none"
+              className="mx-auto h-auto w-full max-w-[200px] object-contain object-center shadow-sm md:max-w-[220px]"
               loading="lazy"
               decoding="async"
             />
           </div>
-          <div className="flex flex-col justify-center p-6 md:col-span-7 md:p-10">
+          <div className="flex flex-col justify-center p-6 md:col-span-8 md:p-10">
             <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
               BOOK
             </span>
@@ -89,19 +89,19 @@ export default function Research() {
         </article>
 
         <article className="card mt-6 overflow-hidden">
-          <div className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:gap-10 md:p-8">
-            <div className="flex shrink-0 items-center justify-center rounded-md border border-line bg-white px-6 py-5 md:w-[min(100%,420px)]">
+          <div className="grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+            <div className="flex items-center justify-center rounded-md border border-line bg-white px-5 py-6 md:col-span-7 md:px-8 md:py-8">
               <img
                 src="/research/voice-foundation.png"
                 alt="The Voice Foundation — Advancing Understanding of the Voice Through Interdisciplinary Research & Education"
                 width={840}
                 height={280}
-                className="h-auto w-full object-contain"
+                className="h-auto w-full max-w-none object-contain"
                 loading="lazy"
                 decoding="async"
               />
             </div>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 md:col-span-5">
               <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
                 ASSOCIATION
               </span>
