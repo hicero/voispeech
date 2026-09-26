@@ -405,3 +405,39 @@ button:disabled { opacity:.45; cursor:not-allowed; }
   object-fit: cover;
   object-position: center top;
 }
+
+/* Before / After split panels */
+.ba-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 7.5rem;
+  border-bottom: 1px solid var(--color-line-soft);
+}
+.ba-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 7.5rem;
+  background: var(--color-sky-muted);
+}
+.ba-panel span {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--color-navy-soft);
+  opacity: 0.7;
+}
+.ba-panel-before {
+  background: linear-gradient(160deg, #eef3f7 0%, var(--color-sky-muted) 100%);
+  border-right: 1px solid var(--color-line-soft);
+}
+.ba-panel-after {
+  background: linear-gradient(160deg, var(--color-sky-muted) 0%, var(--color-sky-soft) 100%);
+}
+#results {
+  border-top: 1px solid var(--color-line-soft);
+}
+#research .card.border-dashed {
+  border-style: dashed;
+  background: color-mix(in srgb, var(--color-sky-muted) 35%, var(--color-surface));
+}

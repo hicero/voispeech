@@ -5,10 +5,11 @@ import Logo from "./Logo";
 
 const navLinks = [
   { href: "#method", label: "코칭 방식" },
-  { href: "/training", label: "온라인 훈련" },
   { href: "#programs", label: "수업" },
+  { href: "#results", label: "전후" },
   { href: "#coach", label: "코치" },
-  { href: "/account/", label: "내 계정" },
+  { href: "#research", label: "연구" },
+  { href: "/training", label: "온라인 훈련" },
 ];
 
 export default function Header() {
