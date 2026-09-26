@@ -62,9 +62,11 @@ export default function Research() {
           </p>
         </div>
 
-        <div className="mt-12">
-          <p className="eyebrow">PUBLICATION</p>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-navy md:text-2xl">
+        <div className="mt-12 border-t border-line-soft pt-8">
+          <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-muted">
+            PUBLICATION
+          </p>
+          <h3 className="mt-1.5 text-lg font-bold tracking-tight text-navy">
             출판
           </h3>
         </div>
@@ -85,9 +87,9 @@ export default function Research() {
             <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
               BOOK
             </span>
-            <h3 className="mt-4 text-2xl font-bold tracking-tight text-navy md:text-3xl">
+            <h4 className="mt-4 text-2xl font-bold tracking-tight text-navy md:text-3xl">
               발성학과 보컬
-            </h3>
+            </h4>
             <p className="mt-1 text-sm font-medium tracking-wide text-sky">
               Vocology and Vocal
             </p>
@@ -112,9 +114,11 @@ export default function Research() {
           </div>
         </article>
 
-        <div className="mt-10">
-          <p className="eyebrow">WORKS</p>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-navy md:text-2xl">
+        <div className="mt-12 border-t border-line-soft pt-8">
+          <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-muted">
+            WORKS
+          </p>
+          <h3 className="mt-1.5 text-lg font-bold tracking-tight text-navy">
             워크숍 · 논문 · 영상
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
@@ -139,9 +143,9 @@ export default function Research() {
                 >
                   {item.type}
                 </span>
-                <h3 className="mt-4 text-base font-bold leading-snug text-navy">
+                <h4 className="mt-4 text-base font-bold leading-snug text-navy">
                   {item.title}
-                </h3>
+                </h4>
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
                   {item.why}
                 </p>
@@ -150,9 +154,11 @@ export default function Research() {
           ))}
         </ul>
 
-        <div className="mt-12">
-          <p className="eyebrow">AFFILIATIONS</p>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-navy md:text-2xl">
+        <div className="mt-12 border-t border-line-soft pt-8">
+          <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-muted">
+            AFFILIATIONS
+          </p>
+          <h3 className="mt-1.5 text-lg font-bold tracking-tight text-navy">
             소속 · 활동 단체
           </h3>
         </div>
@@ -174,9 +180,9 @@ export default function Research() {
               <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
                 ASSOCIATION
               </span>
-              <h3 className="mt-4 text-xl font-bold leading-snug text-navy md:text-2xl">
+              <h4 className="mt-4 text-xl font-bold leading-snug text-navy md:text-2xl">
                 The Voice Foundation 한국챕터
-              </h3>
+              </h4>
               <p className="mt-3 text-sm leading-relaxed text-muted md:text-base">
                 음성·발성 분야의 국제 네트워크와 국내 활동을 잇는 조직입니다.
                 학제 간 연구와 교육을 통해 목소리에 대한 이해를 넓히는 일을
@@ -192,9 +198,9 @@ export default function Research() {
               <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
                 ASSOCIATION
               </span>
-              <h3 className="mt-4 text-base font-bold leading-snug text-navy">
+              <h4 className="mt-4 text-base font-bold leading-snug text-navy">
                 {item.title}
-              </h3>
+              </h4>
               <p className="mt-2 text-sm font-semibold text-sky">{item.role}</p>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
                 {item.why}
