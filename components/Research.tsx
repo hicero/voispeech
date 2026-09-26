@@ -1,27 +1,38 @@
-const items = [
+type Item = {
+  type: "ASSOCIATION" | "WORKSHOP";
+  title: string;
+  why: string;
+  logo?: { src: string; alt: string };
+};
+
+const items: Item[] = [
   {
-    type: "ASSOCIATION" as const,
+    type: "ASSOCIATION",
     title: "The Voice Foundation 한국챕터",
     why: "음성·발성 분야의 국제 네트워크와 국내 활동을 잇는 조직입니다.",
+    logo: {
+      src: "/research/voice-foundation.jpg",
+      alt: "The Voice Foundation 로고",
+    },
   },
   {
-    type: "ASSOCIATION" as const,
+    type: "ASSOCIATION",
     title: "대한발성학회 · 한국발성교정학회",
     why: "학술대회와 학회 활동을 통해 발성교정 흐름을 꾸준히 따라갑니다.",
   },
   {
-    type: "WORKSHOP" as const,
+    type: "WORKSHOP",
     title: "강남세브란스 · Yonsei Laser Voice Workshop",
     why: "병원·연수 기반 워크숍으로 임상과 코칭의 접점을 익힙니다.",
   },
   {
-    type: "WORKSHOP" as const,
+    type: "WORKSHOP",
     title: "SLS Instructor Level 1",
     why: "체계적 보컬 트레이닝 자격으로 코칭 기준을 다집니다.",
   },
-] as const;
+];
 
-const typeStyle: Record<(typeof items)[number]["type"], string> = {
+const typeStyle: Record<Item["type"], string> = {
   ASSOCIATION: "border-line bg-page text-navy-soft",
   WORKSHOP: "border-sky/50 bg-surface text-navy",
 };
@@ -90,6 +101,19 @@ export default function Research() {
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <li key={item.title} className="card flex flex-col p-5 md:p-6">
+              {item.logo ? (
+                <div className="mb-4 flex h-24 items-center justify-center rounded-md border border-line bg-white px-4">
+                  <img
+                    src={item.logo.src}
+                    alt={item.logo.alt}
+                    width={220}
+                    height={220}
+                    className="max-h-20 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              ) : null}
               <span
                 className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] ${typeStyle[item.type]}`}
               >
