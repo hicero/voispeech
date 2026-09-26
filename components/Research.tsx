@@ -46,18 +46,18 @@ export default function Research() {
         </div>
 
         <article className="card mt-12 overflow-hidden md:grid md:grid-cols-12">
-          <div className="flex items-center justify-center bg-sky-muted px-6 py-8 md:col-span-4 md:px-8 md:py-10">
+          <div className="flex items-center justify-center bg-sky-muted px-6 py-8 md:col-span-5 md:px-8 md:py-10">
             <img
               src="/research/vocology-and-vocal.jpg"
               alt="도서 「발성학과 보컬」 Vocology and Vocal 표지"
               width={900}
               height={1200}
-              className="mx-auto h-auto w-full max-w-[200px] object-contain object-center shadow-sm md:max-w-[220px]"
+              className="mx-auto h-auto w-full max-w-[260px] object-contain object-center shadow-sm md:max-w-[300px]"
               loading="lazy"
               decoding="async"
             />
           </div>
-          <div className="flex flex-col justify-center p-6 md:col-span-8 md:p-10">
+          <div className="flex flex-col justify-center p-6 md:col-span-7 md:p-10">
             <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
               BOOK
             </span>
