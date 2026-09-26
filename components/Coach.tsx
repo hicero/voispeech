@@ -44,7 +44,7 @@ const coaches = [
     career: [
       "김재호 발성교정소 대표",
       "남스타보컬스튜디오 실장 · VoiSpeech 부대표",
-      "전 대한발성학회(SKVA) 이사 · 발성교정협회 정회원",
+      "전 대한발성학회(SKVA) 이사 · 한국발성교정협회 정회원",
       "서경대 실용음악과 졸업 · NDH발성교정아카데미 2기",
       "도서 「발성학과 보컬」 집필 참여 (2026)",
       "발성교정사 초·중·고급 과정 수료",
@@ -56,7 +56,7 @@ const coaches = [
     secondaryItems: [
       "강남세브란스 발성이론 워크숍",
       "IVA 한국 보컬 세미나",
-      "제1~8회 한국발성교정학회 학술대회",
+      "제1~8회 한국발성교정협회 학술대회",
       "Rob Gray CLA International Webinar",
       "Yonsei Laser Voice Workshop",
       "4개 병원 연계 발성교정 실습 수료",

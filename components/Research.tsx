@@ -7,8 +7,13 @@ type Item = {
 const items: Item[] = [
   {
     type: "ASSOCIATION",
-    title: "대한발성학회 · 한국발성교정학회",
-    why: "학술대회와 학회 활동을 통해 발성교정 흐름을 꾸준히 따라갑니다.",
+    title: "대한발성학회",
+    why: "전 이사. 학회 활동을 통해 발성·음성 분야의 흐름을 익혔습니다.",
+  },
+  {
+    type: "ASSOCIATION",
+    title: "한국발성교정협회",
+    why: "정회원. 발성교정 현장과 협회 활동을 이어 가고 있습니다.",
   },
   {
     type: "WORKSHOP",
