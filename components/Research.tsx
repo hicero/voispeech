@@ -1,35 +1,47 @@
-type Item = {
-  type: "ASSOCIATION" | "WORKSHOP";
-  title: string;
-  why: string;
-};
-
-const items: Item[] = [
+const affiliations = [
   {
-    type: "ASSOCIATION",
     title: "대한발성학회",
-    why: "전 이사. 학회 활동을 통해 발성·음성 분야의 흐름을 익혔습니다.",
+    role: "전 이사",
+    why: "학회 활동을 통해 발성·음성 분야의 흐름을 익혔습니다.",
   },
   {
-    type: "ASSOCIATION",
     title: "한국발성교정협회",
-    why: "정회원. 발성교정 현장과 협회 활동을 이어 가고 있습니다.",
+    role: "정회원",
+    why: "발성교정 현장과 협회 활동을 이어 가고 있습니다.",
   },
+] as const;
+
+const mediaSlots = [
   {
     type: "WORKSHOP",
     title: "강남세브란스 · Yonsei Laser Voice Workshop",
     why: "병원·연수 기반 워크숍으로 임상과 코칭의 접점을 익힙니다.",
+    slot: "워크숍 사진",
   },
   {
     type: "WORKSHOP",
     title: "SLS Instructor Level 1",
     why: "체계적 보컬 트레이닝 자격으로 코칭 기준을 다집니다.",
+    slot: "자격 · 연수 사진",
   },
-];
+  {
+    type: "PAPER",
+    title: "논문 · 피겨",
+    why: "공개 가능한 논문 피겨·슬라이드를 올리면 이 칸에 표시합니다.",
+    slot: "논문 피겨 이미지",
+  },
+  {
+    type: "VIDEO",
+    title: "강의 · 연수 영상",
+    why: "공개해도 되는 강의·워크숍 영상이 있으면 바로 연결합니다.",
+    slot: "영상 썸네일",
+  },
+] as const;
 
-const typeStyle: Record<Item["type"], string> = {
-  ASSOCIATION: "border-line bg-page text-navy-soft",
+const mediaTypeStyle: Record<(typeof mediaSlots)[number]["type"], string> = {
   WORKSHOP: "border-sky/50 bg-surface text-navy",
+  PAPER: "border-line bg-sky-muted/40 text-muted",
+  VIDEO: "border-line bg-sky-muted/40 text-muted",
 };
 
 export default function Research() {
@@ -45,8 +57,8 @@ export default function Research() {
             </span>
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-            학회·연수·출판을 바탕으로 코칭합니다. 확인된 자료부터 올려 두고,
-            논문·영상은 공개 가능한 것을 추가로 연결합니다.
+            출판·연수·논문·영상을 먼저 보고, 소속·활동 단체는 아래에 모아
+            둡니다. 확인된 자료만 올립니다.
           </p>
         </div>
 
@@ -93,6 +105,51 @@ export default function Research() {
           </div>
         </article>
 
+        <div className="mt-10">
+          <p className="eyebrow">WORKS</p>
+          <h3 className="mt-2 text-xl font-bold tracking-tight text-navy md:text-2xl">
+            워크숍 · 논문 · 영상
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+            사진·피겨·영상 자료를 주시면 이 자리에 바로 올립니다.
+          </p>
+        </div>
+
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+          {mediaSlots.map((item) => (
+            <li key={item.title} className="card flex flex-col overflow-hidden">
+              <div className="flex aspect-[16/10] items-center justify-center border-b border-dashed border-line bg-sky-muted/50 px-4">
+                <p className="text-center text-sm text-muted">
+                  {item.slot}
+                  <span className="mt-1 block text-xs text-faint">
+                    자료 준비 중
+                  </span>
+                </p>
+              </div>
+              <div className="flex flex-1 flex-col p-5 md:p-6">
+                <span
+                  className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] ${mediaTypeStyle[item.type]}`}
+                >
+                  {item.type}
+                </span>
+                <h3 className="mt-4 text-base font-bold leading-snug text-navy">
+                  {item.title}
+                </h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
+                  {item.why}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-12">
+          <p className="eyebrow">AFFILIATIONS</p>
+          <h3 className="mt-2 text-xl font-bold tracking-tight text-navy md:text-2xl">
+            소속 · 활동 단체
+          </h3>
+        </div>
+
         <article className="card mt-6 overflow-hidden">
           <div className="grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
             <div className="flex items-center justify-center rounded-md border border-line bg-white px-5 py-6 md:col-span-7 md:px-8 md:py-8">
@@ -122,64 +179,26 @@ export default function Research() {
           </div>
         </article>
 
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+          {affiliations.map((item) => (
             <li key={item.title} className="card flex flex-col p-5 md:p-6">
-              <span
-                className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] ${typeStyle[item.type]}`}
-              >
-                {item.type}
+              <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
+                ASSOCIATION
               </span>
               <h3 className="mt-4 text-base font-bold leading-snug text-navy">
                 {item.title}
               </h3>
+              <p className="mt-2 text-sm font-semibold text-sky">{item.role}</p>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
                 {item.why}
               </p>
             </li>
           ))}
-
-          <li className="card flex flex-col border-dashed p-5 md:p-6">
-            <span className="inline-flex w-fit rounded-full border border-line bg-sky-muted/40 px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-muted">
-              PAPER
-            </span>
-            <h3 className="mt-4 text-base font-bold leading-snug text-navy-soft">
-              논문 · PDF
-            </h3>
-            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
-              공개 가능한 논문·슬라이드가 준비되면 이 칸에 제목과 링크를
-              올립니다.
-            </p>
-            <span
-              className="mt-4 text-xs text-faint"
-              aria-label="논문 링크는 추후 추가 예정"
-            >
-              링크 준비 중
-            </span>
-          </li>
-
-          <li className="card flex flex-col border-dashed p-5 md:p-6 sm:col-span-2 lg:col-span-1">
-            <span className="inline-flex w-fit rounded-full border border-line bg-sky-muted/40 px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-muted">
-              VIDEO
-            </span>
-            <h3 className="mt-4 text-base font-bold leading-snug text-navy-soft">
-              강의 · 연수 영상
-            </h3>
-            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
-              공개해도 되는 강의·워크숍 영상이 있으면 바로 연결합니다.
-            </p>
-            <span
-              className="mt-4 text-xs text-faint"
-              aria-label="영상 링크는 추후 추가 예정"
-            >
-              링크 준비 중
-            </span>
-          </li>
         </ul>
 
         <p className="section-note mt-6">
-          논문 PDF·강의 영상 링크는 자료를 주시면 바로 올립니다. 확인되지 않은
-          제목·DOI·URL은 올리지 않습니다.
+          워크숍 사진·논문 피겨·영상 링크는 자료를 주시면 바로 올립니다.
+          확인되지 않은 제목·DOI·URL은 올리지 않습니다.
         </p>
       </div>
     </section>
