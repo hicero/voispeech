@@ -2,19 +2,9 @@ type Item = {
   type: "ASSOCIATION" | "WORKSHOP";
   title: string;
   why: string;
-  logo?: { src: string; alt: string };
 };
 
 const items: Item[] = [
-  {
-    type: "ASSOCIATION",
-    title: "The Voice Foundation 한국챕터",
-    why: "음성·발성 분야의 국제 네트워크와 국내 활동을 잇는 조직입니다.",
-    logo: {
-      src: "/research/voice-foundation.jpg",
-      alt: "The Voice Foundation 로고",
-    },
-  },
   {
     type: "ASSOCIATION",
     title: "대한발성학회 · 한국발성교정학회",
@@ -98,22 +88,38 @@ export default function Research() {
           </div>
         </article>
 
+        <article className="card mt-6 overflow-hidden">
+          <div className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:gap-10 md:p-8">
+            <div className="flex shrink-0 items-center justify-center rounded-md border border-line bg-white px-6 py-5 md:w-[min(100%,420px)]">
+              <img
+                src="/research/voice-foundation.png"
+                alt="The Voice Foundation — Advancing Understanding of the Voice Through Interdisciplinary Research & Education"
+                width={840}
+                height={280}
+                className="h-auto w-full object-contain"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
+                ASSOCIATION
+              </span>
+              <h3 className="mt-4 text-xl font-bold leading-snug text-navy md:text-2xl">
+                The Voice Foundation 한국챕터
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted md:text-base">
+                음성·발성 분야의 국제 네트워크와 국내 활동을 잇는 조직입니다.
+                학제 간 연구와 교육을 통해 목소리에 대한 이해를 넓히는 일을
+                함께합니다.
+              </p>
+            </div>
+          </div>
+        </article>
+
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <li key={item.title} className="card flex flex-col p-5 md:p-6">
-              {item.logo ? (
-                <div className="mb-4 flex h-24 items-center justify-center rounded-md border border-line bg-white px-4">
-                  <img
-                    src={item.logo.src}
-                    alt={item.logo.alt}
-                    width={220}
-                    height={220}
-                    className="max-h-20 w-auto object-contain"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              ) : null}
               <span
                 className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] ${typeStyle[item.type]}`}
               >
