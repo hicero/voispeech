@@ -11,36 +11,47 @@ const affiliations = [
   },
 ] as const;
 
+const papers = [
+  {
+    title: "Differences Among Mixed, Chest, and Falsetto Registers: A Multiparametric Study",
+    authors: "Lee Y, Oya M, Kaburagi T, Hidaka S, Nakagawa T",
+    venue: "Journal of Voice, 2023 (online 2021)",
+    doi: "https://doi.org/10.1016/j.jvoice.2020.12.028",
+    why: "믹스·체스트·팔세토를 고속촬영·EGG·공기역학으로 비교해, 믹스가 별도 발성 기전을 갖는다는 점을 보여 줍니다.",
+  },
+  {
+    title:
+      "Laryngeal Muscle Activity and Vocal Fold Adduction During Chest, Chestmix, Headmix, and Head Registers in Females",
+    authors: "Kochis-Jennings KA, Finnegan EM, Hoffman HT, Jaiswal S",
+    venue: "Journal of Voice, 2012",
+    doi: "https://doi.org/10.1016/j.jvoice.2010.11.002",
+    why: "chestmix에서 성대근(TA) 활성과 성대 접촉이 head보다 커진다는 근전도·내시경 관찰입니다.",
+  },
+] as const;
+
 const mediaSlots = [
   {
-    type: "WORKSHOP",
+    type: "WORKSHOP" as const,
     title: "강남세브란스 · Yonsei Laser Voice Workshop",
     why: "병원·연수 기반 워크숍으로 임상과 코칭의 접점을 익힙니다.",
     slot: "워크숍 사진",
   },
   {
-    type: "WORKSHOP",
+    type: "WORKSHOP" as const,
     title: "SLS Instructor Level 1",
     why: "체계적 보컬 트레이닝 자격으로 코칭 기준을 다집니다.",
     slot: "자격 · 연수 사진",
   },
   {
-    type: "PAPER",
-    title: "논문 · 피겨",
-    why: "공개 가능한 논문 피겨·슬라이드를 올리면 이 칸에 표시합니다.",
-    slot: "논문 피겨 이미지",
-  },
-  {
-    type: "VIDEO",
+    type: "VIDEO" as const,
     title: "강의 · 연수 영상",
     why: "공개해도 되는 강의·워크숍 영상이 있으면 바로 연결합니다.",
     slot: "영상 썸네일",
   },
-] as const;
+];
 
 const mediaTypeStyle: Record<(typeof mediaSlots)[number]["type"], string> = {
   WORKSHOP: "border-sky/50 bg-surface text-navy",
-  PAPER: "border-line bg-sky-muted/40 text-muted",
   VIDEO: "border-line bg-sky-muted/40 text-muted",
 };
 
@@ -122,11 +133,40 @@ export default function Research() {
             워크숍 · 논문 · 영상
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-            사진·피겨·영상 자료를 주시면 이 자리에 바로 올립니다.
+            믹스(레지스터 연결) 관련 논문부터 올렸습니다. 피겨·워크숍 사진·영상은
+            공개 가능한 자료를 주시면 이어서 붙입니다.
           </p>
         </div>
 
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        <ul className="mt-6 grid gap-4 lg:grid-cols-2">
+          {papers.map((paper) => (
+            <li key={paper.doi} className="card flex flex-col p-5 md:p-6">
+              <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
+                PAPER
+              </span>
+              <h4 className="mt-4 text-base font-bold leading-snug text-navy">
+                {paper.title}
+              </h4>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                {paper.authors}
+              </p>
+              <p className="mt-1 text-xs font-medium text-sky">{paper.venue}</p>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
+                {paper.why}
+              </p>
+              <a
+                className="mt-4 inline-flex text-sm font-semibold text-navy underline-offset-4 hover:underline"
+                href={paper.doi}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                DOI에서 보기 ↗
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {mediaSlots.map((item) => (
             <li key={item.title} className="card flex flex-col overflow-hidden">
               <div className="flex aspect-[16/10] items-center justify-center border-b border-dashed border-line bg-sky-muted/50 px-4">
@@ -210,8 +250,8 @@ export default function Research() {
         </ul>
 
         <p className="section-note mt-6">
-          워크숍 사진·논문 피겨·영상 링크는 자료를 주시면 바로 올립니다.
-          확인되지 않은 제목·DOI·URL은 올리지 않습니다.
+          논문 피겨는 저널·저자 허용 범위의 이미지만 올립니다. 워크숍 사진·영상
+          링크는 자료를 주시면 바로 연결합니다.
         </p>
       </div>
     </section>
