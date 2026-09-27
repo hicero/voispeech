@@ -1,9 +1,9 @@
 const checks = [
-  { num: "01", name: "호흡·발성", status: "안정", tone: "stable" },
-  { num: "02", name: "두께·성구", status: "우선 조정", tone: "priority" },
-  { num: "03", name: "후두·주변 힘", status: "조정 필요", tone: "adjust" },
-  { num: "04", name: "성도·공명", status: "조정 필요", tone: "adjust" },
-  { num: "05", name: "소리 이해·연습", status: "강점", tone: "strong" },
+  { num: "01", name: "숨과 소리 연결", status: "안정", tone: "stable" },
+  { num: "02", name: "저음·고음 연결", status: "우선 조정", tone: "priority" },
+  { num: "03", name: "목·턱·혀의 힘", status: "조정 필요", tone: "adjust" },
+  { num: "04", name: "모음·울림 조절", status: "조정 필요", tone: "adjust" },
+  { num: "05", name: "소리 구별·재현", status: "강점", tone: "strong" },
 ] as const;
 
 const toneClass: Record<(typeof checks)[number]["tone"], string> = {
@@ -21,9 +21,9 @@ export default function ReportTeaser() {
           <div className="lg:col-span-5 lg:sticky lg:top-28">
             <p className="eyebrow">COACHING REPORT</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
-              원데이 수업 후,
+              수업에서 확인한 내용을
               <br />
-              발성 코칭 리포트로
+              개인 발성 코칭 리포트로
               <br />
               정리합니다
               <span className="text-sky" aria-hidden>
@@ -31,14 +31,15 @@ export default function ReportTeaser() {
               </span>
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-muted md:text-base">
-              수업에서 확인한 발성 특징과 연습 방향을 개인 PDF로 정리합니다.
-              제공 일정은 수업 시 안내하며, 혼자 연습할 때 다시 참고할 수 있습니다.
+              현재 발성 특징, 잘 되는 부분, 조정이 필요한 부분, 연습 방향을 한
+              장에 담습니다. 5 VOICE CHECK와 오늘 연습 방법, 노래 적용 포인트를
+              수업 후 다시 확인할 수 있습니다.
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                "오늘의 발성 한눈에 보기 · 우선 연습 포인트",
-                "5 Voice Check 영역별 관찰 · 해석",
-                "홈 트레이닝 · 다음 수업 방향",
+                "현재 발성 특징 · 잘 되는 부분 · 조정 포인트",
+                "5 VOICE CHECK 영역별 정리",
+                "오늘 연습 방법 · 노래 적용 포인트",
               ].map((item) => (
                 <li key={item} className="dot-label text-sm text-navy-soft">
                   {item}
@@ -79,7 +80,7 @@ export default function ReportTeaser() {
                   오늘의 발성 요약
                 </p>
                 <p className="mt-2 text-2xl font-bold text-navy md:text-3xl">
-                  오늘의 발성 한눈에 보기
+                  오늘의 발성을 한눈에 정리합니다
                   <span className="text-sky" aria-hidden>
                     .
                   </span>
@@ -93,7 +94,7 @@ export default function ReportTeaser() {
                   {[
                     {
                       label: "주요 목표",
-                      value: "고음에서 목 힘을 줄이고 소리의 무게 조절",
+                      value: "고음에서 목 힘을 줄이고 소리 무게 조절",
                     },
                     { label: "확인한 음역", value: "A2 – B4" },
                     {
@@ -149,8 +150,8 @@ export default function ReportTeaser() {
                     먼저 연습할 부분
                   </p>
                   <p className="mt-1 text-sm text-navy-soft">
-                    1순위 소리의 두께와 성구 연결 · 2순위 목 주변의 힘과 후두 조절 ·
-                    3순위 성도와 공명 조절
+                    1순위 저음·고음 연결 · 2순위 목·턱·혀의 힘 · 3순위 모음·울림
+                    조절
                   </p>
                 </div>
 

@@ -5,8 +5,9 @@ import Logo from "./Logo";
 
 const navLinks = [
   { href: "#method", label: "코칭 방식" },
+  { href: "#voice-check", label: "5 Voice Check" },
   { href: "#programs", label: "수업" },
-  { href: "#results", label: "Before & After" },
+  { href: "#results", label: "변화" },
   { href: "#coach", label: "코치" },
   { href: "#research", label: "연구" },
   { href: "/training", label: "온라인 훈련" },
@@ -24,11 +25,18 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const closeOnEscape = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    const resize = () => { if (window.innerWidth >= 768) setOpen(false); };
+    const closeOnEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const resize = () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    };
     window.addEventListener("keydown", closeOnEscape);
     window.addEventListener("resize", resize);
-    return () => { window.removeEventListener("keydown", closeOnEscape); window.removeEventListener("resize", resize); };
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("resize", resize);
+    };
   }, []);
 
   useEffect(() => {
@@ -51,7 +59,7 @@ export default function Header() {
           <Logo compact />
         </a>
 
-        <nav className="hidden items-center gap-5 md:flex" aria-label="주요 메뉴">
+        <nav className="hidden items-center gap-4 lg:flex" aria-label="주요 메뉴">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -62,13 +70,13 @@ export default function Header() {
             </a>
           ))}
           <a href="#booking" className="btn-outline !px-3.5 !py-2 text-xs">
-            레슨 예약
+            원데이 예약
           </a>
         </nav>
 
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center text-navy md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center text-navy lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
@@ -94,7 +102,7 @@ export default function Header() {
 
       <div
         id="mobile-nav"
-        className={`border-t border-line bg-page md:hidden ${open ? "block" : "hidden"}`}
+        className={`border-t border-line bg-page lg:hidden ${open ? "block" : "hidden"}`}
       >
         <nav className="flex flex-col px-5 py-3" aria-label="모바일 메뉴">
           {navLinks.map((link) => (
@@ -112,7 +120,7 @@ export default function Header() {
             className="btn-outline mt-2 mb-3 w-full"
             onClick={() => setOpen(false)}
           >
-            레슨 예약
+            원데이 예약
           </a>
         </nav>
       </div>
