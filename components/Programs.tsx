@@ -48,7 +48,7 @@ const programs = [
 export default function Programs() {
   return (
     <section id="programs" className="section-pad bg-page">
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
+      <div className="content-shell">
         <div className="section-heading">
           <div>
             <p className="eyebrow">PROGRAMS</p>
@@ -69,7 +69,7 @@ export default function Programs() {
               </div>
               <h3>{p.name}</h3>
               <p className="program-who">{p.who}</p>
-              <p>{p.desc}</p>
+              <p className="program-desc">{p.desc}</p>
               <ul>
                 {p.points.map((t) => (
                   <li key={t}>{t}</li>

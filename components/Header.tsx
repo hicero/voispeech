@@ -49,34 +49,28 @@ export default function Header() {
   return (
     <header
       className={`site-header fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled || open
-          ? "is-scrolled border-b border-line bg-page/95 backdrop-blur-md"
-          : "bg-page/95 backdrop-blur-md"
+        scrolled || open ? "is-scrolled" : ""
       }`}
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 md:h-16 md:px-8">
+      <div className="site-header-inner content-shell">
         <a href="#top" onClick={() => setOpen(false)} aria-label="VoiSpeech 홈">
           <Logo compact />
         </a>
 
-        <nav className="hidden items-center gap-4 lg:flex" aria-label="주요 메뉴">
+        <nav className="site-nav hidden items-center gap-4 lg:flex" aria-label="주요 메뉴">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-[0.8125rem] text-muted transition hover:text-navy"
-            >
+            <a key={link.href} href={link.href} className="site-nav-link">
               {link.label}
             </a>
           ))}
-          <a href="#booking" className="btn-outline !px-3.5 !py-2 text-xs">
+          <a href="#booking" className="btn-outline site-nav-cta">
             원데이 예약
           </a>
         </nav>
 
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center text-navy lg:hidden"
+          className="site-menu-btn lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
@@ -102,14 +96,14 @@ export default function Header() {
 
       <div
         id="mobile-nav"
-        className={`border-t border-line bg-page lg:hidden ${open ? "block" : "hidden"}`}
+        className={`site-mobile-nav lg:hidden ${open ? "is-open" : ""}`}
       >
         <nav className="flex flex-col px-5 py-3" aria-label="모바일 메뉴">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="py-3 text-sm text-muted"
+              className="site-mobile-link"
               onClick={() => setOpen(false)}
             >
               {link.label}

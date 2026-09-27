@@ -3,7 +3,7 @@ import ArcGraphic from "./ArcGraphic";
 export default function Hero() {
   return (
     <section id="top" className="hero-section">
-      <div className="hero-grid mx-auto max-w-6xl px-5 md:px-8">
+      <div className="hero-grid content-shell">
         <div className="hero-copy">
           <p className="eyebrow">VOISPEECH · VOCAL COACHING</p>
           <h1>

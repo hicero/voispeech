@@ -6,6 +6,7 @@ type CoachData = {
   id: string;
   photo: string;
   photoAlt: string;
+  photoPos: string;
   nameEn: string;
   nameKo: string;
   role: string;
@@ -23,6 +24,7 @@ const coaches: CoachData[] = [
     id: "jae-woo",
     photo: "/coaches/jae-woo.jpg",
     photoAlt: "Jae Woo 재우 코치 프로필",
+    photoPos: "center 18%",
     nameEn: "JAE WOO",
     nameKo: "재우",
     role: "VOCAL DIRECTOR",
@@ -59,6 +61,7 @@ const coaches: CoachData[] = [
     id: "jae-ho",
     photo: "/coaches/jae-ho.jpg",
     photoAlt: "Jae Ho 재호 코치 프로필",
+    photoPos: "center 22%",
     nameEn: "JAE HO",
     nameKo: "재호",
     role: "VOCAL COACH",
@@ -97,8 +100,8 @@ function CoachCard({ coach }: { coach: CoachData }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <article className="card overflow-hidden">
-      <div className="coach-photo bg-sky-muted">
+    <article className="card coach-card overflow-hidden">
+      <div className="coach-photo">
         <img
           src={coach.photo}
           alt={coach.photoAlt}
@@ -106,39 +109,26 @@ function CoachCard({ coach }: { coach: CoachData }) {
           height={900}
           loading="lazy"
           decoding="async"
+          style={{ objectPosition: coach.photoPos }}
         />
       </div>
 
-      <div className="border-b border-line-soft bg-sky-muted/50 px-5 py-5 md:px-6">
+      <div className="coach-identity">
         <p className="eyebrow">{coach.role}</p>
-        <h3 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+        <h3>
           {coach.nameEn}
-          <span className="ml-2 text-lg font-semibold text-navy-soft">
-            {coach.nameKo}
-          </span>
+          <span>{coach.nameKo}</span>
         </h3>
-        <p className="mt-3 text-sm leading-relaxed text-navy-soft">
-          {coach.tagline}
-        </p>
-        <p className="mt-3 inline-flex rounded-md border border-line bg-surface px-2.5 py-1 text-xs leading-snug text-muted">
-          {coach.affiliation}
-        </p>
+        <p className="coach-tagline">{coach.tagline}</p>
+        <p className="coach-affiliation">{coach.affiliation}</p>
       </div>
 
-      <div className="px-5 py-5 md:px-6 md:py-6">
-        <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-          주요 이력
-        </p>
-        <ul className="mt-3 space-y-2">
+      <div className="coach-body">
+        <p className="case-kicker">주요 이력</p>
+        <ul className="coach-list">
           {coach.headlines.map((item) => (
-            <li
-              key={item}
-              className="flex items-start gap-2 text-sm text-navy-soft"
-            >
-              <span
-                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky"
-                aria-hidden
-              />
+            <li key={item}>
+              <span aria-hidden />
               {item}
             </li>
           ))}
@@ -150,31 +140,21 @@ function CoachCard({ coach }: { coach: CoachData }) {
           aria-hidden={!expanded}
         >
           <div className="expand-panel-inner">
-            <ul className="mt-3 space-y-2">
+            <ul className="coach-list coach-list-more">
               {coach.moreCareer.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2 text-sm text-navy-soft"
-                >
-                  <span
-                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky/60"
-                    aria-hidden
-                  />
+                <li key={item}>
+                  <span aria-hidden />
                   {item}
                 </li>
               ))}
             </ul>
 
-            <div className="mt-6 border-t border-line-soft pt-5">
-              <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-                {coach.secondaryTitle}
+            <div className="coach-secondary">
+              <p className="case-kicker">{coach.secondaryTitle}</p>
+              <p>
+                <span className="coach-chip">{coach.secondaryNote}</span>
               </p>
-              <p className="mt-2">
-                <span className="inline-flex rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-xs font-medium text-navy">
-                  {coach.secondaryNote}
-                </span>
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-navy-soft">
+              <p className="coach-secondary-items">
                 {coach.secondaryItems.join(" · ")}
               </p>
             </div>
@@ -183,7 +163,7 @@ function CoachCard({ coach }: { coach: CoachData }) {
 
         <button
           type="button"
-          className="expand-toggle mt-5"
+          className="expand-toggle"
           aria-expanded={expanded}
           aria-controls={`coach-more-${coach.id}`}
           onClick={() => setExpanded((v) => !v)}
@@ -198,19 +178,17 @@ function CoachCard({ coach }: { coach: CoachData }) {
 export default function Coach() {
   return (
     <section id="coach" className="section-pad bg-surface">
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="max-w-2xl">
+      <div className="content-shell">
+        <div className="section-intro prose-col">
           <p className="eyebrow">COACH</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
-            함께하는 코치
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
+          <h2>함께하는 코치</h2>
+          <p>
             소리와 연습 과정을 함께 살펴보고, 직접 시도할 수 있는 방법으로
             풀어갑니다.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-2 md:gap-8">
+        <div className="coach-grid">
           {coaches.map((coach) => (
             <CoachCard key={coach.id} coach={coach} />
           ))}

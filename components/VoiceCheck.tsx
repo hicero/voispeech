@@ -34,31 +34,31 @@ const areas = [
 export default function VoiceCheck() {
   return (
     <section id="voice-check" className="section-pad bg-surface">
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="section-heading">
-          <div>
+      <div className="content-shell">
+        <div className="voice-layout">
+          <div className="voice-intro">
             <p className="eyebrow">5 VOICE CHECK</p>
             <h2>발성의 5가지 영역</h2>
+            <p>
+              잘 되고 있는 부분과 조정이 필요한 부분을
+              <br className="hidden md:block" /> 함께 살펴, 연습의 우선순위를
+              정합니다.
+            </p>
           </div>
-          <p>
-            잘 되고 있는 부분과 조정이 필요한 부분을
-            <br className="hidden md:block" /> 함께 살펴, 연습의 우선순위를
-            정합니다.
-          </p>
-        </div>
 
-        <ol className="voice-rows">
-          {areas.map((a) => (
-            <li key={a.num}>
-              <span className="voice-number">{a.num}</span>
-              <div>
-                <h3>{a.name}</h3>
-                <p className="voice-en">{a.en}</p>
-                <p>{a.desc}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+          <ol className="voice-rows">
+            {areas.map((a) => (
+              <li key={a.num}>
+                <span className="voice-number">{a.num}</span>
+                <div className="voice-copy">
+                  <h3>{a.name}</h3>
+                  <p className="voice-en">{a.en}</p>
+                  <p>{a.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
 
         <p className="section-note">
           5 VOICE CHECK는 의료적 진단을 위한 검사가 아니라, 음성학과 보컬

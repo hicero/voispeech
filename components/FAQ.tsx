@@ -30,13 +30,13 @@ export default function FAQ() {
 
   return (
     <section id="faq" className="section-pad bg-page">
-      <div className="mx-auto max-w-3xl px-5 md:px-8">
-        <p className="eyebrow">FAQ</p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
-          자주 묻는 질문
-        </h2>
+      <div className="content-shell faq-layout">
+        <div className="faq-intro">
+          <p className="eyebrow">FAQ</p>
+          <h2>자주 묻는 질문</h2>
+        </div>
 
-        <div className="mt-10 divide-y divide-line border-y border-line">
+        <div className="faq-list divide-y divide-line border-y border-line">
           {faqs.map((item, i) => {
             const isOpen = open === i;
             return (
@@ -44,16 +44,14 @@ export default function FAQ() {
                 <h3>
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between gap-4 py-5 text-left text-sm font-semibold text-navy transition hover:text-navy-soft md:text-base"
+                    className="faq-q"
                     aria-expanded={isOpen}
                     aria-controls={`faq-answer-${i}`}
                     onClick={() => setOpen(isOpen ? null : i)}
                   >
                     {item.q}
                     <span
-                      className={`shrink-0 text-sky transition duration-200 ${
-                        isOpen ? "rotate-45" : ""
-                      }`}
+                      className={`faq-icon ${isOpen ? "is-open" : ""}`}
                       aria-hidden
                     >
                       +
@@ -68,9 +66,7 @@ export default function FAQ() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-5 text-sm leading-relaxed text-muted">
-                      {item.a}
-                    </p>
+                    <p className="faq-a">{item.a}</p>
                   </div>
                 </div>
               </div>

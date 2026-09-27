@@ -27,76 +27,60 @@ const cases = [
 export default function BeforeAfter() {
   return (
     <section id="results" className="section-pad bg-surface">
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="max-w-2xl">
+      <div className="content-shell">
+        <div className="section-intro prose-col">
           <p className="eyebrow">BEFORE &amp; AFTER</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
+          <h2>
             같은 구간, 달라진 발성 조건
             <span className="text-sky" aria-hidden>
               .
             </span>
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-            수업에서 확인한 변화를 짧게 보여줍니다. 아래는 레이아웃용 예시이며,
-            수치·치료 효과를 주장하지 않습니다.
+          <p>
+            수업에서 확인한 변화를 짧게 보여줍니다. 수치·치료 효과를 주장하지
+            않습니다.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
+        <div className="case-notes">
           {cases.map((item) => (
-            <article key={item.label} className="card flex flex-col overflow-hidden">
-              <div className="ba-split" aria-hidden="true">
-                <div className="ba-panel ba-panel-before">
-                  <span>BEFORE</span>
-                </div>
-                <div className="ba-panel ba-panel-after">
-                  <span>AFTER</span>
-                </div>
-              </div>
+            <article key={item.label} className="case-note">
+              <header className="case-note-head">
+                <span className="case-note-label">{item.label}</span>
+                <h3>{item.title}</h3>
+              </header>
 
-              <div className="flex flex-1 flex-col px-5 py-5 md:px-6">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[0.6875rem] font-medium tracking-[0.14em] text-sky">
-                    {item.label}
-                  </span>
-                  <span className="text-[0.6875rem] tracking-[0.08em] text-faint">
-                    LAYOUT SAMPLE
-                  </span>
+              <div className="case-note-body">
+                <div className="case-block case-block-before">
+                  <div className="case-block-top">
+                    <p className="case-kicker">BEFORE</p>
+                    <span className="case-audio-slot" aria-hidden="true">
+                      ▶ BEFORE
+                    </span>
+                  </div>
+                  <p>{item.before}</p>
                 </div>
-                <h3 className="mt-3 text-lg font-bold text-navy">{item.title}</h3>
 
-                <div className="mt-4 flex flex-1 flex-col gap-3">
-                  <div className="rounded-lg border border-line-soft bg-page px-3.5 py-3">
-                    <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-                      BEFORE
-                    </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-navy-soft">
-                      {item.before}
-                    </p>
+                <div className="case-block case-block-changed">
+                  <p className="case-kicker">WHAT WE CHANGED</p>
+                  <p>{item.changed}</p>
+                </div>
+
+                <div className="case-block case-block-after">
+                  <div className="case-block-top">
+                    <p className="case-kicker">AFTER</p>
+                    <span className="case-audio-slot" aria-hidden="true">
+                      ▶ AFTER
+                    </span>
                   </div>
-                  <div className="rounded-lg border border-line bg-surface px-3.5 py-3">
-                    <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-sky">
-                      WHAT WE CHANGED
-                    </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-navy-soft">
-                      {item.changed}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-sky/40 bg-sky-muted/60 px-3.5 py-3">
-                    <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-navy">
-                      AFTER
-                    </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-navy-soft">
-                      {item.after}
-                    </p>
-                  </div>
+                  <p>{item.after}</p>
                 </div>
               </div>
             </article>
           ))}
         </div>
 
-        <p className="section-note mt-6">
+        <p className="section-note">
           영상·음원으로 교체 가능 · 실제 사례 미디어를 주시면 이 자리에 바로
           올립니다.
         </p>

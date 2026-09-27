@@ -28,32 +28,30 @@ const steps = [
 export default function Method() {
   return (
     <section id="method" className="section-pad bg-page">
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="max-w-2xl">
+      <div className="content-shell">
+        <div className="section-intro prose-col">
           <p className="eyebrow">METHOD</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
+          <h2>
             살펴보고, 바꿔보고, 노래하기
             <span className="text-sky" aria-hidden>
               .
             </span>
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
+          <p>
             소리만 듣고 원인을 단정하지 않습니다. 직접 조건을 바꿔보고, 그때
             나타나는 변화를 다음 연습의 단서로 삼습니다.
           </p>
         </div>
 
-        <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="method-rail">
           {steps.map((step) => (
-            <li key={step.num} className="card flex flex-col p-6">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-sm font-medium text-sky">{step.num}</span>
-                <span className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted">
-                  {step.en}
-                </span>
+            <li key={step.num}>
+              <div className="method-step-top">
+                <span className="method-num">{step.num}</span>
+                <span className="method-en">{step.en}</span>
               </div>
-              <h3 className="mt-5 text-base font-bold text-navy">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{step.text}</p>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
             </li>
           ))}
         </ol>

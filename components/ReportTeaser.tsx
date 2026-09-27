@@ -16,8 +16,8 @@ const toneClass: Record<(typeof checks)[number]["tone"], string> = {
 export default function ReportTeaser() {
   return (
     <section id="report" className="section-pad bg-page">
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
+      <div className="content-shell">
+        <div className="report-layout grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-5 lg:sticky lg:top-28">
             <p className="eyebrow">COACHING REPORT</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
