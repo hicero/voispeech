@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 const affiliations = [
   {
     title: "대한발성학회",
@@ -11,35 +15,53 @@ const affiliations = [
   },
 ] as const;
 
-const papers = [
+type Paper = {
+  title: string;
+  authors: string;
+  venue: string;
+  doi: string;
+  why: string;
+  figure: null | { src: string; alt: string; caption: string };
+};
+
+const featuredPapers: Paper[] = [
   {
-    title: "Differences Among Mixed, Chest, and Falsetto Registers: A Multiparametric Study",
+    title:
+      "Differences Among Mixed, Chest, and Falsetto Registers: A Multiparametric Study",
     authors: "Lee Y, Oya M, Kaburagi T, Hidaka S, Nakagawa T",
     venue: "Journal of Voice, 2023 (online 2021)",
     doi: "https://doi.org/10.1016/j.jvoice.2020.12.028",
-    why: "믹스·체스트·팔세토를 고속촬영·EGG·공기역학으로 비교해, 믹스가 별도 발성 기전을 갖는다는 점을 보여 줍니다.",
+    why: "저음·고음 연결(믹스)과 체스트·팔세토를 여러 측정으로 비교한 연구입니다. 각 조건에서 소리가 어떻게 달라지는지 보여 줍니다.",
     figure: {
       src: "/research/figures/lee-2021-fig5-hsdi.png",
       alt: "Lee et al. Figure 5 — chest, falsetto, mix 성대 고속촬영(HSDI) 연속 이미지",
-      caption: "Figure 5. HSDI glottal sequences (chest · falsetto · mix), Journal of Voice",
+      caption:
+        "Figure 5. HSDI glottal sequences (chest · falsetto · mix), Journal of Voice",
     },
   },
   {
-    title:
-      "Laryngeal Muscle Activity and Vocal Fold Adduction During Chest, Chestmix, Headmix, and Head Registers in Females",
-    authors: "Kochis-Jennings KA, Finnegan EM, Hoffman HT, Jaiswal S",
-    venue: "Journal of Voice, 2012",
-    doi: "https://doi.org/10.1016/j.jvoice.2010.11.002",
-    why: "chestmix에서 성대근(TA) 활성과 성대 접촉이 head보다 커진다는 근전도·내시경 관찰입니다.",
-    figure: null as null | { src: string; alt: string; caption: string },
+    title: "Professional Opera Tenors' Vocal Tract Configurations in Registers",
+    authors: "Matthias Echternach, Johan Sundberg, Michael Markl, Bernhard Richter",
+    venue: "Folia Phoniatrica et Logopaedica, 2010, 62:278–287",
+    doi: "https://doi.org/10.1159/000312668",
+    why: "테너가 다른 방식으로 음역을 넘길 때, MRI에서 입·인두 형태가 어떻게 달라지는지 보여 줍니다.",
+    figure: {
+      src: "/research/figures/echternach-2010-fig-mri.png",
+      alt: "Echternach et al. Figure 3 — tenor MRI vocal-tract profiles: modal→falsetto vs voix mixte (D4/G4)",
+      caption:
+        "Figure 3. MRI vocal-tract profiles (modal → falsetto vs voix mixte), Folia Phoniatr Logop / Echternach et al. 2010",
+    },
   },
+];
+
+const morePapers: Paper[] = [
   {
     title:
       "Cricothyroid Muscle and Thyroarytenoid Muscle Dominance in Vocal Register Control: Preliminary Results",
     authors: "Kochis-Jennings KA, Finnegan EM, Hoffman HT, Jaiswal S, Hull D",
     venue: "Journal of Voice, 2014",
     doi: "https://doi.org/10.1016/j.jvoice.2014.01.017",
-    why: "CT·TA 근전도로 chest/chestmix/headmix/head를 비교했을 때, 근육 ‘우세’가 레지스터보다 피치에 더 크게 영향을 받는다는 예비 결과입니다.",
+    why: "음높이와 소리 조건이 바뀔 때 후두 근육의 활동 비율이 어떻게 달라지는지 살펴본 예비 연구입니다.",
     figure: {
       src: "/research/figures/kochis-2014-fig1-ct-ta.png",
       alt: "Kochis-Jennings et al. Figure 1 — CT:TA ratio vs fundamental frequency across subjects and registers",
@@ -53,7 +75,7 @@ const papers = [
     authors: "Ingo R. Titze",
     venue: "Journal of the Acoustical Society of America, 2014, 135(4), 2091–2101",
     doi: "https://doi.org/10.1121/1.4868355",
-    why: "mixed registration을 성문의 거의 직사각형(평행) 형태와 상·하부 강성 균형으로 설명하는 이론·시뮬레이션 논문입니다.",
+    why: "저음·고음이 바뀌거나 연결될 때 나타날 수 있는 소리 조건의 메커니즘을 이론과 시뮬레이션으로 설명합니다.",
     figure: {
       src: "/research/figures/titze-2014-fig-mixed.png",
       alt: "Titze Figure 1 — convergent · rectangular · divergent 성문 형태 모식도",
@@ -62,47 +84,82 @@ const papers = [
     },
   },
   {
-    title: "Professional Opera Tenors' Vocal Tract Configurations in Registers",
-    authors: "Matthias Echternach, Johan Sundberg, Michael Markl, Bernhard Richter",
-    venue: "Folia Phoniatrica et Logopaedica, 2010, 62:278–287",
-    doi: "https://doi.org/10.1159/000312668",
-    why: "테너가 falsetto로 넘길 때와 voix mixte로 넘길 때 성도(인두·입·턱) 형태가 MRI에서 어떻게 다른지 보여 줍니다.",
-    figure: {
-      src: "/research/figures/echternach-2010-fig-mri.png",
-      alt: "Echternach et al. Figure 3 — tenor MRI vocal-tract profiles: modal→falsetto vs voix mixte (D4/G4)",
-      caption:
-        "Figure 3. MRI vocal-tract profiles (modal → falsetto vs voix mixte), Folia Phoniatr Logop / Echternach et al. 2010",
-    },
+    title:
+      "Laryngeal Muscle Activity and Vocal Fold Adduction During Chest, Chestmix, Headmix, and Head Registers in Females",
+    authors: "Kochis-Jennings KA, Finnegan EM, Hoffman HT, Jaiswal S",
+    venue: "Journal of Voice, 2012",
+    doi: "https://doi.org/10.1016/j.jvoice.2010.11.002",
+    why: "여러 소리 조건에서 후두 근육 활동과 접촉 양상이 어떻게 달라지는지 관찰한 연구입니다.",
+    figure: null,
   },
-] as const;
+];
 
-const mediaSlots = [
-  {
-    type: "WORKSHOP" as const,
-    title: "강남세브란스 · Yonsei Laser Voice Workshop",
-    why: "병원·연수 기반 워크숍으로 임상과 코칭의 접점을 익힙니다.",
-    slot: "워크숍 사진",
-  },
+const workshopHighlight = {
+  title: "강남세브란스 · Yonsei Laser Voice Workshop",
+  why: "병원·연수 기반 워크숍으로 임상과 코칭의 접점을 익힙니다.",
+};
+
+const moreMedia = [
   {
     type: "WORKSHOP" as const,
     title: "SLS Instructor Level 1",
     why: "체계적 보컬 트레이닝 자격으로 코칭 기준을 다집니다.",
-    slot: "자격 · 연수 사진",
   },
   {
     type: "VIDEO" as const,
     title: "강의 · 연수 영상",
     why: "공개해도 되는 강의·워크숍 영상이 있으면 바로 연결합니다.",
-    slot: "영상 썸네일",
   },
 ];
 
-const mediaTypeStyle: Record<(typeof mediaSlots)[number]["type"], string> = {
-  WORKSHOP: "border-sky/50 bg-surface text-navy",
-  VIDEO: "border-line bg-sky-muted/40 text-muted",
-};
+function PaperCard({ paper }: { paper: Paper }) {
+  return (
+    <li className="card flex flex-col overflow-hidden">
+      {paper.figure ? (
+        <figure className="border-b border-line bg-white">
+          <img
+            src={paper.figure.src}
+            alt={paper.figure.alt}
+            width={1200}
+            height={700}
+            className="h-auto w-full object-contain object-center"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption className="px-4 py-2 text-xs leading-relaxed text-muted">
+            {paper.figure.caption}
+          </figcaption>
+        </figure>
+      ) : null}
+      <div className="flex flex-1 flex-col p-5 md:p-6">
+        <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
+          PAPER
+        </span>
+        <h4 className="mt-4 text-base font-bold leading-snug text-navy">
+          {paper.title}
+        </h4>
+        <p className="mt-2 text-xs leading-relaxed text-muted">{paper.authors}</p>
+        <p className="mt-1 text-xs font-medium text-sky">{paper.venue}</p>
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
+          {paper.why}
+        </p>
+        <a
+          className="mt-4 inline-flex text-sm font-semibold text-navy underline-offset-4 hover:underline"
+          href={paper.doi}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          DOI에서 보기 ↗
+        </a>
+      </div>
+    </li>
+  );
+}
 
 export default function Research() {
+  const [showMore, setShowMore] = useState(false);
+  const [showAffilDetail, setShowAffilDetail] = useState(false);
+
   return (
     <section id="research" className="section-pad bg-page">
       <div className="mx-auto max-w-6xl px-5 md:px-8">
@@ -115,8 +172,8 @@ export default function Research() {
             </span>
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-            출판·연수·논문·영상을 먼저 보고, 소속·활동 단체는 아래에 모아
-            둡니다. 확인된 자료만 올립니다.
+            출판·논문·소속 활동을 먼저 보고, 추가로 확인된 자료는 아래에서 이어
+            볼 수 있습니다. 확인된 자료만 올립니다.
           </p>
         </div>
 
@@ -177,96 +234,69 @@ export default function Research() {
             WORKS
           </p>
           <h3 className="mt-1.5 text-lg font-bold tracking-tight text-navy">
-            워크숍 · 논문 · 영상
+            논문 · 연수
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-            믹스(레지스터 연결) 관련 논문과 피겨를 올렸습니다. 워크숍 사진·영상은
-            공개 가능한 자료를 주시면 이어서 붙입니다.
+            저음·고음 연결과 소리 조건 변화에 관한 논문과 피겨를 올렸습니다.
           </p>
         </div>
 
         <ul className="mt-6 grid gap-4 lg:grid-cols-2">
-          {papers.map((paper) => (
-            <li key={paper.doi} className="card flex flex-col overflow-hidden">
-              {paper.figure ? (
-                <figure className="border-b border-line bg-white">
-                  <img
-                    src={paper.figure.src}
-                    alt={paper.figure.alt}
-                    width={1200}
-                    height={700}
-                    className="h-auto w-full object-contain object-center"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <figcaption className="px-4 py-2 text-xs leading-relaxed text-muted">
-                    {paper.figure.caption}
-                  </figcaption>
-                </figure>
-              ) : (
-                <div className="flex aspect-[16/10] items-center justify-center border-b border-dashed border-line bg-sky-muted/50 px-4">
-                  <p className="text-center text-sm text-muted">
-                    논문 피겨
-                    <span className="mt-1 block text-xs text-faint">
-                      캡처 준비 중
-                    </span>
-                  </p>
-                </div>
-              )}
-              <div className="flex flex-1 flex-col p-5 md:p-6">
-                <span className="inline-flex w-fit rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
-                  PAPER
-                </span>
-                <h4 className="mt-4 text-base font-bold leading-snug text-navy">
-                  {paper.title}
-                </h4>
-                <p className="mt-2 text-xs leading-relaxed text-muted">
-                  {paper.authors}
-                </p>
-                <p className="mt-1 text-xs font-medium text-sky">{paper.venue}</p>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
-                  {paper.why}
-                </p>
-                <a
-                  className="mt-4 inline-flex text-sm font-semibold text-navy underline-offset-4 hover:underline"
-                  href={paper.doi}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  DOI에서 보기 ↗
-                </a>
-              </div>
-            </li>
+          {featuredPapers.map((paper) => (
+            <PaperCard key={paper.doi} paper={paper} />
           ))}
         </ul>
 
-        <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {mediaSlots.map((item) => (
-            <li key={item.title} className="card flex flex-col overflow-hidden">
-              <div className="flex aspect-[16/10] items-center justify-center border-b border-dashed border-line bg-sky-muted/50 px-4">
-                <p className="text-center text-sm text-muted">
-                  {item.slot}
-                  <span className="mt-1 block text-xs text-faint">
-                    자료 준비 중
+        <article className="card mt-4 p-5 md:p-6">
+          <span className="inline-flex w-fit rounded-full border border-sky/50 bg-surface px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy">
+            WORKSHOP
+          </span>
+          <h4 className="mt-4 text-base font-bold leading-snug text-navy">
+            {workshopHighlight.title}
+          </h4>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            {workshopHighlight.why}
+          </p>
+        </article>
+
+        <div
+          id="research-more"
+          className={`expand-panel ${showMore ? "is-open" : ""}`}
+          aria-hidden={!showMore}
+        >
+          <div className="expand-panel-inner">
+            <ul className="mt-4 grid gap-4 lg:grid-cols-2">
+              {morePapers.map((paper) => (
+                <PaperCard key={paper.doi} paper={paper} />
+              ))}
+            </ul>
+            <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+              {moreMedia.map((item) => (
+                <li key={item.title} className="card flex flex-col p-5 md:p-6">
+                  <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
+                    {item.type}
                   </span>
-                </p>
-              </div>
-              <div className="flex flex-1 flex-col p-5 md:p-6">
-                <span
-                  className={`inline-flex w-fit rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] ${mediaTypeStyle[item.type]}`}
-                >
-                  {item.type}
-                </span>
-                <h4 className="mt-4 text-base font-bold leading-snug text-navy">
-                  {item.title}
-                </h4>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
-                  {item.why}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <h4 className="mt-4 text-base font-bold leading-snug text-navy">
+                    {item.title}
+                  </h4>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
+                    {item.why}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="expand-toggle mt-5"
+          aria-expanded={showMore}
+          aria-controls="research-more"
+          onClick={() => setShowMore((v) => !v)}
+        >
+          {showMore ? "연구·학술 활동 접기 −" : "연구·학술 활동 더 보기 +"}
+        </button>
 
         <div className="mt-12 border-t border-line-soft pt-8">
           <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-muted">
@@ -278,35 +308,54 @@ export default function Research() {
         </div>
 
         <article className="card mt-6 overflow-hidden">
-          <div className="grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
-            <div className="flex items-center justify-center rounded-md border border-line bg-white px-5 py-6 md:col-span-7 md:px-8 md:py-8">
+          <div className="grid gap-5 p-5 md:grid-cols-12 md:items-center md:gap-6 md:p-6">
+            <div className="flex items-center justify-center rounded-md border border-line bg-white px-4 py-4 md:col-span-5">
               <img
                 src="/research/voice-foundation.png"
                 alt="The Voice Foundation — Advancing Understanding of the Voice Through Interdisciplinary Research & Education"
                 width={840}
                 height={280}
-                className="h-auto w-full max-w-none object-contain"
+                className="h-auto w-full max-w-[280px] object-contain md:max-w-none"
                 loading="lazy"
                 decoding="async"
               />
             </div>
-            <div className="min-w-0 md:col-span-5">
+            <div className="min-w-0 md:col-span-7">
               <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
                 ASSOCIATION
               </span>
-              <h4 className="mt-4 text-xl font-bold leading-snug text-navy md:text-2xl">
+              <h4 className="mt-3 text-lg font-bold leading-snug text-navy md:text-xl">
                 The Voice Foundation 한국챕터
               </h4>
-              <p className="mt-3 text-sm leading-relaxed text-muted md:text-base">
+              <p className="mt-2 text-sm leading-relaxed text-muted">
                 음성·발성 분야의 국제 네트워크와 국내 활동을 잇는 조직입니다.
-                학제 간 연구와 교육을 통해 목소리에 대한 이해를 넓히는 일을
-                함께합니다.
               </p>
+              <div
+                id="affil-detail"
+                className={`expand-panel ${showAffilDetail ? "is-open" : ""}`}
+                aria-hidden={!showAffilDetail}
+              >
+                <div className="expand-panel-inner">
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    학제 간 연구와 교육을 통해 목소리에 대한 이해를 넓히는 일을
+                    함께합니다.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="expand-toggle mt-3"
+                aria-expanded={showAffilDetail}
+                aria-controls="affil-detail"
+                onClick={() => setShowAffilDetail((v) => !v)}
+              >
+                {showAffilDetail ? "설명 접기 −" : "자세히 보기 +"}
+              </button>
             </div>
           </div>
         </article>
 
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        <ul className="mt-4 grid gap-4 sm:grid-cols-2">
           {affiliations.map((item) => (
             <li key={item.title} className="card flex flex-col p-5 md:p-6">
               <span className="inline-flex w-fit rounded-full border border-line bg-page px-2.5 py-0.5 text-[0.6875rem] font-medium tracking-[0.1em] text-navy-soft">
@@ -326,7 +375,7 @@ export default function Research() {
         <p className="section-note mt-6">
           논문 피겨는 출처를 밝히고 DOI로 원문을 연결합니다. 상업적 재사용이
           제한될 수 있으니, 장기적으로는 저널·저자 허용 이미지를 쓰는 편이
-          안전합니다. 워크숍 사진·영상 링크는 자료를 주시면 바로 연결합니다.
+          안전합니다.
         </p>
       </div>
     </section>

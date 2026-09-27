@@ -1,4 +1,24 @@
-const coaches = [
+"use client";
+
+import { useState } from "react";
+
+type CoachData = {
+  id: string;
+  photo: string;
+  photoAlt: string;
+  nameEn: string;
+  nameKo: string;
+  role: string;
+  tagline: string;
+  affiliation: string;
+  headlines: string[];
+  moreCareer: string[];
+  secondaryTitle: string;
+  secondaryNote: string;
+  secondaryItems: string[];
+};
+
+const coaches: CoachData[] = [
   {
     id: "jae-woo",
     photo: "/coaches/jae-woo.jpg",
@@ -6,14 +26,18 @@ const coaches = [
     nameEn: "JAE WOO",
     nameKo: "재우",
     role: "VOCAL DIRECTOR",
-    tagline: "18년의 발성 연구, 한 사람의 목소리까지 정확하게 설계합니다.",
+    tagline: "18년의 발성 연구와 현장 코칭으로, 한 사람의 연습 방향을 함께 잡습니다.",
     affiliation: "The Voice Foundation 한국챕터 조직위원장 / 임시회장",
-    career: [
+    headlines: [
       "VoiSpeech 대표",
+      "18년차 보컬 코치",
+      "『발성학과 보컬』 공동 집필 · 군자출판사, 2026",
+      "The Voice Foundation Korea Chapter 조직위원장",
+      "전 대한발성학회(SKVA) 이사",
+    ],
+    moreCareer: [
       "Justin Vocal Studio & Find Your Voice 대표",
-      "18년 경력 성악 전공 · 전 대한발성학회 이사",
       "홍대 실용음악학원 발성 메인 강사",
-      "「발성학과 보컬」 저서 공동 집필",
       "SLS Instructor Level 1 자격 보유",
       "한국발성교정협회 정회원",
       "강남 세브란스 병원 워크샵 수료",
@@ -37,16 +61,21 @@ const coaches = [
     photoAlt: "Jae Ho 재호 코치 프로필",
     nameEn: "JAE HO",
     nameKo: "재호",
-    role: "음성검사 파트",
+    role: "VOCAL COACH",
     tagline:
-      "임상과 학회, 무대를 잇는 발성교정의 흐름, 음성검사의 기준을 설계합니다.",
-    affiliation: "김재호 발성교정소 대표 · 남스타보컬스튜디오 실장 · VoiSpeech 부대표",
-    career: [
+      "현장 코칭과 학회·연수 경험을 바탕으로, 연습 과정을 함께 정리합니다.",
+    affiliation:
+      "김재호 발성교정소 대표 · 남스타보컬스튜디오 실장 · VoiSpeech 부대표",
+    headlines: [
+      "VoiSpeech 부대표",
       "김재호 발성교정소 대표",
-      "남스타보컬스튜디오 실장 · VoiSpeech 부대표",
-      "전 대한발성학회(SKVA) 이사 · 한국발성교정협회 정회원",
+      "남스타보컬스튜디오 실장",
+      "전 대한발성학회(SKVA) 이사",
+      "『발성학과 보컬』 집필 참여 (2026)",
+    ],
+    moreCareer: [
+      "한국발성교정협회 정회원",
       "서경대 실용음악과 졸업 · NDH발성교정아카데미 2기",
-      "도서 「발성학과 보컬」 집필 참여 (2026)",
       "발성교정사 초·중·고급 과정 수료",
       "한양대 · 강남세브란스 · 분당제생 · 보아스이비인후과 실습",
       "스피치지도사 1급 · 음악심리상담사 1급",
@@ -62,7 +91,109 @@ const coaches = [
       "4개 병원 연계 발성교정 실습 수료",
     ],
   },
-] as const;
+];
+
+function CoachCard({ coach }: { coach: CoachData }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <article className="card overflow-hidden">
+      <div className="coach-photo bg-sky-muted">
+        <img
+          src={coach.photo}
+          alt={coach.photoAlt}
+          width={720}
+          height={900}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div className="border-b border-line-soft bg-sky-muted/50 px-5 py-5 md:px-6">
+        <p className="eyebrow">{coach.role}</p>
+        <h3 className="mt-2 text-2xl font-bold tracking-tight text-navy">
+          {coach.nameEn}
+          <span className="ml-2 text-lg font-semibold text-navy-soft">
+            {coach.nameKo}
+          </span>
+        </h3>
+        <p className="mt-3 text-sm leading-relaxed text-navy-soft">
+          {coach.tagline}
+        </p>
+        <p className="mt-3 inline-flex rounded-md border border-line bg-surface px-2.5 py-1 text-xs leading-snug text-muted">
+          {coach.affiliation}
+        </p>
+      </div>
+
+      <div className="px-5 py-5 md:px-6 md:py-6">
+        <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
+          주요 이력
+        </p>
+        <ul className="mt-3 space-y-2">
+          {coach.headlines.map((item) => (
+            <li
+              key={item}
+              className="flex items-start gap-2 text-sm text-navy-soft"
+            >
+              <span
+                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky"
+                aria-hidden
+              />
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        <div
+          id={`coach-more-${coach.id}`}
+          className={`expand-panel ${expanded ? "is-open" : ""}`}
+          aria-hidden={!expanded}
+        >
+          <div className="expand-panel-inner">
+            <ul className="mt-3 space-y-2">
+              {coach.moreCareer.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 text-sm text-navy-soft"
+                >
+                  <span
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky/60"
+                    aria-hidden
+                  />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-6 border-t border-line-soft pt-5">
+              <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
+                {coach.secondaryTitle}
+              </p>
+              <p className="mt-2">
+                <span className="inline-flex rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-xs font-medium text-navy">
+                  {coach.secondaryNote}
+                </span>
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-navy-soft">
+                {coach.secondaryItems.join(" · ")}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="expand-toggle mt-5"
+          aria-expanded={expanded}
+          aria-controls={`coach-more-${coach.id}`}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? "이력 접기 −" : "전체 이력 보기 +"}
+        </button>
+      </div>
+    </article>
+  );
+}
 
 export default function Coach() {
   return (
@@ -74,75 +205,14 @@ export default function Coach() {
             함께하는 코치
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-            소리와 연습 과정을 함께 살펴보고,
-            직접 시도할 수 있는 방법으로 풀어갑니다.
+            소리와 연습 과정을 함께 살펴보고, 직접 시도할 수 있는 방법으로
+            풀어갑니다.
           </p>
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 md:gap-8">
           {coaches.map((coach) => (
-            <article key={coach.id} className="card overflow-hidden">
-              <div className="coach-photo bg-sky-muted">
-                <img
-                  src={coach.photo}
-                  alt={coach.photoAlt}
-                  width={720}
-                  height={900}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-
-              <div className="border-b border-line-soft bg-sky-muted/50 px-5 py-5 md:px-6">
-                <p className="eyebrow">{coach.role}</p>
-                <h3 className="mt-2 text-2xl font-bold tracking-tight text-navy">
-                  {coach.nameEn}
-                  <span className="ml-2 text-lg font-semibold text-navy-soft">
-                    {coach.nameKo}
-                  </span>
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-navy-soft">
-                  {coach.tagline}
-                </p>
-                <p className="mt-3 inline-flex rounded-md border border-line bg-surface px-2.5 py-1 text-xs leading-snug text-muted">
-                  {coach.affiliation}
-                </p>
-              </div>
-
-              <div className="px-5 py-5 md:px-6 md:py-6">
-                <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-                  주요 이력
-                </p>
-                <ul className="mt-3 space-y-2">
-                  {coach.career.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-2 text-sm text-navy-soft"
-                    >
-                      <span
-                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-sky"
-                        aria-hidden
-                      />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-6 border-t border-line-soft pt-5">
-                  <p className="text-[0.6875rem] font-medium tracking-[0.12em] text-muted">
-                    {coach.secondaryTitle}
-                  </p>
-                  <p className="mt-2">
-                    <span className="inline-flex rounded-full border border-sky bg-sky-muted px-2.5 py-0.5 text-xs font-medium text-navy">
-                      {coach.secondaryNote}
-                    </span>
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-navy-soft">
-                    {coach.secondaryItems.join(" · ")}
-                  </p>
-                </div>
-              </div>
-            </article>
+            <CoachCard key={coach.id} coach={coach} />
           ))}
         </div>
       </div>
