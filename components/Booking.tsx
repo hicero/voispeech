@@ -157,15 +157,19 @@ export default function Booking() {
             {calLink ? (
               <>
                 <div className="booking-mobile-cta">
-                  {!mobileOpen ? (
-                    <button
-                      type="button"
-                      className="btn-primary booking-expand-btn"
-                      onClick={() => setMobileOpen(true)}
-                    >
-                      레슨 일정 확인하기 <span aria-hidden>↗</span>
-                    </button>
-                  ) : null}
+                  <button
+                    type="button"
+                    className={`${mobileOpen ? "btn-outline" : "btn-primary"} booking-expand-btn`}
+                    aria-expanded={mobileOpen}
+                    aria-controls="voispeech-cal"
+                    onClick={() => setMobileOpen((open) => !open)}
+                  >
+                    {mobileOpen ? (
+                      <>일정 접기 <span aria-hidden>∧</span></>
+                    ) : (
+                      <>레슨 일정 확인하기 <span aria-hidden>↗</span></>
+                    )}
+                  </button>
                   <a
                     className="btn-outline booking-external-btn"
                     href={`https://cal.com/${calLink}`}
