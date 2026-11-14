@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const siteUrl = "https://voispeech.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "보이스피치 | 발성 코칭 스튜디오",
   description:
     "보이스피치 — 5 VOICE CHECK 발성 관찰과 1:1 코칭, 수업 후 코칭 리포트. 기초 발성부터 성구 연결과 노래 적용까지.",
@@ -19,6 +22,22 @@ export const metadata: Metadata = {
       "목소리를 알아가는 시간. 5 Voice Check와 1:1 코칭, 코칭 리포트로 정리합니다.",
     locale: "ko_KR",
     type: "website",
+    url: siteUrl,
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "보이스피치 | 발성 코칭 스튜디오",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "보이스피치 | 발성 코칭 스튜디오",
+    description:
+      "목소리를 알아가는 시간. 5 Voice Check와 1:1 코칭, 코칭 리포트로 정리합니다.",
+    images: ["/og.png"],
   },
 };
 

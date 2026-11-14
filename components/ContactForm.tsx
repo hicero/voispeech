@@ -5,8 +5,12 @@ import { contactUrl } from "./siteConfig";
 export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [copying, setCopying] = useState(false);
 
   async function copy() {
+    if (copying) return;
+    setCopying(true);
+    setStatus("문의 내용을 복사하는 중…");
     try {
       await navigator.clipboard.writeText(message);
       setStatus(
@@ -16,6 +20,8 @@ export default function ContactForm() {
       setStatus(
         "자동 복사가 되지 않았습니다. 입력한 내용을 직접 선택해 복사해 주세요.",
       );
+    } finally {
+      setCopying(false);
     }
   }
 
@@ -54,7 +60,7 @@ export default function ContactForm() {
             <button
               type="button"
               className="btn-primary"
-              disabled={!message.trim()}
+              disabled={!message.trim() || copying}
               onClick={copy}
             >
               문의 내용 복사

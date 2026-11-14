@@ -29,7 +29,7 @@ export default function Header() {
       if (e.key === "Escape") setOpen(false);
     };
     const resize = () => {
-      if (window.innerWidth >= 768) setOpen(false);
+      if (window.innerWidth >= 1024) setOpen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
     window.addEventListener("resize", resize);
@@ -57,7 +57,7 @@ export default function Header() {
           <Logo compact />
         </a>
 
-        <nav className="site-nav hidden items-center gap-4 lg:flex" aria-label="주요 메뉴">
+        <nav className="site-nav items-center gap-4" aria-label="주요 메뉴">
           {navLinks.map((link) => (
             <a key={link.href} href={link.href} className="site-nav-link">
               {link.label}
@@ -70,53 +70,64 @@ export default function Header() {
 
         <button
           type="button"
-          className="site-menu-btn lg:hidden"
+          className="site-menu-btn"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
           onClick={() => setOpen((v) => !v)}
         >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            aria-hidden
-          >
-            {open ? (
-              <path d="M6 6l12 12M18 6L6 18" />
-            ) : (
+          <span className={`menu-icon${open ? " is-open" : ""}`} aria-hidden>
+            <svg
+              className="menu-icon-bars"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+            >
               <path d="M4 7h16M4 12h16M4 17h16" />
-            )}
-          </svg>
+            </svg>
+            <svg
+              className="menu-icon-close"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </span>
         </button>
       </div>
 
       <div
         id="mobile-nav"
-        className={`site-mobile-nav lg:hidden ${open ? "is-open" : ""}`}
+        className={`site-mobile-nav${open ? " is-open" : ""}`}
       >
-        <nav className="flex flex-col px-5 py-3" aria-label="모바일 메뉴">
-          {navLinks.map((link) => (
+        <div className="site-mobile-nav-inner">
+          <nav className="flex flex-col px-5 py-3" aria-label="모바일 메뉴">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="site-mobile-link"
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
             <a
-              key={link.href}
-              href={link.href}
-              className="site-mobile-link"
+              href="#booking"
+              className="btn-outline mt-2 mb-3 w-full"
               onClick={() => setOpen(false)}
             >
-              {link.label}
+              원데이 예약
             </a>
-          ))}
-          <a
-            href="#booking"
-            className="btn-outline mt-2 mb-3 w-full"
-            onClick={() => setOpen(false)}
-          >
-            원데이 예약
-          </a>
-        </nav>
+          </nav>
+        </div>
       </div>
     </header>
   );

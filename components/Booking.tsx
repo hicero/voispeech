@@ -40,10 +40,33 @@ export default function Booking() {
   const host = useRef<HTMLDivElement>(null);
   const calLink = getCalLink(bookingUrl);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [calStatus, setCalStatus] = useState<"loading" | "ready" | "error">(
+    calLink ? "loading" : "ready",
+  );
 
   useEffect(() => {
     const element = host.current;
     if (!calLink || !element) return;
+
+    let cancelled = false;
+    let readyTimer: number | undefined;
+    const markReady = () => {
+      if (!cancelled) setCalStatus("ready");
+    };
+    const markError = () => {
+      if (cancelled) return;
+      setCalStatus("error");
+      element.textContent =
+        "달력을 불러오지 못했습니다. 아래 버튼으로 예약 페이지를 열어 주세요.";
+    };
+
+    const watchIframe = () => {
+      const iframe = element.querySelector("iframe");
+      if (!iframe) return false;
+      iframe.addEventListener("load", markReady, { once: true });
+      readyTimer = window.setTimeout(markReady, 4000);
+      return true;
+    };
 
     if (!window.Cal) {
       const queue: unknown[][] = [];
@@ -57,8 +80,7 @@ export default function Booking() {
       script.src = "https://app.cal.com/embed/embed.js";
       script.async = true;
       script.onerror = () => {
-        element.textContent =
-          "달력을 불러오지 못했습니다. 아래 버튼으로 예약 페이지를 열어 주세요.";
+        markError();
         script.remove();
         delete window.Cal;
       };
@@ -72,7 +94,17 @@ export default function Booking() {
       config: { layout: "month_view", theme: "light" },
     });
 
+    const observer = new MutationObserver(() => {
+      if (watchIframe()) observer.disconnect();
+    });
+    if (!watchIframe()) {
+      observer.observe(element, { childList: true, subtree: true });
+    }
+
     return () => {
+      cancelled = true;
+      if (readyTimer) window.clearTimeout(readyTimer);
+      observer.disconnect();
       element.replaceChildren();
     };
   }, [calLink]);
@@ -183,12 +215,30 @@ export default function Booking() {
                 <div
                   className={`booking-cal-wrap${mobileOpen ? " is-open" : ""}`}
                 >
-                  <div
-                    id="voispeech-cal"
-                    ref={host}
-                    className="cal-host"
-                    aria-label="원데이 레슨 날짜와 시간 선택"
-                  />
+                  <div className="booking-cal-embed">
+                    {calStatus === "loading" ? (
+                      <div
+                        className="cal-skeleton"
+                        aria-busy="true"
+                        aria-live="polite"
+                      >
+                        <p>레슨 일정을 불러오는 중…</p>
+                        <span className="cal-skeleton-bar" />
+                        <div className="cal-skeleton-grid" aria-hidden>
+                          {Array.from({ length: 28 }, (_, i) => (
+                            <span key={i} />
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                    <div
+                      id="voispeech-cal"
+                      ref={host}
+                      className={`cal-host${calStatus === "ready" ? " is-ready" : ""}`}
+                      aria-label="원데이 레슨 날짜와 시간 선택"
+                      aria-busy={calStatus === "loading"}
+                    />
+                  </div>
                   <p className="booking-help">
                     달력이 표시되지 않으면{" "}
                     <a
