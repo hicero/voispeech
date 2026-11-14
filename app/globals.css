@@ -1848,20 +1848,10 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   -webkit-box-decoration-break: clone;
 }
 
-.voice-number,
-.report-check-num {
+.voice-number {
   color: var(--color-accent);
 }
 
-.report-tone-priority {
-  border-color: color-mix(in srgb, var(--color-accent-line) 55%, var(--color-line));
-  background: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
-  color: var(--color-navy);
-}
-
-.report-tone-strong {
-  border-color: color-mix(in srgb, var(--color-accent-line) 70%, var(--color-sky));
-}
 
 #method {
   background: color-mix(in srgb, var(--color-page) 72%, var(--color-warm));
@@ -1927,34 +1917,10 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   color: var(--color-accent);
 }
 
-/* Report preview slide + check tracks */
+/* Report preview slide */
 .report-preview {
   position: relative;
   z-index: 1;
-}
-
-.report-check-row {
-  position: relative;
-  overflow: hidden;
-}
-
-.report-check-track {
-  position: absolute;
-  left: 0.75rem;
-  right: 0.75rem;
-  bottom: 0;
-  height: 2px;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.report-check-fill {
-  display: block;
-  height: 100%;
-  width: 100%;
-  background: var(--color-accent-line);
-  transform: scaleX(1);
-  transform-origin: left center;
 }
 
 /* Sample reviews marquee */
@@ -2130,30 +2096,6 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
 }
 
-.js-motion .report-check-fill {
-  transform: scaleX(0);
-}
-
-.js-motion .report-check-list.is-inview .report-check-row:nth-child(1) .report-check-fill {
-  transform: scaleX(1);
-  transition: transform 0.7s ease-out 0.12s;
-}
-.js-motion .report-check-list.is-inview .report-check-row:nth-child(2) .report-check-fill {
-  transform: scaleX(1);
-  transition: transform 0.7s ease-out 0.24s;
-}
-.js-motion .report-check-list.is-inview .report-check-row:nth-child(3) .report-check-fill {
-  transform: scaleX(1);
-  transition: transform 0.7s ease-out 0.36s;
-}
-.js-motion .report-check-list.is-inview .report-check-row:nth-child(4) .report-check-fill {
-  transform: scaleX(1);
-  transition: transform 0.7s ease-out 0.48s;
-}
-.js-motion .report-check-list.is-inview .report-check-row:nth-child(5) .report-check-fill {
-  transform: scaleX(1);
-  transition: transform 0.7s ease-out 0.6s;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .js-motion [data-reveal],
@@ -2181,9 +2123,7 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   .js-motion .voice-rows li::after,
   .js-motion .voice-rows:not(.is-inview) li::after,
   .js-motion .method-rail::before,
-  .js-motion .method-rail.is-inview::before,
-  .js-motion .report-check-fill,
-  .js-motion .report-check-list.is-inview .report-check-fill {
+  .js-motion .method-rail.is-inview::before {
     transform: none;
     transition: none;
   }
@@ -2226,5 +2166,244 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 @media (prefers-reduced-motion: reduce) and (min-width: 768px) {
   .review-set {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ——— Report document card tidy ——— */
+.report-doc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--color-line-soft);
+  background: var(--color-surface);
+}
+
+.report-doc-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.7rem;
+  min-width: 0;
+}
+
+.report-doc-name {
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--color-navy);
+}
+
+.report-doc-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  color: var(--color-faint);
+}
+
+.report-doc-page {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.report-doc-body {
+  padding: 1.25rem 1.25rem 1.4rem;
+  background: color-mix(in srgb, var(--color-page) 70%, var(--color-sky-muted));
+}
+
+.report-doc-kicker {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 550;
+  letter-spacing: 0.12em;
+  color: var(--color-muted);
+}
+
+.report-doc-title {
+  margin: 0.4rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 730;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+  color: var(--color-navy);
+}
+
+.report-doc-lead {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+.report-doc-facts {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.report-doc-fact {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  padding: 0.8rem 0.9rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+.report-doc-fact-label {
+  margin: 0;
+  font-size: 0.6875rem;
+  color: var(--color-faint);
+}
+
+.report-doc-fact-value {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  line-height: 1.5;
+  color: var(--color-navy);
+}
+
+.report-doc-checks {
+  margin-top: 1.5rem;
+}
+
+.report-check-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.report-check-row {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.7rem;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-soft);
+  border-radius: var(--radius-card);
+}
+
+.report-check-num {
+  font-size: 0.75rem;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--color-faint);
+}
+
+.report-check-name {
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-check-status {
+  justify-self: end;
+  min-width: 4.6rem;
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.32rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.report-check-status.is-adjust {
+  background: color-mix(in srgb, var(--color-page) 80%, var(--color-surface));
+  color: var(--color-navy-soft);
+}
+
+.report-check-status.is-strong {
+  color: var(--color-navy-soft);
+}
+
+.report-check-row.is-priority {
+  border-color: color-mix(in srgb, var(--color-accent-line) 45%, var(--color-line));
+}
+
+.report-check-row.is-priority .report-check-num {
+  color: var(--color-accent);
+}
+
+.report-check-status.is-priority {
+  border-color: color-mix(in srgb, var(--color-accent-line) 55%, var(--color-line));
+  background: color-mix(in srgb, var(--color-accent-soft) 60%, var(--color-surface));
+  color: var(--color-navy);
+}
+
+.report-doc-next {
+  margin-top: 1.15rem;
+  padding: 0.85rem 0.95rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-card);
+}
+
+.report-doc-next-text {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--color-navy-soft);
+}
+
+@media (min-width: 640px) {
+  .report-doc-head,
+  .report-doc-body {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .report-doc-body {
+    padding-top: 1.5rem;
+    padding-bottom: 1.6rem;
+  }
+
+  .report-doc-title {
+    font-size: 1.6rem;
+  }
+
+  .report-doc-facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .report-doc-fact {
+    min-height: 5.5rem;
+  }
+}
+
+.js-motion .report-check-list:not(.is-inview) .report-check-row.is-priority .report-check-status {
+  background: var(--color-surface);
+  border-color: var(--color-line);
+}
+
+.js-motion .report-check-list.is-inview .report-check-row.is-priority .report-check-status {
+  transition: background-color 0.45s ease-out 0.15s, border-color 0.45s ease-out 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-motion .report-check-list:not(.is-inview) .report-check-row.is-priority .report-check-status,
+  .js-motion .report-check-list.is-inview .report-check-row.is-priority .report-check-status {
+    background: color-mix(in srgb, var(--color-accent-soft) 60%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-accent-line) 55%, var(--color-line));
+    transition: none;
   }
 }
