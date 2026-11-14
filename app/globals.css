@@ -3224,14 +3224,49 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 }
 
 .academy .academy-brand {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.625rem;
   flex-shrink: 0;
   z-index: 1;
   font-size: 1.05rem;
   line-height: 1.15;
 }
 
-.academy .academy-brand span {
+.academy .academy-brand-mark {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.academy .academy-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  line-height: 1.15;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+.academy .academy-brand-sub,
+.academy .academy-brand span.academy-brand-sub {
   font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  color: var(--color-faint);
+  font-weight: 550;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .academy .academy-brand-mark {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
 }
 
 .academy .academy-top-nav {
