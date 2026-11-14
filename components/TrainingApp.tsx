@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { getMemberClient } from '@/lib/member-client';
 import {
@@ -219,6 +219,93 @@ function pickHandoffMembership(): Membership | null {
   const snapshot = loadMembershipSnapshot();
   if (snapshot && (isSubscriptionActive(snapshot) || snapshot.status === 'active')) return snapshot;
   return null;
+}
+
+type TrainingAuthContextValue = {
+  state: AuthState;
+  busy: boolean;
+  signOut: () => void;
+};
+
+const TrainingAuthContext = createContext<TrainingAuthContextValue | null>(null);
+
+function accountStatusLabel(state: AuthState) {
+  if (!state.ready) return '회원 상태 확인 중…';
+  if (!state.configured) return '회원 연결 준비 중';
+  if (state.email) return state.active ? `${state.email} · 구독 중` : `${state.email} · 구독 전`;
+  return '로그인하지 않음';
+}
+
+export function TrainingAccountControl() {
+  const ctx = useContext(TrainingAuthContext);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  if (!ctx) return null;
+  const { state, busy, signOut } = ctx;
+  const statusLabel = accountStatusLabel(state);
+
+  if (!state.email) {
+    return (
+      <Link href="/account/" className="btn-outline academy-login-btn">
+        로그인
+      </Link>
+    );
+  }
+
+  const initial = (state.email[0] || '?').toUpperCase();
+
+  return (
+    <div className="academy-account" ref={rootRef}>
+      <button
+        type="button"
+        className="academy-account-btn"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls="academy-account-menu"
+        aria-label={statusLabel}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="academy-account-avatar" aria-hidden="true">{initial}</span>
+      </button>
+      {open ? (
+        <div className="academy-account-menu" id="academy-account-menu" role="menu">
+          <p className="academy-account-status">{statusLabel}</p>
+          <Link href="/account/" className="academy-account-item" role="menuitem" onClick={() => setOpen(false)}>
+            내 계정
+          </Link>
+          <button
+            type="button"
+            className="academy-account-item"
+            role="menuitem"
+            disabled={busy}
+            onClick={() => {
+              setOpen(false);
+              signOut();
+            }}
+          >
+            로그아웃
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export default function TrainingApp({ children }: { children: React.ReactNode }) {
@@ -523,34 +610,9 @@ export default function TrainingApp({ children }: { children: React.ReactNode })
     }
   }
 
-  const label = !state.ready
-    ? '회원 상태 확인 중…'
-    : !state.configured
-      ? '회원 연결 준비 중'
-      : state.email
-        ? state.active
-          ? `${state.email} · 구독 중`
-          : `${state.email} · 구독 전`
-        : '로그인하지 않음';
-
   return (
-    <>
-      <div className="member-topbar" role="region" aria-label="회원 상태">
-        <p className="member-topbar-status" aria-live="polite">
-          {label}
-        </p>
-        <div className="member-topbar-actions">
-          <Link href="/account/" className="member-topbar-link">
-            {state.email ? '내 계정' : '로그인 · 회원가입'}
-          </Link>
-          {state.email ? (
-            <button type="button" className="member-topbar-logout" disabled={busy} onClick={signOut}>
-              로그아웃
-            </button>
-          ) : null}
-        </div>
-      </div>
+    <TrainingAuthContext.Provider value={{ state, busy, signOut }}>
       {children}
-    </>
+    </TrainingAuthContext.Provider>
   );
 }

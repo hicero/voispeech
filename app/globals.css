@@ -3197,20 +3197,64 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 }
 
 
-/* ——— Training header home button ——— */
-.academy .academy-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
+/* ——— Training hall unified header (homepage height) ——— */
+.academy .member-topbar {
+  display: none;
 }
 
-.academy .academy-home-btn {
+.academy .academy-header {
+  position: sticky;
+  top: 0;
+  z-index: 32;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0 1.25rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+@media (min-width: 768px) {
+  .academy .academy-header {
+    min-height: 3.75rem;
+    padding: 0 1.5rem;
+  }
+}
+
+.academy .academy-brand {
   flex-shrink: 0;
+  z-index: 1;
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+
+.academy .academy-brand span {
+  font-size: 0.625rem;
+}
+
+.academy .academy-top-nav {
+  display: none;
+}
+
+.academy .academy-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  z-index: 1;
   margin-left: auto;
+}
+
+.academy .academy-home-btn,
+.academy .academy-login-btn {
+  flex-shrink: 0;
+  margin-left: 0;
   min-height: 44px;
   min-width: 44px;
-  padding: 0.35rem 0.9rem;
+  padding: 0.3rem 0.85rem;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -3219,13 +3263,145 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   box-shadow: none;
 }
 
-.academy .academy-home-btn:hover {
+.academy .academy-home-btn:hover,
+.academy .academy-login-btn:hover {
   transform: none;
 }
 
+.academy .academy-account {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.academy .academy-account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-navy);
+}
+
+.academy .academy-account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-navy);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.academy .academy-account-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 40;
+  min-width: 13.5rem;
+  padding: 0.45rem 0;
+  background: var(--color-surface);
+  border: 1px solid var(--studio-edge, var(--color-line));
+  border-radius: var(--radius-card, 10px);
+  box-shadow: var(--studio-shadow, var(--shadow-card));
+}
+
+.academy .academy-account-status {
+  margin: 0;
+  padding: 0.45rem 0.9rem 0.55rem;
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.academy .academy-account-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.35rem 0.9rem;
+  text-align: left;
+  color: var(--color-navy);
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.academy .academy-account-item:hover,
+.academy .academy-account-item:focus-visible {
+  background: color-mix(in srgb, var(--color-sky-muted) 70%, #fff);
+}
+
+@media (min-width: 901px) {
+  .academy .academy-header {
+    position: sticky;
+    top: 0;
+  }
+
+  .academy .academy-top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .academy .academy-top-nav button {
+    min-height: 44px;
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-btn, 6px);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-navy-soft);
+    background: transparent;
+  }
+
+  .academy .academy-top-nav button[aria-pressed="true"] {
+    background: color-mix(in srgb, var(--color-navy) 9%, transparent);
+    color: var(--color-navy);
+    font-weight: 650;
+  }
+
+  .academy .academy-sidebar > nav {
+    display: none;
+  }
+
+  .academy .academy-sidebar {
+    min-height: calc(100vh - 3.75rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .academy .member-topbar,
+  .academy .academy-top-nav {
+    display: none;
+  }
+
+  .academy .academy-header {
+    position: sticky;
+    top: 0;
+    z-index: 32;
+    padding: 0 1rem;
+  }
+}
+
 @media (max-width: 520px) {
-  .academy .academy-home-btn {
-    padding: 0.35rem 0.7rem;
+  .academy .academy-home-btn,
+  .academy .academy-login-btn {
+    padding: 0.3rem 0.65rem;
     font-size: 0.75rem;
   }
 }
