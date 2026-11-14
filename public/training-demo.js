@@ -292,7 +292,8 @@ function renderLibrary(){
     const artInner=thumb
       ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">▷</span></span>`
       : `<span>${escapeHtml(l.category)}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">▷</span>`;
-    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>학습 완료 ✓</span></div>`;
+    const accessKind=l.access==='free'?'free':'locked';
+    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}" data-kind="${accessKind}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>학습 완료 ✓</span></div>`;
     grid.append(article);
   });
   let empty=$('.library-empty');
@@ -328,9 +329,10 @@ function update(){
   const completion=$('#completion-count');if(completion)completion.textContent=`${done.size} / ${list.length||4}`;
   all('[data-access]').forEach(e=>{
     const lesson=lessonById(e.dataset.access);
-    if(!lesson){e.textContent='구독 전용';return;}
-    if(lesson.access==='free')e.textContent='무료 미리보기';
-    else e.textContent=exclusive?'시청 가능':'구독 전용';
+    if(!lesson){e.textContent='구독 전용';e.dataset.kind='locked';return;}
+    if(lesson.access==='free'){e.textContent='무료 미리보기';e.dataset.kind='free';}
+    else if(exclusive){e.textContent='시청 가능';e.dataset.kind='open';}
+    else {e.textContent='구독 전용';e.dataset.kind='locked';}
   });
   all('[data-done]').forEach(e=>e.hidden=!done.has(String(e.dataset.done)));
   const subState=$('#subscription-state');
