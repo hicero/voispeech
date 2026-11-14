@@ -2925,3 +2925,122 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     transition: none;
   }
 }
+
+/* ——— Training hall card depth (scoped; homepage tokens unchanged) ——— */
+.academy {
+  --studio-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 1px 2px rgba(32, 57, 79, 0.12),
+    0 8px 16px rgba(32, 57, 79, 0.09),
+    0 22px 40px rgba(32, 57, 79, 0.11);
+  --studio-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 2px 5px rgba(32, 57, 79, 0.14),
+    0 12px 26px rgba(32, 57, 79, 0.13),
+    0 32px 64px rgba(32, 57, 79, 0.14);
+  --studio-surface: linear-gradient(180deg, #ffffff 0%, #f4f7fa 100%);
+  --studio-edge: color-mix(in srgb, var(--color-navy) 18%, var(--color-line));
+  background: color-mix(in srgb, var(--color-page) 62%, #d5e0ea);
+}
+
+.academy .lesson-card,
+.academy .community-post,
+.academy .membership-card,
+.academy .practice-form,
+.academy .progress-list,
+.academy #favorites-list.progress-list,
+.academy .library-empty,
+.academy .academy-subscribe,
+.academy .record-summary,
+.academy .learning-path {
+  background-color: var(--color-surface);
+  background-image: var(--studio-surface);
+  border: 1px solid var(--studio-edge);
+  box-shadow: var(--studio-shadow);
+}
+
+.academy .lesson-card,
+.academy .community-post,
+.academy .membership-card,
+.academy .academy-subscribe {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.academy .lesson-card:hover,
+.academy .community-post:hover,
+.academy .membership-card:hover,
+.academy .academy-subscribe:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--studio-shadow-hover);
+}
+
+.academy .academy-subscribe {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-surface) 88%, var(--color-sky-muted)) 0%,
+    color-mix(in srgb, var(--color-sky-muted) 55%, var(--color-warm)) 100%
+  );
+}
+
+.academy .record-summary {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-surface) 80%, var(--color-sky-muted)) 0%,
+    color-mix(in srgb, var(--color-sky-muted) 70%, var(--color-surface)) 100%
+  );
+}
+
+.academy .feature-lesson {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 1px 2px rgba(16, 30, 45, 0.22),
+    0 10px 22px rgba(32, 57, 79, 0.2),
+    0 28px 56px rgba(32, 57, 79, 0.18);
+}
+
+.academy .lesson-art,
+.academy .lesson-art-2,
+.academy .lesson-art-3,
+.academy .lesson-art-4,
+.academy .lesson-art-thumb {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -12px 20px rgba(32, 57, 79, 0.1);
+}
+
+.academy .lesson-art-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(32, 57, 79, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -18px 28px rgba(32, 57, 79, 0.14);
+}
+
+.academy .academy-dialog {
+  background-image: var(--studio-surface);
+  border: 1px solid var(--studio-edge);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 2px 6px rgba(16, 30, 45, 0.16),
+    0 16px 36px rgba(32, 57, 79, 0.2),
+    0 36px 72px rgba(32, 57, 79, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .academy .lesson-card,
+  .academy .lesson-card:hover,
+  .academy .community-post,
+  .academy .community-post:hover,
+  .academy .membership-card,
+  .academy .membership-card:hover,
+  .academy .academy-subscribe,
+  .academy .academy-subscribe:hover {
+    transform: none;
+    transition: none;
+    box-shadow: var(--studio-shadow);
+  }
+}
