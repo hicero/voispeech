@@ -1585,25 +1585,19 @@ a.btn-outline.site-nav-cta {
   }
   .booking-grid {
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.25fr);
-    align-items: start;
-    gap: 1.5rem;
-  }
-  .booking-info {
-    position: sticky;
-    top: 5.5rem;
+    align-items: stretch;
+    gap: 0;
   }
   .cal-host {
-    min-height: 520px;
-    max-height: 720px;
+    min-height: 560px;
     max-width: 100%;
-    overflow: auto;
+    overflow: visible;
   }
 }
 @media (max-width: 767px) {
   .cal-host {
-    min-height: 520px;
-    max-height: 720px;
-    overflow: auto;
+    min-height: 640px;
+    overflow: visible;
   }
 }
 .booking-cal-embed {
@@ -1616,11 +1610,8 @@ a.btn-outline.site-nav-cta {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  padding: 1.35rem 1.25rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-card);
+  padding: 0.25rem 0.15rem;
   background: var(--color-surface);
-  box-shadow: var(--shadow-card);
   color: var(--color-muted);
   font-size: 0.9375rem;
 }
