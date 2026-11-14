@@ -179,7 +179,7 @@ export default function Coach() {
   return (
     <section id="coach" className="section-pad bg-surface">
       <div className="content-shell">
-        <div className="section-intro prose-col">
+        <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">COACH</p>
           <h2>함께하는 코치</h2>
           <p>

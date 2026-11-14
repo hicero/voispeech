@@ -28,7 +28,7 @@ export default function BeforeAfter() {
   return (
     <section id="results" className="section-pad bg-surface">
       <div className="content-shell">
-        <div className="section-intro prose-col">
+        <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">BEFORE &amp; AFTER</p>
           <h2>
             같은 구간, 달라진 발성 조건
@@ -44,7 +44,7 @@ export default function BeforeAfter() {
 
         <div className="case-notes">
           {cases.map((item) => (
-            <article key={item.label} className="case-note">
+            <article key={item.label} className="case-note" data-reveal>
               <header className="case-note-head">
                 <span className="case-note-label">{item.label}</span>
                 <h3>{item.title}</h3>

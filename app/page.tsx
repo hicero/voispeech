@@ -6,6 +6,7 @@ import VoiceCheck from "@/components/VoiceCheck";
 import ReportTeaser from "@/components/ReportTeaser";
 import Programs from "@/components/Programs";
 import BeforeAfter from "@/components/BeforeAfter";
+import Testimonials from "@/components/Testimonials";
 import Coach from "@/components/Coach";
 import Research from "@/components/Research";
 import FAQ from "@/components/FAQ";
@@ -25,10 +26,11 @@ export default function Home() {
         <ReportTeaser />
         <Programs />
         <BeforeAfter />
+        <Testimonials />
         <Coach />
         <Research />
         <section id="online-training" className="section-pad online-teaser">
-          <div className="content-shell online-teaser-grid">
+          <div className="content-shell online-teaser-grid" data-reveal>
             <div className="online-teaser-copy">
               <p className="eyebrow">온라인 발성훈련 · 체험 운영 중</p>
               <h2>

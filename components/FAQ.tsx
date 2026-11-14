@@ -31,7 +31,7 @@ export default function FAQ() {
   return (
     <section id="faq" className="section-pad bg-page">
       <div className="content-shell faq-layout">
-        <div className="faq-intro">
+        <div className="faq-intro" data-reveal>
           <p className="eyebrow">FAQ</p>
           <h2>자주 묻는 질문</h2>
         </div>

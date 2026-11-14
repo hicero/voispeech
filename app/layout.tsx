@@ -59,6 +59,11 @@ export default function RootLayout({
       <body className="min-h-screen bg-page text-navy antialiased">
         <a className="skip-link" href="#main-content">본문 바로가기</a>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;if(!("IntersectionObserver" in window))return;var pending=[];var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("is-inview");io.unobserve(e.target);}});},{threshold:0.16,rootMargin:"0px 0px -8% 0px"});function collect(){document.querySelectorAll("[data-reveal]").forEach(function(el){if(!el.classList.contains("is-inview")&&pending.indexOf(el)<0)pending.push(el);});}function markVisible(){pending.forEach(function(el){var r=el.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight*0.92)el.classList.add("is-inview");else io.observe(el);});pending=[];}function boot(){collect();markVisible();document.documentElement.classList.add("js-motion");}boot();setTimeout(function(){document.querySelectorAll("[data-reveal]:not(.is-inview)").forEach(function(el){el.classList.add("is-inview");});},2800);document.addEventListener("touchstart",function(e){var m=e.target.closest&&e.target.closest(".review-viewport");if(m)m.classList.add("is-paused");},{passive:true});document.addEventListener("touchend",function(){document.querySelectorAll(".review-viewport.is-paused").forEach(function(m){m.classList.remove("is-paused");});},{passive:true});}catch(e){}})();`,
+          }}
+        />
       </body>
     </html>
   );

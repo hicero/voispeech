@@ -49,7 +49,7 @@ export default function Programs() {
   return (
     <section id="programs" className="section-pad bg-page">
       <div className="content-shell">
-        <div className="section-heading">
+        <div className="section-heading" data-reveal>
           <div>
             <p className="eyebrow">PROGRAMS</p>
             <h2>One-Day, Private, Online.</h2>
@@ -62,7 +62,7 @@ export default function Programs() {
         </div>
         <div className="program-grid">
           {programs.map((p) => (
-            <article className="program-card" key={p.num}>
+            <article className="program-card" data-reveal key={p.num}>
               <div className="program-top">
                 <span>{p.num}</span>
                 <span>{p.tag}</span>

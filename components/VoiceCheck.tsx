@@ -36,17 +36,18 @@ export default function VoiceCheck() {
     <section id="voice-check" className="section-pad bg-surface">
       <div className="content-shell">
         <div className="voice-layout">
-          <div className="voice-intro">
+          <div className="voice-intro" data-reveal>
             <p className="eyebrow">5 VOICE CHECK</p>
             <h2>발성의 5가지 영역</h2>
             <p>
               잘 되고 있는 부분과 조정이 필요한 부분을
-              <br className="hidden md:block" /> 함께 살펴, 연습의 우선순위를
+              <br className="hidden md:block" /> 함께 살펴,{' '}
+              <span className="phrase-mark">연습의 우선순위를</span>{' '}
               정합니다.
             </p>
           </div>
 
-          <ol className="voice-rows">
+          <ol className="voice-rows" data-reveal>
             {areas.map((a) => (
               <li key={a.num}>
                 <span className="voice-number">{a.num}</span>

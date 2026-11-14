@@ -8,9 +8,9 @@ const checks = [
 
 const toneClass: Record<(typeof checks)[number]["tone"], string> = {
   stable: "border-line bg-surface text-muted",
-  priority: "border-sky/40 bg-sky-muted text-navy",
+  priority: "report-tone-priority border-sky/40 bg-sky-muted text-navy",
   adjust: "border-line bg-page text-navy-soft",
-  strong: "border-sky bg-sky-muted text-navy font-semibold",
+  strong: "report-tone-strong border-sky bg-sky-muted text-navy font-semibold",
 };
 
 export default function ReportTeaser() {
@@ -18,12 +18,12 @@ export default function ReportTeaser() {
     <section id="report" className="section-pad bg-page">
       <div className="content-shell">
         <div className="report-layout grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-5 lg:sticky lg:top-28">
+          <div className="lg:col-span-5 lg:sticky lg:top-28" data-reveal>
             <p className="eyebrow">COACHING REPORT</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
               수업에서 확인한 내용을
               <br />
-              개인 발성 코칭 리포트로
+              <span className="phrase-mark">개인 발성 코칭 리포트로</span>
               <br />
               정리합니다
               <span className="text-sky" aria-hidden>
@@ -49,7 +49,7 @@ export default function ReportTeaser() {
           </div>
 
           <div className="space-y-6 lg:col-span-7">
-            <div className="card overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]">
+            <div className="card report-preview overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]" data-reveal>
               <img
                 src="/report/coaching-report.jpg"
                 alt="VoiSpeech 발성 코칭 리포트 PDF 미리보기"
@@ -63,6 +63,7 @@ export default function ReportTeaser() {
 
             <div
               className="card overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]"
+              data-reveal
               aria-hidden="true"
             >
               <div className="flex items-center justify-between border-b border-line-soft px-5 py-4 md:px-6">
@@ -121,14 +122,14 @@ export default function ReportTeaser() {
                   <p className="mt-1 text-sm font-semibold text-navy">
                     발성의 5가지 영역
                   </p>
-                  <ul className="mt-3 space-y-2">
+                  <ul className="report-check-list mt-3 space-y-2" data-reveal>
                     {checks.map((row) => (
                       <li
                         key={row.num}
-                        className="flex items-center justify-between gap-3 rounded-lg border border-line-soft bg-surface px-3 py-2.5"
+                        className="report-check-row flex items-center justify-between gap-3 rounded-lg border border-line-soft bg-surface px-3 py-2.5"
                       >
                         <span className="flex min-w-0 items-center gap-3 text-sm text-navy-soft">
-                          <span className="shrink-0 text-xs font-medium text-sky">
+                          <span className="report-check-num shrink-0 text-xs font-medium">
                             {row.num}
                           </span>
                           <span className="truncate font-medium text-navy">
@@ -139,6 +140,9 @@ export default function ReportTeaser() {
                           className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[0.6875rem] ${toneClass[row.tone]}`}
                         >
                           {row.status}
+                        </span>
+                        <span className="report-check-track" aria-hidden="true">
+                          <span className="report-check-fill" />
                         </span>
                       </li>
                     ))}

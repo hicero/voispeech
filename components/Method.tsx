@@ -29,10 +29,10 @@ export default function Method() {
   return (
     <section id="method" className="section-pad bg-page">
       <div className="content-shell">
-        <div className="section-intro prose-col">
+        <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">METHOD</p>
           <h2>
-            살펴보고, 바꿔보고, 노래하기
+            살펴보고, 바꿔보고, <span className="phrase-mark">노래하기</span>
             <span className="text-sky" aria-hidden>
               .
             </span>
@@ -43,7 +43,7 @@ export default function Method() {
           </p>
         </div>
 
-        <ol className="method-rail">
+        <ol className="method-rail" data-reveal>
           {steps.map((step) => (
             <li key={step.num}>
               <div className="method-step-top">

@@ -21,7 +21,7 @@ export default function TrustStrip() {
     <section aria-label="핵심 차별점" className="border-y border-line bg-surface">
       <div className="content-shell grid divide-y divide-line md:grid-cols-3 md:divide-x md:divide-y-0">
         {items.map((item) => (
-          <div key={item.label} className="px-5 py-8 md:px-8 md:py-10">
+          <div key={item.label} className="px-5 py-8 md:px-8 md:py-10" data-reveal>
             <p className="eyebrow text-sky !normal-case tracking-[0.12em]">
               {item.label}
             </p>

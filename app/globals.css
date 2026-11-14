@@ -16,6 +16,9 @@
   --color-faint: #5A6B7C;
   --color-line: #E2E6EB;
   --color-line-soft: #EEF1F4;
+  --color-accent: #7A5A2E;
+  --color-accent-soft: #E9DFCC;
+  --color-accent-line: #C4A36A;
   --font-sans: "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 }
 
@@ -1803,5 +1806,425 @@ iframe {
   .btn-sky,
   .expand-toggle {
     transition: none;
+  }
+}
+
+/* ——— Homepage emphasis + motion (2026-11, revert-friendly) ——— */
+::selection {
+  background-color: color-mix(in srgb, var(--color-accent-soft) 70%, var(--color-sky-muted));
+  color: var(--color-navy);
+}
+
+.hero-copy .eyebrow::before,
+.section-intro .eyebrow::before,
+.voice-intro .eyebrow::before,
+.section-heading .eyebrow::before,
+.faq-intro .eyebrow::before,
+section[aria-label="핵심 차별점"] .eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 0.65rem;
+  height: 1.5px;
+  margin-right: 0.5rem;
+  margin-bottom: 0.18em;
+  background: var(--color-accent);
+  vertical-align: middle;
+}
+
+.hero-copy h1 .phrase-mark {
+  color: var(--color-navy);
+}
+
+.phrase-mark {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-accent-line) 80%, var(--color-accent)),
+    color-mix(in srgb, var(--color-accent-line) 80%, var(--color-accent))
+  );
+  background-repeat: no-repeat;
+  background-position: 0 90%;
+  background-size: 100% 0.16em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.voice-number,
+.report-check-num {
+  color: var(--color-accent);
+}
+
+.report-tone-priority {
+  border-color: color-mix(in srgb, var(--color-accent-line) 55%, var(--color-line));
+  background: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
+  color: var(--color-navy);
+}
+
+.report-tone-strong {
+  border-color: color-mix(in srgb, var(--color-accent-line) 70%, var(--color-sky));
+}
+
+#method {
+  background: color-mix(in srgb, var(--color-page) 72%, var(--color-warm));
+}
+
+#voice-check {
+  background: #fff;
+}
+
+#programs {
+  background: color-mix(in srgb, var(--color-sky-muted) 62%, var(--color-page));
+}
+
+#results {
+  background: color-mix(in srgb, var(--color-page) 45%, #fff);
+}
+
+#testimonials {
+  background: color-mix(in srgb, var(--color-warm) 68%, var(--color-page));
+}
+
+/* Voice check: divider draw + sequential number light */
+.voice-rows li {
+  position: relative;
+  border-bottom-color: transparent;
+}
+
+.voice-rows li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-accent-line) 50%, var(--color-line));
+  transform: scaleX(1);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+/* Method connecting line (desktop rail) */
+@media (min-width: 1024px) {
+  .method-rail {
+    position: relative;
+  }
+
+  .method-rail::before {
+    content: "";
+    position: absolute;
+    top: 2.35rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-accent-line) 80%, var(--color-line));
+    transform: scaleX(1);
+    transform-origin: left center;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.method-num {
+  color: var(--color-accent);
+}
+
+/* Report preview slide + check tracks */
+.report-preview {
+  position: relative;
+  z-index: 1;
+}
+
+.report-check-row {
+  position: relative;
+  overflow: hidden;
+}
+
+.report-check-track {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0;
+  height: 2px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.report-check-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--color-accent-line);
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* Sample reviews marquee */
+.review-viewport {
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.review-track {
+  display: flex;
+  width: max-content;
+  animation: review-marquee 48s linear infinite;
+}
+
+.review-viewport:hover .review-track,
+.review-viewport:focus-within .review-track,
+.review-viewport.is-paused .review-track {
+  animation-play-state: paused;
+}
+
+.review-set {
+  display: flex;
+  gap: 1rem;
+  padding-right: 1rem;
+}
+
+.review-card {
+  flex: 0 0 auto;
+  width: min(20rem, 78vw);
+  padding: 1.25rem 1.35rem 1.35rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), var(--shadow-card);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.review-card-label {
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  color: var(--color-accent);
+  margin: 0 0 0.7rem;
+}
+
+.review-card-quote {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-navy-soft);
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+@keyframes review-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.case-note {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.case-note:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Hero navy card: very slow arc drift */
+@keyframes hero-arc-drift {
+  0%,
+  100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-6px, 8px, 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-cover .cover-arc {
+    animation: hero-arc-drift 22s ease-in-out infinite;
+  }
+}
+
+/* Scroll reveal — visible unless js-motion is set (no-JS / IO fallback) */
+.js-motion [data-reveal] {
+  opacity: 0;
+  transform: translateY(0.8rem);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+
+.js-motion [data-reveal].is-inview {
+  opacity: 1;
+  transform: none;
+}
+
+.js-motion [data-delay="2"] { --reveal-delay: 0.12s; }
+.js-motion [data-delay="3"] { --reveal-delay: 0.22s; }
+
+.js-motion .program-grid [data-reveal]:nth-child(1),
+.js-motion .case-notes [data-reveal]:nth-child(1),
+.js-motion section[aria-label="핵심 차별점"] [data-reveal]:nth-child(1) {
+  --reveal-delay: 0.06s;
+}
+.js-motion .program-grid [data-reveal]:nth-child(2),
+.js-motion .case-notes [data-reveal]:nth-child(2),
+.js-motion section[aria-label="핵심 차별점"] [data-reveal]:nth-child(2) {
+  --reveal-delay: 0.14s;
+}
+.js-motion .program-grid [data-reveal]:nth-child(3),
+.js-motion .case-notes [data-reveal]:nth-child(3),
+.js-motion section[aria-label="핵심 차별점"] [data-reveal]:nth-child(3) {
+  --reveal-delay: 0.22s;
+}
+
+.js-motion .phrase-mark {
+  background-size: 0 0.16em;
+  transition: background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.18s;
+}
+
+.js-motion .is-inview .phrase-mark,
+.js-motion .phrase-mark.is-inview {
+  background-size: 100% 0.16em;
+}
+
+.js-motion .voice-number {
+  color: var(--color-faint);
+  transition: color 0.45s ease-out;
+}
+
+.js-motion .voice-rows.is-inview li:nth-child(1) .voice-number { color: var(--color-accent); transition-delay: 0.08s; }
+.js-motion .voice-rows.is-inview li:nth-child(2) .voice-number { color: var(--color-accent); transition-delay: 0.2s; }
+.js-motion .voice-rows.is-inview li:nth-child(3) .voice-number { color: var(--color-accent); transition-delay: 0.32s; }
+.js-motion .voice-rows.is-inview li:nth-child(4) .voice-number { color: var(--color-accent); transition-delay: 0.44s; }
+.js-motion .voice-rows.is-inview li:nth-child(5) .voice-number { color: var(--color-accent); transition-delay: 0.56s; }
+
+.js-motion .voice-rows:not(.is-inview) li::after {
+  transform: scaleX(0);
+}
+
+.js-motion .voice-rows.is-inview li::after {
+  transform: scaleX(1);
+  transition: transform 0.65s ease-out;
+}
+
+.js-motion .voice-rows.is-inview li:nth-child(1)::after { transition-delay: 0.1s; }
+.js-motion .voice-rows.is-inview li:nth-child(2)::after { transition-delay: 0.22s; }
+.js-motion .voice-rows.is-inview li:nth-child(3)::after { transition-delay: 0.34s; }
+.js-motion .voice-rows.is-inview li:nth-child(4)::after { transition-delay: 0.46s; }
+.js-motion .voice-rows.is-inview li:nth-child(5)::after { transition-delay: 0.58s; }
+
+.js-motion .method-rail::before {
+  transform: scaleX(0);
+}
+
+.js-motion .method-rail.is-inview::before {
+  transform: scaleX(1);
+  transition: transform 0.9s ease-out 0.16s;
+}
+
+.js-motion .report-preview:not(.is-inview) {
+  opacity: 0;
+  transform: translate3d(1.1rem, 0.85rem, 0);
+}
+
+.js-motion .report-preview.is-inview {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+}
+
+.js-motion .report-check-fill {
+  transform: scaleX(0);
+}
+
+.js-motion .report-check-list.is-inview .report-check-row:nth-child(1) .report-check-fill {
+  transform: scaleX(1);
+  transition: transform 0.7s ease-out 0.12s;
+}
+.js-motion .report-check-list.is-inview .report-check-row:nth-child(2) .report-check-fill {
+  transform: scaleX(1);
+  transition: transform 0.7s ease-out 0.24s;
+}
+.js-motion .report-check-list.is-inview .report-check-row:nth-child(3) .report-check-fill {
+  transform: scaleX(1);
+  transition: transform 0.7s ease-out 0.36s;
+}
+.js-motion .report-check-list.is-inview .report-check-row:nth-child(4) .report-check-fill {
+  transform: scaleX(1);
+  transition: transform 0.7s ease-out 0.48s;
+}
+.js-motion .report-check-list.is-inview .report-check-row:nth-child(5) .report-check-fill {
+  transform: scaleX(1);
+  transition: transform 0.7s ease-out 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-motion [data-reveal],
+  .js-motion [data-reveal].is-inview,
+  .js-motion .report-preview:not(.is-inview),
+  .js-motion .report-preview.is-inview {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .phrase-mark,
+  .js-motion .phrase-mark,
+  .js-motion .is-inview .phrase-mark {
+    background-size: 100% 0.16em;
+    transition: none;
+  }
+
+  .js-motion .voice-number,
+  .js-motion .voice-rows.is-inview li .voice-number {
+    color: var(--color-accent);
+    transition: none;
+  }
+
+  .js-motion .voice-rows li::after,
+  .js-motion .voice-rows:not(.is-inview) li::after,
+  .js-motion .method-rail::before,
+  .js-motion .method-rail.is-inview::before,
+  .js-motion .report-check-fill,
+  .js-motion .report-check-list.is-inview .report-check-fill {
+    transform: none;
+    transition: none;
+  }
+
+  .hero-cover .cover-arc {
+    animation: none;
+  }
+
+  .review-track {
+    animation: none;
+    width: auto;
+    display: block;
+    transform: none;
+  }
+
+  .review-set {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .review-set[aria-hidden="true"] {
+    display: none;
+  }
+
+  .review-card {
+    width: auto;
+  }
+
+  .case-note:hover,
+  .review-card:hover,
+  .program-card:hover,
+  .btn-primary:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
+  .review-set {
+    grid-template-columns: 1fr 1fr;
   }
 }

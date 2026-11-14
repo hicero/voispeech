@@ -4,14 +4,14 @@ export default function Hero() {
   return (
     <section id="top" className="hero-section">
       <div className="hero-grid content-shell">
-        <div className="hero-copy">
+        <div className="hero-copy" data-reveal>
           <p className="eyebrow">VOISPEECH · VOCAL COACHING</p>
           <h1>
             내 발성이
             <br />
             어려운 이유부터,
             <br />
-            <span>연습의 방향까지.</span>
+            <span className="phrase-mark">연습의 방향까지.</span>
           </h1>
           <p className="hero-description">
             현재 목소리를 먼저 확인하고,
@@ -31,7 +31,7 @@ export default function Hero() {
             리포트
           </p>
         </div>
-        <div className="hero-cover" aria-label="보이스피치 코칭 소개">
+        <div className="hero-cover" data-reveal data-delay="2" aria-label="보이스피치 코칭 소개">
           <div className="cover-top">
             <span>VoiSpeech</span>
             <span>VOICE · PRACTICE · YOU</span>
