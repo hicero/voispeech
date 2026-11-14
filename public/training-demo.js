@@ -543,6 +543,12 @@ function onAcademyClick(e){
 
   const root=academy();
   if(!root||!root.contains(e.target))return;
+  const brand=e.target.closest('.academy-brand');
+  if(brand&&root.contains(brand)){
+    tab('library');
+    window.scrollTo(0,0);
+    return;
+  }
   const b=e.target.closest('button');if(!b||!root.contains(b))return;
   if(b.dataset.close){const d=$('#'+b.dataset.close);if(d)d.close();return;}
   if(b.dataset.tab){

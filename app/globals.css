@@ -3195,3 +3195,37 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     background-size: 100% 100%, 0 100%;
   }
 }
+
+
+/* ——— Training header home button ——— */
+.academy .academy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.academy .academy-home-btn {
+  flex-shrink: 0;
+  margin-left: auto;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.academy .academy-home-btn:hover {
+  transform: none;
+}
+
+@media (max-width: 520px) {
+  .academy .academy-home-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+}

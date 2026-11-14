@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import TrainingApp from "@/components/TrainingApp";
 export const metadata: Metadata = {title:"온라인 발성훈련 | VoiSpeech",robots:{index:false,follow:false}};
 export default function Training(){return <TrainingApp><div className="academy" id="academy">
- <header className="academy-header"><Link className="academy-brand" href="/">VoiSpeech <span>ONLINE STUDIO</span></Link></header>
+ <header className="academy-header"><Link className="academy-brand" href="/training/">VoiSpeech <span>ONLINE STUDIO</span></Link><Link className="btn-outline academy-home-btn" href="/">보이스피치 홈</Link></header>
  <div className="academy-shell"><aside className="academy-sidebar"><p className="eyebrow">MY VOICE PRACTICE</p><nav aria-label="온라인 훈련 메뉴"><button data-tab="library" aria-pressed="true">훈련 <span>↗</span></button><button data-tab="community" aria-pressed="false">커뮤니티</button><button data-tab="progress" aria-pressed="false">연습 기록</button><button data-tab="membership" aria-pressed="false">마이</button></nav><div className="sidebar-note"><span>수업과 수업 사이에도</span><p>나의 속도로,<br/>다시 연습하는 시간.</p></div><Link href="/#booking">1:1 레슨 예약 ↗</Link><button data-action="reset" className="academy-reset">체험 처음부터</button></aside>
  <main id="main-content" className="academy-main">
  <section data-panel="library"><div className="academy-heading" data-reveal><div><p className="eyebrow">나의 발성 연습</p><h1>오늘의 연습을<br/>이어가세요.</h1><p>이어서 학습하거나, 필요한 강의를 찾아<br className="mobile-break"/> 나의 속도로 연습해 보세요.</p></div><div className="practice-count"><strong id="completion-count">0 / 4</strong><span>완료한 강의</span></div></div>
