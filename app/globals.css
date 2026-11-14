@@ -762,14 +762,11 @@ section[aria-label="핵심 차별점"] {
     min-height: 3.75rem;
   }
 }
-/* Homepage only, desktop: shrink-wrap the logo link so the lockup centers with nav/CTA.
-   Mobile homepage position is left unchanged. */
-@media (min-width: 1024px) {
-  .site-logo-link {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-  }
+/* Shrink-wrap the homepage logo link so the lockup centers in the bar at all widths. */
+.site-logo-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
 .site-logo {
   display: inline-flex;
@@ -780,8 +777,8 @@ section[aria-label="핵심 차별점"] {
 }
 .site-logo-mark {
   display: block;
-  width: 2.125rem;
-  height: 2.125rem;
+  width: 1.875rem;
+  height: 1.875rem;
   flex-shrink: 0;
   object-fit: contain;
 }
@@ -793,7 +790,7 @@ section[aria-label="핵심 차별점"] {
   line-height: 1;
 }
 .site-logo-word {
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -801,7 +798,7 @@ section[aria-label="핵심 차별점"] {
 }
 .site-logo-ko {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.65625rem;
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: 0.02em;
@@ -809,11 +806,14 @@ section[aria-label="핵심 차별점"] {
 }
 @media (min-width: 768px) {
   .site-logo-mark {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2rem;
+    height: 2rem;
   }
   .site-logo-word {
-    font-size: 1.2rem;
+    font-size: 1.0625rem;
+  }
+  .site-logo-ko {
+    font-size: 0.6875rem;
   }
 }
 .site-nav {
@@ -3281,9 +3281,14 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   line-height: 1;
 }
 
+.academy .academy-brand .site-logo-mark {
+  width: 1.875rem;
+  height: 1.875rem;
+}
+
 .academy .academy-brand .site-logo-word {
   display: block;
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -3295,7 +3300,7 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 .academy .academy-brand span.academy-brand-sub {
   display: block;
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.65625rem;
   font-weight: 550;
   line-height: 1.1;
   letter-spacing: 0.12em;
@@ -3303,18 +3308,12 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 }
 
 @media (min-width: 768px) {
-  .academy .academy-brand .site-logo-word {
-    font-size: 1.2rem;
-  }
-}
-
-@media (max-width: 900px) {
   .academy .academy-brand .site-logo-mark {
     width: 2rem;
     height: 2rem;
   }
   .academy .academy-brand .site-logo-word {
-    font-size: 1rem;
+    font-size: 1.0625rem;
   }
   .academy .academy-brand-sub,
   .academy .academy-brand .site-logo-ko,
