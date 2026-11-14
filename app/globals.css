@@ -1587,21 +1587,51 @@ a.btn-outline.site-nav-cta {
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.25fr);
     align-items: stretch;
     gap: 0;
+    padding: 0;
+  }
+  .booking-info {
+    position: static;
+    top: auto;
+    margin: 0;
+    align-self: stretch;
+    height: auto;
+  }
+  .booking-calendar {
+    align-self: stretch;
+    margin: 0;
   }
   .cal-host {
-    min-height: 560px;
+    min-height: 32rem;
+    max-height: none;
+    height: auto;
     max-width: 100%;
     overflow: visible;
   }
 }
 @media (max-width: 767px) {
   .cal-host {
-    min-height: 640px;
+    min-height: 28rem;
+    max-height: none;
+    height: auto;
     overflow: visible;
   }
 }
+.booking-cal-wrap,
+.booking-cal-embed,
+.cal-host {
+  max-height: none;
+  overflow: visible;
+}
 .booking-cal-embed {
   position: relative;
+}
+.cal-host iframe,
+.cal-host iframe.cal-embed {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border: 0;
+  overflow: visible;
 }
 .cal-skeleton {
   position: absolute;
