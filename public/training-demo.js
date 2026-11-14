@@ -1,5 +1,5 @@
 (()=>{
-let demoActive=false,cancelled=false,currentId=null;const done=new Set();const favorites=new Set();const modules={};let step=0;const localRecords=[];let channel="공지";const localPosts=[];let dbRecords=[];let dbPosts=[];let lessonsCache=[];const COMMUNITY_PAGE=10;let communityPage=0;let communityHasMore=false;let communityTotal=0;let communityLoading=false;let communityShowLoading=false;let communityFetchSeq=0;const communityCache=new Map();let progressHydrated=false;
+let demoActive=false,cancelled=false,currentId=null,lastResumeId=null;const done=new Set();const favorites=new Set();const modules={};let step=0;const localRecords=[];let channel="공지";const localPosts=[];let dbRecords=[];let dbPosts=[];let lessonsCache=[];const COMMUNITY_PAGE=10;let communityPage=0;let communityHasMore=false;let communityTotal=0;let communityLoading=false;let communityShowLoading=false;let communityFetchSeq=0;const communityCache=new Map();let progressHydrated=false;
 const FAV_KEY='voispeech_favorites';
 
 function academy(){return document.getElementById('academy');}
@@ -23,13 +23,14 @@ loadFavorites();
 
 function applyProgressRows(rows){
   if(!Array.isArray(rows))return;
-  rows.forEach(row=>{
+  rows.forEach((row,i)=>{
     const id=String(row.lesson_id||'');
     if(!id)return;
     const steps=Array.isArray(row.completed_steps)?row.completed_steps:[];
     if(!modules[id])modules[id]=new Set();
     steps.forEach(n=>{const v=Number(n);if(Number.isFinite(v)&&v>=0)modules[id].add(Math.floor(v));});
     if(row.completed)done.add(id);
+    if(i===0&&!currentId)lastResumeId=id;
   });
 }
 
@@ -381,6 +382,7 @@ function update(){
   }
   updateCommunityHint();
   updatePracticeHint();
+  renderPracticePanel();
 }
 
 function firstUnfinishedStep(lesson){
@@ -405,6 +407,122 @@ function updatePracticeStart(){
   if(description)description.textContent=started?`${lessonStepCount(lesson)}개 회차 중 ${firstUnfinishedStep(lesson)+1}번째부터 이어갑니다.`:(lesson.description||'강의 설명을 확인하고 연습을 시작해 보세요.');
 }
 
+
+function isLoggedOutLive(){
+  const m=membership();
+  return !!(m.live&&!m.loggedIn);
+}
+
+function existingLessonCategories(){
+  const cats=[];
+  const seen=new Set();
+  lessons().forEach(l=>{
+    const c=(l.category||'').trim();
+    if(c&&!seen.has(c)){seen.add(c);cats.push(c);}
+  });
+  return cats;
+}
+
+function closestVoiceCheckFilter(name){
+  const cats=existingLessonCategories();
+  const exact=(name||'').trim();
+  if(exact&&cats.includes(exact))return exact;
+  const prefs={
+    '숨과 소리 연결':['SOVT','기초'],
+    '저음·고음 연결':['기초'],
+    '목·턱·혀의 힘':['기초'],
+    '모음·울림 조절':['기초'],
+    '소리 구별·재현':['노래 적용','기초'],
+  };
+  const list=prefs[exact]||[];
+  for(let i=0;i<list.length;i++)if(cats.includes(list[i]))return list[i];
+  return '전체';
+}
+
+function firstFreeLesson(){
+  const list=lessons();
+  return list.find(l=>l.access==='free')||list[0]||null;
+}
+
+function resumeLesson(){
+  if(currentId){
+    const cur=lessonById(currentId);
+    if(cur)return cur;
+  }
+  if(lastResumeId){
+    const last=lessonById(lastResumeId);
+    if(last)return last;
+  }
+  const list=lessons();
+  return list.find(l=>canWatchLesson(l)&&(modules[l.id]||new Set()).size>0&&(modules[l.id]||new Set()).size<lessonStepCount(l))||null;
+}
+
+function renderPracticePanel(){
+  const guest=$('.practice-panel-guest');
+  const member=$('.practice-panel-member');
+  const loggedOut=isLoggedOutLive();
+  if(guest)guest.hidden=!loggedOut;
+  if(member)member.hidden=loggedOut;
+
+  const free=firstFreeLesson();
+  const guestBtn=$('#practice-guest-start');
+  const guestCopy=$('#practice-guest-copy');
+  if(guestBtn&&free){
+    guestBtn.dataset.lesson=free.id;
+    guestBtn.textContent='강의 열기 →';
+  }
+  if(guestCopy){
+    guestCopy.textContent=free&&free.title
+      ?free.title
+      :'무료 미리보기부터 시작해 보세요.';
+  }
+
+  const resumeEl=$('#practice-resume');
+  if(resumeEl){
+    resumeEl.replaceChildren();
+    const lesson=resumeLesson();
+    if(!lesson){
+      const p=document.createElement('p');
+      p.textContent='아직 완료한 영상이 없어요. 무료 미리보기부터 시작해 보세요.';
+      resumeEl.append(p);
+      if(free){
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='btn-primary';
+        b.dataset.lesson=free.id;
+        b.textContent='강의 열기 →';
+        resumeEl.append(b);
+      }
+    }else{
+      const title=document.createElement('p');
+      title.className='practice-resume-title';
+      title.textContent=lesson.title;
+      resumeEl.append(title);
+      const total=lessonStepCount(lesson);
+      const next=firstUnfinishedStep(lesson);
+      const meta=document.createElement('p');
+      meta.className='practice-resume-meta';
+      if(done.has(String(lesson.id)))meta.textContent='학습 완료 ✓';
+      else meta.textContent=`${total}개 회차 중 ${next+1}번째부터 이어갑니다.`;
+      resumeEl.append(meta);
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='btn-primary';
+      b.dataset.lesson=lesson.id;
+      const inProgress=!done.has(String(lesson.id))&&(modules[lesson.id]||new Set()).size>0;
+      b.textContent=inProgress?'이어서 연습하기 →':'강의 열기 →';
+      resumeEl.append(b);
+    }
+  }
+
+  const list=lessons();
+  const total=list.length||0;
+  const countEl=$('#practice-panel-count');
+  if(countEl)countEl.textContent=`${done.size} / ${total||0}`;
+  const bar=$('#practice-panel-bar');
+  if(bar)bar.style.setProperty('--progress',total?String(done.size/total):'0');
+}
+
 function selectLearningPath(index){
   const terms=['기초','관찰','루틴','노래'];
   const descriptions=['기초 개념을 다루는 강의를 찾아보세요.','내 발성을 관찰하는 강의를 찾아보세요.','반복할 루틴 강의를 찾아보세요.','노래에 적용하는 강의를 찾아보세요.'];
@@ -424,7 +542,7 @@ function openLesson(id){
     checkout();
     return;
   }
-  currentId=lesson.id;step=firstUnfinishedStep(lesson);renderModules();
+  currentId=lesson.id;lastResumeId=lesson.id;step=firstUnfinishedStep(lesson);renderModules();renderPracticePanel();
   const playerTitle=$('#player-title');if(playerTitle)playerTitle.textContent=lesson.title;
   setPlayerCopy(lesson);
   const dialog=$('#player-dialog');if(dialog)dialog.showModal();
@@ -567,6 +685,16 @@ function onAcademyClick(e){
   if(b.dataset.path){selectLearningPath(Number(b.dataset.path));return;}
   if(b.dataset.channel){channel=b.dataset.channel;all('[data-channel]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));communityPage=0;paintCommunityFromCacheOrLoading();void refreshPosts({soft:true});return;}
   if(b.dataset.module){step=Number(b.dataset.module);renderModules();return;}
+  if(b.dataset.voiceCheck){
+    tab('library');
+    const filter=closestVoiceCheckFilter(b.dataset.voiceName||'');
+    all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.filter===filter)));
+    const search=$('#course-search');if(search)search.value='';
+    filterCourses();
+    const library=$('[data-panel=library]');
+    if(library){const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;library.scrollIntoView({block:'start',behavior:reduce?'auto':'smooth'});}
+    return;
+  }
   if(b.dataset.filter){all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));filterCourses();return;}
   if(b.dataset.lesson){openLesson(b.dataset.lesson);return;}
   switch(b.dataset.action){
@@ -623,7 +751,7 @@ function onAcademyClick(e){
       demoActive=false;cancelled=false;tell('이용기간 만료를 체험했습니다. 전용 영상이 다시 잠겼습니다.');
       break;
     case 'reset':
-      demoActive=false;cancelled=false;done.clear();Object.keys(modules).forEach(k=>delete modules[k]);favorites.clear();saveFavorites();localRecords.length=0;localPosts.length=0;dbRecords=[];dbPosts=[];communityPage=0;communityHasMore=false;communityTotal=0;communityShowLoading=false;communityCache.clear();progressHydrated=false;renderRecords();renderPosts();tab('library');all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.filter==='전체')));all('[data-category]').forEach(x=>x.hidden=false);tell('체험을 초기화했습니다.');
+      demoActive=false;cancelled=false;currentId=null;lastResumeId=null;done.clear();Object.keys(modules).forEach(k=>delete modules[k]);favorites.clear();saveFavorites();localRecords.length=0;localPosts.length=0;dbRecords=[];dbPosts=[];communityPage=0;communityHasMore=false;communityTotal=0;communityShowLoading=false;communityCache.clear();progressHydrated=false;renderRecords();renderPosts();tab('library');all('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.filter==='전체')));all('[data-category]').forEach(x=>x.hidden=false);tell('체험을 초기화했습니다.');
       if(membership().live&&membership().loggedIn)void refreshProgress();
       break;
   }
