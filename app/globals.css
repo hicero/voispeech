@@ -762,10 +762,14 @@ section[aria-label="핵심 차별점"] {
     min-height: 3.75rem;
   }
 }
-.site-logo-link {
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
+/* Homepage only, desktop: shrink-wrap the logo link so the lockup centers with nav/CTA.
+   Mobile homepage position is left unchanged. */
+@media (min-width: 1024px) {
+  .site-logo-link {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
 }
 .site-logo {
   display: inline-flex;
@@ -3301,6 +3305,21 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 @media (min-width: 768px) {
   .academy .academy-brand .site-logo-word {
     font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .academy .academy-brand .site-logo-mark {
+    width: 2rem;
+    height: 2rem;
+  }
+  .academy .academy-brand .site-logo-word {
+    font-size: 1rem;
+  }
+  .academy .academy-brand-sub,
+  .academy .academy-brand .site-logo-ko,
+  .academy .academy-brand span.academy-brand-sub {
+    font-size: 0.6875rem;
   }
 }
 
