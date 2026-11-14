@@ -292,7 +292,7 @@ function renderLibrary(){
     const artInner=thumb
       ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">▷</span></span>`
       : `<span>${escapeHtml(l.category)}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">▷</span>`;
-    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${escapeAttr(l.id)}">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>학습 완료 ✓</span></div>`;
+    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>학습 완료 ✓</span></div>`;
     grid.append(article);
   });
   let empty=$('.library-empty');
@@ -322,7 +322,7 @@ function update(){
   const exclusive=canWatchExclusive();
   const list=lessons();
   updatePracticeStart();
-  all('[data-progress]').forEach(e=>{const lesson=lessonById(e.dataset.progress);const total=lessonStepCount(lesson);e.textContent=`${(modules[e.dataset.progress]||new Set()).size} / ${total}`;});
+  all('[data-progress]').forEach(e=>{const lesson=lessonById(e.dataset.progress);const total=lessonStepCount(lesson);const done=(modules[e.dataset.progress]||new Set()).size;e.textContent=`${done} / ${total}`;e.style.setProperty('--progress',total?String(done/total):'0');});
   all('[data-favorite]').forEach(e=>{const on=favorites.has(String(e.dataset.favorite));e.setAttribute('aria-pressed',String(on));e.textContent=on?'★ 저장됨':'☆ 저장';});
   const saved=$('#favorites-list');if(saved){saved.replaceChildren();if(!favorites.size)saved.textContent='저장한 코스가 없습니다.';favorites.forEach(id=>{const lesson=lessonById(id);const b=document.createElement('button');b.dataset.lesson=id;b.textContent=lesson?lesson.title:id;saved.append(b);});}
   const completion=$('#completion-count');if(completion)completion.textContent=`${done.size} / ${list.length||4}`;
