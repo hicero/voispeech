@@ -762,6 +762,11 @@ section[aria-label="핵심 차별점"] {
     min-height: 3.75rem;
   }
 }
+.site-logo-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
 .site-logo {
   display: inline-flex;
   flex-direction: row;
