@@ -4554,3 +4554,24 @@ section[aria-label="핵심 차별점"],
     font-size: calc(0.75rem * var(--wide-scale));
   }
 }
+
+
+/* Desktop-only sticky left heading in Report, same offset as Method / Coach. */
+@media (min-width: 901px) {
+  #report .report-layout {
+    display: grid;
+    grid-template-columns: minmax(16.5rem, 5fr) minmax(0, 7fr);
+    column-gap: 3.25rem;
+    align-items: start;
+  }
+  #report .report-intro {
+    position: sticky;
+    top: 5.25rem;
+    align-self: start;
+  }
+}
+@media (max-width: 900px) {
+  #report .report-intro {
+    position: static;
+  }
+}

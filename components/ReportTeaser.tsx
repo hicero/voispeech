@@ -22,8 +22,9 @@ export default function ReportTeaser() {
   return (
     <section id="report" className="section-pad bg-page">
       <div className="content-shell">
-        <div className="report-layout grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-5 lg:sticky lg:top-28" data-reveal>
+        <div className="report-layout grid items-start gap-10">
+          <div className="report-intro">
+            <div data-reveal>
             <p className="eyebrow">COACHING REPORT</p>
             <h2 className="line-rise mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
               <span className="line-rise-item">
@@ -59,9 +60,10 @@ export default function ReportTeaser() {
                 </li>
               ))}
             </ul>
+            </div>
           </div>
 
-          <div className="space-y-6 lg:col-span-7">
+          <div className="space-y-6">
             <div
               className="card report-preview overflow-hidden shadow-[0_12px_40px_rgba(45,62,80,0.06)]"
               data-reveal
