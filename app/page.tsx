@@ -35,10 +35,13 @@ export default function Home() {
           <div className="content-shell online-teaser-grid" data-reveal>
             <div className="online-teaser-copy">
               <p className="eyebrow">온라인 발성훈련 · 체험 운영 중</p>
-              <h2>
-                수업과 수업 사이,
-                <br />
-                내 목소리를 위한 연습.
+              <h2 className="line-rise">
+                <span className="line-rise-item">
+                  <span className="line-rise-inner">수업과 수업 사이,</span>
+                </span>
+                <span className="line-rise-item">
+                  <span className="line-rise-inner">내 목소리를 위한 연습.</span>
+                </span>
               </h2>
               <p>
                 발성 강의를 보고, 연습을 기록하고,

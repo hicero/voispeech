@@ -41,7 +41,11 @@ export default function VoiceCheck() {
         <div className="voice-layout">
           <div className="voice-intro" data-reveal>
             <p className="eyebrow">5 VOICE CHECK</p>
-            <h2>발성의 5가지 영역</h2>
+            <h2 className="line-rise">
+              <span className="line-rise-item">
+                <span className="line-rise-inner">발성의 5가지 영역</span>
+              </span>
+            </h2>
             <p>
               잘 되고 있는 부분과 조정이 필요한 부분을
               <br className="hidden md:block" /> 함께 살펴,{' '}

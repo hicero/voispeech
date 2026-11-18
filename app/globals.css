@@ -4333,3 +4333,34 @@ section[aria-label="핵심 차별점"],
     content: none;
   }
 }
+
+
+/* Line-rise on key homepage headings, built on the existing data-reveal / is-inview system. */
+.line-rise-item {
+  display: block;
+  overflow: hidden;
+}
+.line-rise-inner {
+  display: block;
+}
+.js-motion [data-reveal]:not(.is-inview) .line-rise-inner {
+  transform: translate3d(0, 108%, 0);
+}
+.js-motion [data-reveal].is-inview .line-rise-inner {
+  transform: none;
+  transition: transform 1.05s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+.js-motion [data-reveal].is-inview .line-rise-item:nth-child(2) .line-rise-inner {
+  transition-delay: 0.12s;
+}
+.js-motion [data-reveal].is-inview .line-rise-item:nth-child(3) .line-rise-inner {
+  transition-delay: 0.22s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js-motion [data-reveal] .line-rise-inner,
+  .js-motion [data-reveal]:not(.is-inview) .line-rise-inner,
+  .js-motion [data-reveal].is-inview .line-rise-inner {
+    transform: none;
+    transition: none;
+  }
+}

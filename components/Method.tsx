@@ -31,10 +31,15 @@ export default function Method() {
       <div className="content-shell">
         <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">METHOD</p>
-          <h2>
-            살펴보고, 바꿔보고, <span className="phrase-mark">노래하기</span>
-            <span className="text-sky" aria-hidden>
-              .
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">
+                살펴보고, 바꿔보고,{" "}
+                <span className="phrase-mark">노래하기</span>
+                <span className="text-sky" aria-hidden>
+                  .
+                </span>
+              </span>
             </span>
           </h2>
           <p>

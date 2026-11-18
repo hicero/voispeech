@@ -181,7 +181,11 @@ export default function Coach() {
       <div className="content-shell">
         <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">COACH</p>
-          <h2>함께하는 코치</h2>
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">함께하는 코치</span>
+            </span>
+          </h2>
           <p>
             소리와 연습 과정을 함께 살펴보고, 직접 시도할 수 있는 방법으로
             풀어갑니다.

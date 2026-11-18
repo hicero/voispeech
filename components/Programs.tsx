@@ -54,7 +54,11 @@ export default function Programs() {
         <div className="section-heading" data-reveal>
           <div>
             <p className="eyebrow">PROGRAMS</p>
-            <h2>One-Day, Private, Online.</h2>
+            <h2 className="line-rise">
+              <span className="line-rise-item">
+                <span className="line-rise-inner">One-Day, Private, Online.</span>
+              </span>
+            </h2>
           </div>
           <p>
             학원식 반 나누기 대신,
