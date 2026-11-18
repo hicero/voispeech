@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import TrustStrip from "@/components/TrustStrip";
@@ -6,13 +7,14 @@ import VoiceCheck from "@/components/VoiceCheck";
 import ReportTeaser from "@/components/ReportTeaser";
 import Programs from "@/components/Programs";
 import BeforeAfter from "@/components/BeforeAfter";
-import Testimonials from "@/components/Testimonials";
 import Coach from "@/components/Coach";
 import Research from "@/components/Research";
-import FAQ from "@/components/FAQ";
 import ContactForm from "@/components/ContactForm";
 import Booking from "@/components/Booking";
 import Footer from "@/components/Footer";
+
+const Testimonials = dynamic(() => import("@/components/Testimonials"));
+const FAQ = dynamic(() => import("@/components/FAQ"));
 
 export default function Home() {
   return (

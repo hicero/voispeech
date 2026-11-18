@@ -241,7 +241,7 @@ export default function Research() {
         <div
           id="research-more"
           className={`expand-panel ${showMore ? "is-open" : ""}`}
-          aria-hidden={!showMore}
+          inert={!showMore}
         >
           <div className="expand-panel-inner">
             <ul className="paper-grid paper-grid-more">
@@ -297,7 +297,7 @@ export default function Research() {
               <div
                 id="affil-detail"
                 className={`expand-panel ${showAffilDetail ? "is-open" : ""}`}
-                aria-hidden={!showAffilDetail}
+                inert={!showAffilDetail}
               >
                 <div className="expand-panel-inner">
                   <p>

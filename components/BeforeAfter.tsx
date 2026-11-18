@@ -1,4 +1,4 @@
-import { Play } from "lucide-react";
+import Play from "lucide-react/icons/play";
 import UiIcon from "./UiIcon";
 
 const cases = [

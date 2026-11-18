@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import Menu from "lucide-react/icons/menu";
+import X from "lucide-react/icons/x";
 import Logo from "./Logo";
 import UiIcon from "./UiIcon";
 
@@ -55,7 +56,7 @@ export default function Header() {
       }`}
     >
       <div className="site-header-inner content-shell">
-        <a className="site-logo-link" href="#top" onClick={() => setOpen(false)} aria-label="VoiSpeech 홈">
+        <a className="site-logo-link" href="#top" onClick={() => setOpen(false)} aria-label="VoiSpeech 보이스피치">
           <Logo compact />
         </a>
 

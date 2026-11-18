@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import ArrowUpRight from "lucide-react/icons/arrow-up-right";
 import UiIcon from "./UiIcon";
 import { isHttpsUrl, onedayPlatforms } from "./siteConfig";
 

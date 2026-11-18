@@ -1,4 +1,7 @@
-import { BookOpen, ClipboardList, MessagesSquare, User } from "lucide-react";
+import BookOpen from "lucide-react/icons/book-open";
+import ClipboardList from "lucide-react/icons/clipboard-list";
+import MessagesSquare from "lucide-react/icons/messages-square";
+import User from "lucide-react/icons/user";
 import UiIcon from "./UiIcon";
 
 const ICONS = {
