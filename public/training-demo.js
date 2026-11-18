@@ -277,7 +277,7 @@ function setCtaLabel(el,text){
   const right=raw.includes('→');
   const clean=raw.replace(/\s*[↗→]\s*/g,'').trim();
   const icon=up?'arrowUpRight':right?'arrowRight':'';
-  el.innerHTML=icon?withIcon(icon,clean):escapeHtml(clean);
+  el.innerHTML=icon?('<span>'+escapeHtml(clean)+'</span>'+(ICONS[icon]||'')):escapeHtml(clean);
 }
 
 function renderFilters(){
