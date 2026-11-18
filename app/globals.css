@@ -747,9 +747,10 @@ section[aria-label="핵심 차별점"] {
   border-bottom: 1px solid transparent;
 }
 .site-header.is-scrolled {
-  border-bottom-color: var(--color-line);
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
+  border-bottom-color: color-mix(in srgb, var(--color-line) 80%, transparent);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(1.2) blur(14px);
+  -webkit-backdrop-filter: saturate(1.2) blur(14px);
 }
 .site-header-inner {
   display: flex;
