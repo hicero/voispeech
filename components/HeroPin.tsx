@@ -2,10 +2,14 @@
 
 import { useEffect } from "react";
 
+const PIN_MIN_HEIGHT = 821;
+const PIN_MIN_WIDTH = 768;
+
 /**
  * Home-only pinned-hero progress. Sets --p (0–1) on .hero-section via one
- * rAF-throttled scroll listener. Respects prefers-reduced-motion (static first
- * frame, no pin). Not mounted from layout or /training/.
+ * rAF-throttled scroll listener. Respects prefers-reduced-motion, short
+ * viewports, and first-frame fit (static hero, no pin). Not mounted from
+ * layout or /training/.
  */
 export default function HeroPin({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -13,11 +17,36 @@ export default function HeroPin({ children }: { children: React.ReactNode }) {
     if (!root) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const shortH = window.matchMedia(`(max-height: ${PIN_MIN_HEIGHT - 1}px)`);
+    const narrow = window.matchMedia(`(max-width: ${PIN_MIN_WIDTH - 1}px)`);
     const stick = root.querySelector<HTMLElement>(".hero-stick");
     const slot = root.querySelector<HTMLElement>(".hero-cover-slot");
+    const grid = root.querySelector<HTMLElement>(".hero-grid");
+
+    const canPin = () => {
+      if (reduce.matches || shortH.matches || narrow.matches) return false;
+      if (window.innerHeight < PIN_MIN_HEIGHT) return false;
+      if (window.innerWidth < PIN_MIN_WIDTH) return false;
+      if (stick && grid) {
+        const cs = getComputedStyle(stick);
+        const pad =
+          (parseFloat(cs.paddingTop) || 0) +
+          (parseFloat(cs.paddingBottom) || 0);
+        const needed = grid.getBoundingClientRect().height + pad + 16;
+        if (needed > window.innerHeight) return false;
+      }
+      return true;
+    };
+
+    const disablePin = () => {
+      root.style.setProperty("--p", "0");
+      root.classList.add("is-static-hero");
+      root.classList.remove("is-hero-measured", "is-hero-copy-gone");
+      if (slot) slot.style.minHeight = "";
+    };
 
     const measure = () => {
-      if (!stick || !slot || reduce.matches) return;
+      if (!stick || !slot || !canPin()) return;
       const sr = stick.getBoundingClientRect();
       const sl = slot.getBoundingClientRect();
       const t = sl.top - sr.top;
@@ -44,11 +73,8 @@ export default function HeroPin({ children }: { children: React.ReactNode }) {
     };
 
     const apply = () => {
-      if (reduce.matches) {
-        root.style.setProperty("--p", "0");
-        root.classList.add("is-static-hero");
-        root.classList.remove("is-hero-measured", "is-hero-copy-gone");
-        if (slot) slot.style.minHeight = "";
+      if (!canPin()) {
+        disablePin();
         return;
       }
       root.classList.remove("is-static-hero");
@@ -70,7 +96,8 @@ export default function HeroPin({ children }: { children: React.ReactNode }) {
     };
 
     const onResize = () => {
-      measure();
+      apply();
+      if (canPin()) measure();
       apply();
     };
 
@@ -81,16 +108,16 @@ export default function HeroPin({ children }: { children: React.ReactNode }) {
       apply();
     });
 
-    if (!reduce.matches) {
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onResize);
-    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
     reduce.addEventListener("change", onResize);
+    shortH.addEventListener("change", onResize);
+    narrow.addEventListener("change", onResize);
 
     const ro =
       stick && slot && typeof ResizeObserver !== "undefined"
         ? new ResizeObserver(() => {
-            if (!reduce.matches) measure();
+            if (canPin()) measure();
           })
         : null;
     if (ro && stick) ro.observe(stick);
@@ -100,6 +127,8 @@ export default function HeroPin({ children }: { children: React.ReactNode }) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       reduce.removeEventListener("change", onResize);
+      shortH.removeEventListener("change", onResize);
+      narrow.removeEventListener("change", onResize);
       ro?.disconnect();
     };
   }, []);

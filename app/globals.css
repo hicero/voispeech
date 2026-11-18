@@ -4185,7 +4185,7 @@ section[aria-label="핵심 차별점"],
   display: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-height: 821px) and (min-width: 768px) {
   .hero-section {
     --p: 0;
     height: 170vh;
@@ -4306,7 +4306,9 @@ section[aria-label="핵심 차별점"],
   content: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* Short viewports and mobile: the stacked/padded first frame cannot fit in
+   a 100vh overflow-hidden sticky pane, so fall back to the static hero. */
+@media (prefers-reduced-motion: reduce), (max-height: 820px), (max-width: 767px) {
   .hero-section {
     height: auto;
   }
