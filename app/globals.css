@@ -4161,9 +4161,15 @@ section[aria-label="핵심 차별점"],
 }
 
 
-/* Home pinned hero: short, calm scroll (desktop ~170vh, mobile shorter).
-   One rAF listener in HeroPin sets --p. Static first frame when reduced-motion. */
+/* Home hero is always static: no pinned 170vh scroller, no --p card grow. */
+.hero-section {
+  height: auto;
+}
 .hero-stick {
+  position: static;
+  height: auto;
+  overflow: visible;
+  display: block;
   padding: 9.5rem 0 5.5rem;
 }
 @media (max-width: 767px) {
@@ -4181,160 +4187,24 @@ section[aria-label="핵심 차별점"],
   }
 }
 
-.hero-cover-end {
-  display: none;
-}
-
-@media (prefers-reduced-motion: no-preference) and (min-height: 821px) and (min-width: 768px) {
-  .hero-section {
-    --p: 0;
-    height: 170vh;
-  }
-  @media (max-width: 767px) {
-    .hero-section {
-      height: 140vh;
-    }
-  }
-
-  .hero-stick {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100svh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-
-  .hero-copy-pin {
-    opacity: calc(1 - (var(--p, 0) * 2.15));
-    transform: translate3d(0, calc(var(--p, 0) * -2.1rem), 0);
-  }
-
-  .hero-section.is-hero-copy-gone .hero-copy-pin {
-    pointer-events: none;
-  }
-
-  .hero-section.is-hero-measured .hero-cover {
-    position: absolute;
-    z-index: 2;
-    top: calc((var(--c0-t, 0px) * (1 - var(--p, 0))) + (var(--c1-t, 0px) * var(--p, 0)));
-    left: calc((var(--c0-l, 0px) * (1 - var(--p, 0))) + (var(--c1-l, 0px) * var(--p, 0)));
-    width: calc((var(--c0-w, 0px) * (1 - var(--p, 0))) + (var(--c1-w, 0px) * var(--p, 0)));
-    height: calc((var(--c0-h, 0px) * (1 - var(--p, 0))) + (var(--c1-h, 0px) * var(--p, 0)));
-    min-height: 0;
-    border-radius:
-      calc(8px - (var(--p, 0) * 2px))
-      calc(8px - (var(--p, 0) * 2px))
-      calc(70px - (var(--p, 0) * 60px))
-      calc(8px - (var(--p, 0) * 2px));
-  }
-
-  .hero-section.is-hero-measured .hero-cover::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--color-navy);
-    opacity: calc(var(--p, 0) * 0.38);
-    pointer-events: none;
-    z-index: 2;
-    border-radius: inherit;
-  }
-  @media (max-width: 767px) {
-    .hero-section.is-hero-measured .hero-cover::after {
-      opacity: calc(var(--p, 0) * 0.26);
-    }
-  }
-
-  .hero-section.is-hero-measured .hero-cover .cover-top,
-  .hero-section.is-hero-measured .hero-cover .cover-title,
-  .hero-section.is-hero-measured .hero-cover .cover-arc,
-  .hero-section.is-hero-measured .hero-cover .cover-bottom {
-    opacity: calc(1 - (var(--p, 0) * 2.05));
-  }
-
-  .hero-section.is-hero-measured .hero-cover-end {
-    display: block;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 3;
-    margin: 0;
-    width: min(16rem, 80%);
-    transform: translate(-50%, calc(-50% + 0.6rem));
-    font-size: clamp(1.55rem, 2.6vw, 2.15rem);
-    font-weight: 500;
-    line-height: 1.45;
-    letter-spacing: -0.03em;
-    color: #f4f8fb;
-    text-align: center;
-    opacity: calc((var(--p, 0) - 0.6) * 2.7);
-    pointer-events: none;
-  }
-  @media (max-width: 767px) {
-    .hero-section.is-hero-measured .hero-cover-end {
-      font-size: 1.35rem;
-    }
-  }
-}
-
-.hero-section.is-static-hero {
-  height: auto;
-}
-.hero-section.is-static-hero .hero-stick {
-  position: static;
-  height: auto;
-  overflow: visible;
-  display: block;
-}
-.hero-section.is-static-hero .hero-copy-pin {
+.hero-copy-pin {
   opacity: 1;
   transform: none;
   pointer-events: auto;
 }
-.hero-section.is-static-hero .hero-cover {
+
+.hero-cover-end {
+  display: none;
+}
+
+.hero-section .hero-cover {
   position: relative;
   inset: auto;
   width: auto;
   height: auto;
 }
-.hero-section.is-static-hero .hero-cover-end {
-  display: none;
-}
-.hero-section.is-static-hero .hero-cover::after {
+.hero-section .hero-cover::after {
   content: none;
-}
-
-/* Short viewports and mobile: the stacked/padded first frame cannot fit in
-   a 100vh overflow-hidden sticky pane, so fall back to the static hero. */
-@media (prefers-reduced-motion: reduce), (max-height: 820px), (max-width: 767px) {
-  .hero-section {
-    height: auto;
-  }
-  .hero-stick {
-    position: static;
-    height: auto;
-    overflow: visible;
-    display: block;
-  }
-  .hero-copy-pin {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-  }
-  .hero-cover-end {
-    display: none;
-  }
-  .hero-section.is-hero-measured .hero-cover {
-    position: relative;
-    inset: auto;
-    width: auto;
-    height: auto;
-  }
-  .hero-section.is-hero-measured .hero-cover::after {
-    content: none;
-  }
 }
 
 

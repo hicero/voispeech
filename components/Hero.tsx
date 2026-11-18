@@ -1,11 +1,10 @@
 import ArrowUpRight from "lucide-react/icons/arrow-up-right";
 import UiIcon from "./UiIcon";
 import ArcGraphic from "./ArcGraphic";
-import HeroPin from "./HeroPin";
 
 export default function Hero() {
   return (
-    <HeroPin>
+    <>
       <div id="top" className="scroll-top-anchor" tabIndex={-1} />
       <section className="hero-section">
         <div className="hero-stick">
@@ -78,6 +77,6 @@ export default function Hero() {
           </div>
         </div>
       </section>
-    </HeroPin>
+    </>
   );
 }
