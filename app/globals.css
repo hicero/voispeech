@@ -4113,3 +4113,56 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   top: 0.75rem;
   right: 0.75rem;
 }
+
+
+/* Home section background rhythm: off-white / pale blue / navy, contrast AA */
+.hero-section,
+#method,
+#programs,
+#testimonials,
+#research,
+#booking,
+.booking-section {
+  background: var(--color-page);
+  background-image: none;
+}
+section[aria-label="핵심 차별점"],
+#voice-check,
+#report,
+#results,
+#coach,
+#faq {
+  background: var(--color-sky-muted);
+  background-image: none;
+}
+#report {
+  background: color-mix(in srgb, var(--color-sky-muted) 70%, var(--color-sky-soft));
+}
+.online-teaser {
+  background: var(--color-navy);
+  background-image: none;
+  color: #f4f8fb;
+}
+.online-teaser .eyebrow {
+  color: #d1dfe9;
+}
+.online-teaser h2 {
+  color: #ffffff;
+}
+.online-teaser p {
+  color: #d1dfe9;
+}
+.online-teaser small {
+  color: #c5d5e0;
+}
+.online-teaser .btn-primary {
+  background: #f4f8fb;
+  color: var(--color-navy);
+}
+.online-teaser .btn-primary:hover {
+  background: #ffffff;
+  color: var(--color-navy);
+}
+.contact-section {
+  background: var(--color-navy);
+}
