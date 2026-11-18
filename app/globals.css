@@ -3118,15 +3118,12 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   border-color: color-mix(in srgb, var(--color-navy) 16%, var(--color-sky));
 }
 
-.academy .lesson-tag[data-kind="locked"]::before,
-.academy .lesson-tag:not([data-kind])::before {
-  content: "";
-  width: 0.7em;
-  height: 0.7em;
+
+.academy .lesson-tag .ui-icon,
+.academy .lesson-tag svg {
+  width: 0.75rem;
+  height: 0.75rem;
   flex-shrink: 0;
-  background-color: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23000' d='M6 1.5A2.25 2.25 0 0 0 3.75 3.75V5h-.5C2.56 5 2 5.56 2 6.25v3.5C2 10.44 2.56 11 3.25 11h5.5c.69 0 1.25-.56 1.25-1.25v-3.5C10 5.56 9.44 5 8.75 5h-.5V3.75A2.25 2.25 0 0 0 6 1.5zm-1.25 2.25c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25V5h-2.5V3.75z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23000' d='M6 1.5A2.25 2.25 0 0 0 3.75 3.75V5h-.5C2.56 5 2 5.56 2 6.25v3.5C2 10.44 2.56 11 3.25 11h5.5c.69 0 1.25-.56 1.25-1.25v-3.5C10 5.56 9.44 5 8.75 5h-.5V3.75A2.25 2.25 0 0 0 6 1.5zm-1.25 2.25c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25V5h-2.5V3.75z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .academy .lesson-copy h3 {
@@ -3976,43 +3973,43 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 }
 
 
-/* Learning path: connecting line + current-step highlight; vertical on small screens */
+/* Learning path: Lucide chevrons centered between steps; vertical on small screens */
 .academy .learning-path-steps,
 .learning-path-steps {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.7rem;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
   margin: 1rem 0;
-}
-.academy .learning-path-steps::before {
-  content: "";
-  position: absolute;
-  top: 1.15rem;
-  left: 8%;
-  right: 8%;
-  height: 1px;
-  background: color-mix(in srgb, var(--color-navy) 22%, var(--color-line));
-  pointer-events: none;
-  z-index: 0;
 }
 .academy .learning-path-steps button {
   position: relative;
   z-index: 1;
-  overflow: visible;
+  flex: 1 1 0;
+  min-width: 0;
 }
-.academy .learning-path-steps button:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  top: 1.05rem;
-  right: calc(-0.35rem - 2px);
-  width: 0.38rem;
-  height: 0.38rem;
-  border-top: 1.5px solid color-mix(in srgb, var(--color-navy) 38%, var(--color-line));
-  border-right: 1.5px solid color-mix(in srgb, var(--color-navy) 38%, var(--color-line));
-  transform: rotate(45deg);
+.academy .learning-path-steps button:not(:last-child)::after,
+.academy .learning-path-steps::before {
+  content: none;
+  display: none;
+}
+.academy .learning-path-connector {
+  flex: 0 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 14px;
+  height: 14px;
+  margin: 0 0.35rem;
+  color: var(--color-faint);
   pointer-events: none;
-  z-index: 2;
+}
+.academy .learning-path-connector .ui-icon,
+.academy .learning-path-connector svg {
+  width: 14px;
+  height: 14px;
+  display: block;
 }
 .academy .learning-path-steps button[aria-current="step"] {
   box-shadow: inset 0 0 0 1.5px var(--color-navy);
@@ -4029,27 +4026,21 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   .learning-path > div,
   .learning-path-steps,
   .academy .learning-path-steps {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-    padding-left: 0.15rem;
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    gap: 0;
+    padding-left: 0;
   }
-  .academy .learning-path-steps::before {
-    top: 1rem;
-    bottom: 1rem;
-    left: 1.15rem;
-    right: auto;
-    width: 1px;
-    height: auto;
+  .academy .learning-path-steps button {
+    flex: 0 0 auto;
+    width: 100%;
   }
-  .academy .learning-path-steps button:not(:last-child)::after {
-    top: auto;
-    right: auto;
-    left: 1.02rem;
-    bottom: calc(-0.45rem - 2px);
-    transform: rotate(135deg);
+  .academy .learning-path-connector {
+    margin: 0.3rem 0;
+    transform: rotate(90deg);
   }
 }
-
 
 /* Lesson card CSS/SVG-style pattern thumbs + lock badge */
 .academy .lesson-art {
