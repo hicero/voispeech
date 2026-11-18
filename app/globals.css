@@ -4429,3 +4429,28 @@ section[aria-label="핵심 차별점"],
   transform: none;
   transition: none;
 }
+
+
+/* Calendar fills the booking panel edge to edge. */
+.booking-calendar {
+  padding: 0;
+  background: #ffffff;
+  overflow: hidden;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .booking-calendar {
+    border-radius: 0 12px 12px 0;
+  }
+}
+@media (max-width: 767px) {
+  .booking-calendar {
+    padding: 0;
+    border-radius: 0 0 12px 12px;
+  }
+}
+.booking-cal-wrap,
+.booking-cal-embed {
+  background: #ffffff;
+  overflow: hidden;
+}
