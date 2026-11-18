@@ -4049,3 +4049,67 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     transform: rotate(135deg);
   }
 }
+
+
+/* Lesson card CSS/SVG-style pattern thumbs + lock badge */
+.academy .lesson-art {
+  overflow: hidden;
+}
+.academy .lesson-art > span:first-of-type:not(.lesson-pattern),
+.academy .lesson-art > strong,
+.academy .lesson-art > .lesson-play {
+  position: relative;
+  z-index: 1;
+}
+.academy .lesson-pattern {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 86% 18%, rgba(32, 57, 79, 0.1), transparent 42%),
+    repeating-linear-gradient(-18deg, transparent 0 11px, rgba(32, 57, 79, 0.07) 11px 12px);
+}
+.academy .lesson-card[data-category="SOVT"] .lesson-pattern {
+  background-image:
+    radial-gradient(circle at 72% 58%, transparent 16px, rgba(32, 57, 79, 0.12) 17px, transparent 18px),
+    radial-gradient(circle at 72% 58%, transparent 28px, rgba(32, 57, 79, 0.1) 29px, transparent 30px),
+    radial-gradient(circle at 72% 58%, transparent 40px, rgba(32, 57, 79, 0.08) 41px, transparent 42px),
+    repeating-linear-gradient(90deg, transparent 0 13px, rgba(47, 81, 107, 0.08) 13px 14px);
+}
+.academy .lesson-card[data-category="기초"] .lesson-pattern {
+  background-image:
+    repeating-linear-gradient(180deg, transparent 0 13px, rgba(32, 57, 79, 0.08) 13px 14px),
+    radial-gradient(ellipse at 20% 80%, rgba(90, 130, 155, 0.16), transparent 46%);
+}
+.academy .lesson-card[data-category="노래 적용"] .lesson-pattern {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90' fill='none'%3E%3Cpath d='M8 58c18-22 32-22 48 0s32 22 48 0 32-22 48 0' stroke='%2320394f' stroke-opacity='.18' stroke-width='1.4' stroke-linecap='round'/%3E%3Cpath d='M12 70c16-16 28-16 42 0s28 16 42 0 28-16 42 0' stroke='%2320394f' stroke-opacity='.12' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 18% 24%, rgba(32, 57, 79, 0.1), transparent 40%);
+  background-size: cover, auto;
+  background-position: center, center;
+}
+.academy .lesson-lock {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 3;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-navy) 78%, transparent);
+  color: #f4f8fb;
+  pointer-events: none;
+}
+.academy .lesson-lock .ui-icon,
+.academy .lesson-lock svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.academy .lesson-art-thumb .lesson-lock {
+  top: 0.75rem;
+  right: 0.75rem;
+}

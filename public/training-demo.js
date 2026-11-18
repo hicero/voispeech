@@ -335,18 +335,21 @@ function renderLibrary(){
     const thumb=l.thumbnail_url||'';
     const artClass=thumb
       ? 'lesson-art lesson-art-thumb'
-      : `lesson-art lesson-art-${(idx%4)+1}`;
+      : `lesson-art lesson-art-pattern lesson-art-${(idx%4)+1}`;
     const article=document.createElement('article');
     article.className='lesson-card';
     article.dataset.category=l.category;
     article.dataset.lessonId=l.id;
     article.dataset.search=lessonSearchHaystack(l);
     const steps=lessonStepCount(l);
+    const order=String(l.sort_order).padStart(2,'0');
+    const lockBadge=l.access==='free'?'':`<span class="lesson-lock" aria-hidden="true">${ICONS.lock}</span>`;
     const artInner=thumb
-      ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">${ICONS.play}</span></span>`
-      : `<span>${escapeHtml(l.category)}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">${ICONS.play}</span>`;
+      ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">${ICONS.play}</span></span>${lockBadge}`
+      : `<span class="lesson-pattern" aria-hidden="true"></span><span>${escapeHtml(l.category)}</span><strong>${order}</strong><span class="lesson-play">${ICONS.play}</span>${lockBadge}`;
     const accessKind=l.access==='free'?'free':'locked';
-    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}" data-kind="${accessKind}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">${withIcon("star","저장")}</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>${withIcon("check","학습 완료")}</span></div>`;
+    const artLabel=`${l.title} 열기 ${l.category||''} ${order}`.trim();
+    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(artLabel)}">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}" data-kind="${accessKind}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 저장 즐겨찾기">${withIcon("star","저장")}</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>${withIcon("check","학습 완료")}</span></div>`;
     grid.append(article);
   });
   let empty=$('.library-empty');
