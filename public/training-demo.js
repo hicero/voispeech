@@ -435,6 +435,7 @@ function update(){
   updateCommunityHint();
   updatePracticeHint();
   renderPracticePanel();
+  highlightLearningPath();
 }
 
 function firstUnfinishedStep(lesson){
@@ -573,6 +574,25 @@ function renderPracticePanel(){
   if(countEl)tickCount(countEl,`${done.size} / ${total||0}`);
   const bar=$('#practice-panel-bar');
   if(bar)bar.style.setProperty('--progress',total?String(done.size/total):'0');
+}
+
+
+function currentLearningPathIndex(){
+  const terms=['기초','관찰','루틴','노래'].map(normalizeSearch);
+  const list=lessons();
+  if(!done.size)return 0;
+  const completed=terms.map(term=>list.some(l=>done.has(String(l.id))&&lessonSearchHaystack(l).includes(term)));
+  if(!completed.some(Boolean))return 0;
+  const firstOpen=completed.findIndex(v=>!v);
+  return firstOpen===-1?terms.length-1:firstOpen;
+}
+
+function highlightLearningPath(){
+  const index=currentLearningPathIndex();
+  all('[data-path]').forEach(x=>{
+    if(Number(x.dataset.path)===index)x.setAttribute('aria-current','step');
+    else x.removeAttribute('aria-current');
+  });
 }
 
 function selectLearningPath(index){
