@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import UiIcon from "./UiIcon";
+import MotionPress from "./MotionPress";
 
 const areas = [
   {
@@ -70,14 +71,14 @@ export default function VoiceCheck() {
           VoiSpeech의 코칭 프레임워크입니다.
         </p>
 
-        <div className="voice-check-cta">
+        <MotionPress className="voice-check-cta">
           <a href="#booking" className="btn-primary">
             원데이 클래스 예약 <UiIcon icon={ArrowUpRight} />
           </a>
           <a href="#booking" className="hero-link">
             현재 목소리 확인하기
           </a>
-        </div>
+        </MotionPress>
       </div>
     </section>
   );

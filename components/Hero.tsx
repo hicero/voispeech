@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import UiIcon from "./UiIcon";
+import MotionPress from "./MotionPress";
 import ArcGraphic from "./ArcGraphic";
 
 export default function Hero() {
@@ -20,14 +21,14 @@ export default function Hero() {
             <br className="hidden sm:block" /> 어떤 조건에서 소리가 달라지는지 본 뒤,
             <br className="hidden sm:block" /> 필요한 연습 방향을 찾는 곳입니다.
           </p>
-          <div className="hero-actions">
+          <MotionPress className="hero-actions">
             <a href="#booking" className="btn-primary">
               원데이 클래스 예약 <UiIcon icon={ArrowUpRight} />
             </a>
             <a href="/training/" className="hero-link">
               온라인 훈련 둘러보기
             </a>
-          </div>
+          </MotionPress>
           <p className="hero-meta">
             1:1 발성 코칭 <span>/</span> 5 VOICE CHECK <span>/</span> 개인 코칭
             리포트

@@ -517,7 +517,7 @@ button:disabled { opacity:.45; cursor:not-allowed; }
 
 .program-card {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), var(--shadow-card);
-  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .program-card:hover {
@@ -2040,10 +2040,10 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 /* Scroll reveal — visible unless js-motion is set (no-JS / IO fallback) */
 .js-motion [data-reveal] {
   opacity: 0;
-  transform: translateY(0.8rem);
+  transform: translateY(0.7rem);
   transition:
-    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
-    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
 }
 
 .js-motion [data-reveal].is-inview {
