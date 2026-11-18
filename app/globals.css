@@ -4121,15 +4121,16 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 }
 section[aria-label="핵심 차별점"],
 #voice-check,
-#report,
 #results,
 #coach,
 #faq {
   background: var(--color-sky-muted);
   background-image: none;
 }
+/* White so Report reads apart from the pale-blue Voice Check band beside it. */
 #report {
-  background: color-mix(in srgb, var(--color-sky-muted) 70%, var(--color-sky-soft));
+  background: var(--color-surface);
+  background-image: none;
 }
 .online-teaser {
   background: var(--color-navy);
