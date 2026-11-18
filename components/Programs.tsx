@@ -1,3 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+import UiIcon from "./UiIcon";
 import { isHttpsUrl, onedayPlatforms } from "./siteConfig";
 
 const programs = [
@@ -76,7 +78,7 @@ export default function Programs() {
                 ))}
               </ul>
               <a href={p.href}>
-                {p.cta} <span aria-hidden>↗</span>
+                {p.cta} <UiIcon icon={ArrowUpRight} />
               </a>
               {p.num === "01" && (
                 <div className="oneday-platforms">

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 import Logo from "./Logo";
+import UiIcon from "./UiIcon";
 
 const navLinks = [
   { href: "#method", label: "코칭 방식" },
@@ -77,28 +79,8 @@ export default function Header() {
           onClick={() => setOpen((v) => !v)}
         >
           <span className={`menu-icon${open ? " is-open" : ""}`} aria-hidden>
-            <svg
-              className="menu-icon-bars"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-            >
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
-            <svg
-              className="menu-icon-close"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-            >
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
+            <UiIcon icon={Menu} className="menu-icon-bars" size={22} />
+            <UiIcon icon={X} className="menu-icon-close" size={22} />
           </span>
         </button>
       </div>

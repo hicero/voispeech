@@ -1,3 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+import UiIcon from "./UiIcon";
 import ArcGraphic from "./ArcGraphic";
 
 export default function Hero() {
@@ -20,7 +22,7 @@ export default function Hero() {
           </p>
           <div className="hero-actions">
             <a href="#booking" className="btn-primary">
-              원데이 클래스 예약 <span aria-hidden>↗</span>
+              원데이 클래스 예약 <UiIcon icon={ArrowUpRight} />
             </a>
             <a href="/training/" className="hero-link">
               온라인 훈련 둘러보기

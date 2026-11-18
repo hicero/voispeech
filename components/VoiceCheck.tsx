@@ -1,3 +1,6 @@
+import { ArrowUpRight } from "lucide-react";
+import UiIcon from "./UiIcon";
+
 const areas = [
   {
     num: "01",
@@ -69,7 +72,7 @@ export default function VoiceCheck() {
 
         <div className="voice-check-cta">
           <a href="#booking" className="btn-primary">
-            원데이 클래스 예약 <span aria-hidden>↗</span>
+            원데이 클래스 예약 <UiIcon icon={ArrowUpRight} />
           </a>
           <a href="#booking" className="hero-link">
             현재 목소리 확인하기

@@ -1,3 +1,6 @@
+import { Play } from "lucide-react";
+import UiIcon from "./UiIcon";
+
 const cases = [
   {
     label: "CASE 01",
@@ -55,7 +58,7 @@ export default function BeforeAfter() {
                   <div className="case-block-top">
                     <p className="case-kicker">BEFORE</p>
                     <span className="case-audio-slot" aria-hidden="true">
-                      ▶ BEFORE
+                      <><UiIcon icon={Play} size={12} /> BEFORE</>
                     </span>
                   </div>
                   <p>{item.before}</p>
@@ -70,7 +73,7 @@ export default function BeforeAfter() {
                   <div className="case-block-top">
                     <p className="case-kicker">AFTER</p>
                     <span className="case-audio-slot" aria-hidden="true">
-                      ▶ AFTER
+                      <><UiIcon icon={Play} size={12} /> AFTER</>
                     </span>
                   </div>
                   <p>{item.after}</p>

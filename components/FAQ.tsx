@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import UiIcon from "./UiIcon";
 
 const faqs = [
   {
@@ -54,7 +56,7 @@ export default function FAQ() {
                       className={`faq-icon ${isOpen ? "is-open" : ""}`}
                       aria-hidden
                     >
-                      +
+                      <UiIcon icon={ChevronDown} />
                     </span>
                   </button>
                 </h3>

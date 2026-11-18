@@ -3726,3 +3726,90 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     transition: none;
   }
 }
+
+
+/* ——— Lucide icons (shared stroke, sized to text) ——— */
+.ui-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: -0.125em;
+  stroke-width: 1.75;
+}
+.faq-icon.is-open {
+  transform: rotate(180deg);
+}
+.btn-primary,
+.btn-outline,
+.academy-light,
+.favorite-button,
+.academy-reset,
+.practice-booking-cta,
+.practice-booking-label,
+.practice-panel h2,
+.lesson-tag,
+.lesson-done,
+.hero-actions .btn-primary,
+.voice-check-cta .btn-primary {
+  align-items: center;
+}
+.btn-primary,
+.btn-outline,
+.favorite-button,
+.academy-reset,
+.practice-booking-cta,
+.practice-booking-label,
+.lesson-tag,
+.lesson-done {
+  display: inline-flex;
+  gap: 0.35em;
+}
+.practice-panel h2,
+.academy-light {
+  display: flex;
+  gap: 0.4rem;
+}
+.academy .academy-top-nav button,
+.academy .academy-sidebar nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.academy .academy-bottom button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  line-height: 1.2;
+}
+.academy .academy-bottom .ui-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.lesson-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.lesson-play .ui-icon {
+  width: 16px;
+  height: 16px;
+}
+.dialog-heading button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.case-audio-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.module-list button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}

@@ -250,6 +250,36 @@ function escapeAttr(value){
   return escapeHtml(value).replace(/'/g,'&#39;');
 }
 
+function iconSvg(inner,size){
+  size=size||16;
+  return `<svg class="ui-icon" xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+}
+const ICONS={
+  play:iconSvg('<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>'),
+  star:iconSvg('<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>'),
+  starFill:iconSvg('<path fill="currentColor" d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>'),
+  check:iconSvg('<path d="M20 6 9 17l-5-5"/>'),
+  lock:iconSvg('<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'),
+  arrowRight:iconSvg('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>'),
+  arrowUpRight:iconSvg('<path d="M7 7h10v10"/><path d="M7 17 17 7"/>')
+};
+function withIcon(icon,text){
+  return (ICONS[icon]||'')+'<span>'+escapeHtml(text)+'</span>';
+}
+function setIconLabel(el,icon,text){
+  if(!el)return;
+  el.innerHTML=withIcon(icon,text);
+}
+function setCtaLabel(el,text){
+  if(!el)return;
+  const raw=String(text||'');
+  const up=raw.includes('↗');
+  const right=raw.includes('→');
+  const clean=raw.replace(/\s*[↗→]\s*/g,'').trim();
+  const icon=up?'arrowUpRight':right?'arrowRight':'';
+  el.innerHTML=icon?withIcon(icon,clean):escapeHtml(clean);
+}
+
 function renderFilters(){
   const wrap=$('.academy-filters');
   if(!wrap)return;
@@ -291,10 +321,10 @@ function renderLibrary(){
     article.dataset.search=lessonSearchHaystack(l);
     const steps=lessonStepCount(l);
     const artInner=thumb
-      ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">▷</span></span>`
-      : `<span>${escapeHtml(l.category)}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">▷</span>`;
+      ? `<img class="lesson-thumb" src="${escapeAttr(thumb)}" alt="" loading="lazy"/><span class="lesson-art-overlay"><span>${escapeHtml(l.category)}</span><span class="lesson-play">${ICONS.play}</span></span>`
+      : `<span>${escapeHtml(l.category)}</span><strong>${String(l.sort_order).padStart(2,'0')}</strong><span class="lesson-play">${ICONS.play}</span>`;
     const accessKind=l.access==='free'?'free':'locked';
-    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}" data-kind="${accessKind}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">☆ 저장</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>학습 완료 ✓</span></div>`;
+    article.innerHTML=`<button class="${artClass}" data-lesson="${escapeAttr(l.id)}" aria-label="${escapeAttr(l.title)} 열기">${artInner}</button><div class="lesson-copy"><span class="lesson-tag" data-access="${escapeAttr(l.id)}" data-kind="${accessKind}">${escapeHtml(l.tag)}</span><h3><button data-lesson="${escapeAttr(l.id)}">${escapeHtml(l.title)}</button></h3><p>${escapeHtml(l.description)}</p><button class="favorite-button" data-favorite="${escapeAttr(l.id)}" aria-pressed="false" aria-label="${escapeAttr(l.title)} 즐겨찾기">${withIcon("star","저장")}</button><span class="course-progress" data-progress="${escapeAttr(l.id)}" style="--progress:0">0 / ${steps}</span><span class="lesson-done" data-done="${escapeAttr(l.id)}" hidden>${withIcon("check","학습 완료")}</span></div>`;
     grid.append(article);
   });
   let empty=$('.library-empty');
@@ -325,15 +355,15 @@ function update(){
   const list=lessons();
   updatePracticeStart();
   all('[data-progress]').forEach(e=>{const lesson=lessonById(e.dataset.progress);const total=lessonStepCount(lesson);const done=(modules[e.dataset.progress]||new Set()).size;e.textContent=`${done} / ${total}`;e.style.setProperty('--progress',total?String(done/total):'0');});
-  all('[data-favorite]').forEach(e=>{const on=favorites.has(String(e.dataset.favorite));e.setAttribute('aria-pressed',String(on));e.textContent=on?'★ 저장됨':'☆ 저장';});
+  all('[data-favorite]').forEach(e=>{const on=favorites.has(String(e.dataset.favorite));e.setAttribute('aria-pressed',String(on));e.innerHTML=withIcon(on?'starFill':'star',on?'저장됨':'저장');});
   const saved=$('#favorites-list');if(saved){saved.replaceChildren();if(!favorites.size)saved.textContent='저장한 코스가 없습니다.';favorites.forEach(id=>{const lesson=lessonById(id);const b=document.createElement('button');b.dataset.lesson=id;b.textContent=lesson?lesson.title:id;saved.append(b);});}
   const completion=$('#completion-count');if(completion)completion.textContent=`${done.size} / ${list.length||4}`;
   all('[data-access]').forEach(e=>{
     const lesson=lessonById(e.dataset.access);
-    if(!lesson){e.textContent='구독 전용';e.dataset.kind='locked';return;}
+    if(!lesson){e.innerHTML=withIcon('lock','구독 전용');e.dataset.kind='locked';return;}
     if(lesson.access==='free'){e.textContent='무료 미리보기';e.dataset.kind='free';}
     else if(exclusive){e.textContent='시청 가능';e.dataset.kind='open';}
-    else {e.textContent='구독 전용';e.dataset.kind='locked';}
+    else {e.innerHTML=withIcon('lock','구독 전용');e.dataset.kind='locked';}
   });
   all('[data-done]').forEach(e=>e.hidden=!done.has(String(e.dataset.done)));
   const subState=$('#subscription-state');
@@ -342,7 +372,7 @@ function update(){
     if(m.active){
       if(subState)subState.textContent='구독 중';
       if(subDetail)subDetail.textContent='실제 구독이 활성화되어 전용 예시 영상을 열 수 있습니다.';
-      all('[data-action="subscribe"]').forEach(e=>e.textContent='내 구독 확인');
+      all('[data-action="subscribe"]').forEach(e=>setCtaLabel(e,'내 구독 확인'));
       const cancelBtn=$('[data-action="cancel"]');if(cancelBtn)cancelBtn.hidden=false;
       const expireBtn=$('[data-action="expire"]');if(expireBtn)expireBtn.hidden=false;
     }else{
@@ -350,7 +380,7 @@ function update(){
       if(subDetail)subDetail.textContent=m.loggedIn
         ?'구독 체험을 시작하면 전용 영상이 열립니다. 실제 결제는 없습니다.'
         :'전용 영상을 열려면 먼저 로그인한 뒤 구독 체험을 시작하세요.';
-      all('[data-action="subscribe"]').forEach(e=>e.textContent=m.loggedIn?'구독 체험하기 ↗':'로그인 후 구독 체험');
+      all('[data-action="subscribe"]').forEach(e=>setCtaLabel(e,m.loggedIn?'구독 체험하기 ↗':'로그인 후 구독 체험'));
       const cancelBtn=$('[data-action="cancel"]');if(cancelBtn)cancelBtn.hidden=true;
       const expireBtn=$('[data-action="expire"]');if(expireBtn)expireBtn.hidden=true;
     }
@@ -359,7 +389,7 @@ function update(){
     if(subDetail)subDetail.textContent=demoActive
       ?(cancelled?'갱신이 해지되었습니다. 이용기간 만료를 체험하면 전용 영상이 다시 잠깁니다.':'전체 예시 영상이 열렸습니다. 실제 결제나 정기 청구는 발생하지 않습니다.')
       :'구독 체험을 시작하면 전용 영상이 열립니다.';
-    all('[data-action="subscribe"]').forEach(e=>e.textContent=demoActive?'내 구독 확인':'구독 체험하기 ↗');
+    all('[data-action="subscribe"]').forEach(e=>setCtaLabel(e,demoActive?'내 구독 확인':'구독 체험하기 ↗'));
     const cancelBtn=$('[data-action="cancel"]');if(cancelBtn)cancelBtn.hidden=!demoActive||cancelled;
     const expireBtn=$('[data-action="expire"]');if(expireBtn)expireBtn.hidden=!demoActive;
   }
@@ -378,7 +408,7 @@ function update(){
   if(listEl){
     listEl.replaceChildren();
     if(!done.size){const p=document.createElement('p');p.textContent='아직 완료한 영상이 없어요. 무료 미리보기부터 시작해 보세요.';listEl.append(p);}
-    else[...done].forEach(id=>{const lesson=lessonById(id);const b=document.createElement('button');b.dataset.lesson=id;b.textContent=(lesson?lesson.title:id)+' · 완료 ✓';listEl.append(b);});
+    else[...done].forEach(id=>{const lesson=lessonById(id);const b=document.createElement('button');b.dataset.lesson=id;b.innerHTML=withIcon('check',(lesson?lesson.title:id)+' · 완료');listEl.append(b);});
   }
   updateCommunityHint();
   updatePracticeHint();
@@ -402,7 +432,7 @@ function updatePracticeStart(){
   const chip=$('#practice-start-label');
   if(!lesson)return;
   if(title)title.textContent=lesson.title;
-  if(button){button.dataset.lesson=lesson.id;button.textContent=started?'이어서 연습하기 →':'강의 열기 →';}
+  if(button){button.dataset.lesson=lesson.id;setCtaLabel(button,started?'이어서 연습하기 →':'강의 열기 →');}
   if(chip)chip.textContent=started?'이어서 학습':(lesson.access==='free'?'첫 연습 · 무료 미리보기':'첫 연습');
   if(description)description.textContent=started?`${lessonStepCount(lesson)}개 회차 중 ${firstUnfinishedStep(lesson)+1}번째부터 이어갑니다.`:(lesson.description||'강의 설명을 확인하고 연습을 시작해 보세요.');
 }
@@ -469,7 +499,7 @@ function renderPracticePanel(){
   const guestCopy=$('#practice-guest-copy');
   if(guestBtn&&free){
     guestBtn.dataset.lesson=free.id;
-    guestBtn.textContent='강의 열기 →';
+    setCtaLabel(guestBtn,'강의 열기 →');
   }
   if(guestCopy){
     guestCopy.textContent=free&&free.title
@@ -490,7 +520,7 @@ function renderPracticePanel(){
         b.type='button';
         b.className='btn-primary';
         b.dataset.lesson=free.id;
-        b.textContent='강의 열기 →';
+        setCtaLabel(b,'강의 열기 →');
         resumeEl.append(b);
       }
     }else{
@@ -502,7 +532,7 @@ function renderPracticePanel(){
       const next=firstUnfinishedStep(lesson);
       const meta=document.createElement('p');
       meta.className='practice-resume-meta';
-      if(done.has(String(lesson.id)))meta.textContent='학습 완료 ✓';
+      if(done.has(String(lesson.id)))meta.innerHTML=withIcon('check','학습 완료');
       else meta.textContent=`${total}개 회차 중 ${next+1}번째부터 이어갑니다.`;
       resumeEl.append(meta);
       const b=document.createElement('button');
@@ -510,7 +540,7 @@ function renderPracticePanel(){
       b.className='btn-primary';
       b.dataset.lesson=lesson.id;
       const inProgress=!done.has(String(lesson.id))&&(modules[lesson.id]||new Set()).size>0;
-      b.textContent=inProgress?'이어서 연습하기 →':'강의 열기 →';
+      setCtaLabel(b,inProgress?'이어서 연습하기 →':'강의 열기 →');
       resumeEl.append(b);
     }
   }
@@ -806,12 +836,12 @@ function renderModules(){
     titles.forEach((title,i)=>{
       const b=document.createElement('button');
       b.dataset.module=i;
-      const mark=watched.has(i)?' ✓':'';
+      const mark=watched.has(i)?ICONS.check:'';
       if(includeBase&&i===0){
-        b.textContent=`「강의」${mark}`;
+        b.innerHTML=`<span>「강의」</span>${mark}`;
       }else{
         const sessionIndex=includeBase?i:i+1;
-        b.textContent=`${sessionIndex}. ${title}${mark}`;
+        b.innerHTML=`<span>${sessionIndex}. ${escapeHtml(title)}</span>${mark}`;
       }
       b.setAttribute('aria-pressed',String(i===step));
       list.append(b);
