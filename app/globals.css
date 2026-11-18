@@ -3921,3 +3921,17 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   0% { background-position: 140% 0; }
   100% { background-position: -40% 0; }
 }
+
+
+/* Booking sidebar: platform chips sit on navy, not the light mist fill used on pale surfaces */
+.booking-info .oneday-platforms-list a:nth-child(even),
+.booking-info .oneday-platforms-list span:nth-child(even),
+.booking-info .oneday-platforms-list a:nth-child(odd),
+.booking-info .oneday-platforms-list span:nth-child(odd) {
+  background: transparent;
+}
+.booking-info .oneday-platforms-list span,
+.booking-info .oneday-platforms-list span:nth-child(even),
+.booking-info .oneday-platforms-list span:nth-child(odd) {
+  color: #d1dfe9;
+}

@@ -56,7 +56,7 @@ export default function Header() {
       }`}
     >
       <div className="site-header-inner content-shell">
-        <a className="site-logo-link" href="#top" onClick={() => setOpen(false)} aria-label="VoiSpeech 보이스피치">
+        <a className="site-logo-link" href="#top" onClick={() => setOpen(false)}>
           <Logo compact />
         </a>
 
