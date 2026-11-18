@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import UiIcon from "./UiIcon";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const faqs = [
   {
@@ -28,8 +31,6 @@ const faqs = [
 ];
 
 export default function FAQ() {
-  const [open, setOpen] = useState<number | null>(0);
-
   return (
     <section id="faq" className="section-pad bg-page">
       <div className="content-shell faq-layout">
@@ -38,43 +39,21 @@ export default function FAQ() {
           <h2>자주 묻는 질문</h2>
         </div>
 
-        <div className="faq-list divide-y divide-line border-y border-line">
-          {faqs.map((item, i) => {
-            const isOpen = open === i;
-            return (
-              <div key={item.q}>
-                <h3>
-                  <button
-                    type="button"
-                    className="faq-q"
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-answer-${i}`}
-                    onClick={() => setOpen(isOpen ? null : i)}
-                  >
-                    {item.q}
-                    <span
-                      className={`faq-icon ${isOpen ? "is-open" : ""}`}
-                      aria-hidden
-                    >
-                      <UiIcon icon={ChevronDown} />
-                    </span>
-                  </button>
-                </h3>
-                <div
-                  id={`faq-answer-${i}`}
-                  aria-hidden={!isOpen}
-                  className={`grid transition-[grid-template-rows] duration-300 ${
-                    isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    <p className="faq-a">{item.a}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <Accordion
+          type="single"
+          collapsible
+          defaultValue="item-0"
+          className="faq-list divide-y divide-line border-y border-line"
+        >
+          {faqs.map((item, i) => (
+            <AccordionItem key={item.q} value={`item-${i}`}>
+              <AccordionTrigger>{item.q}</AccordionTrigger>
+              <AccordionContent>
+                <p className="faq-a">{item.a}</p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </section>
   );

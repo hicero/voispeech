@@ -3813,3 +3813,44 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   align-items: center;
   gap: 0.3em;
 }
+
+
+/* ——— shadcn-aligned controls (existing hooks/classes preserved) ——— */
+.faq-q[data-state="open"] .faq-icon {
+  transform: rotate(180deg);
+}
+.faq-q[data-state="closed"] .faq-icon {
+  transform: rotate(0deg);
+}
+.academy-filters button,
+.community-channels button,
+.learning-path button,
+.academy .academy-top-nav button {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.academy-filters button:focus-visible,
+.community-channels button:focus-visible,
+.learning-path button:focus-visible,
+.academy .academy-top-nav button:focus-visible,
+.academy .academy-bottom button:focus-visible,
+.favorite-button:focus-visible,
+.lesson-copy h3 button:focus-visible,
+.lesson-art:focus-visible,
+.practice-voice-list button:focus-visible,
+.btn-primary:focus-visible,
+.btn-outline:focus-visible,
+.academy-home-btn:focus-visible,
+.academy-login-btn:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
+}
+.lesson-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+}
+.academy-filters button {
+  border-radius: 999px;
+}
