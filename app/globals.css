@@ -3935,3 +3935,42 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 .booking-info .oneday-platforms-list span:nth-child(odd) {
   color: #d1dfe9;
 }
+
+
+/* Feature card: soft breath-line motif in navy tones */
+.academy .feature-word {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: #c5d9e8;
+  font-size: 0;
+  line-height: 0;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.academy .feature-motif {
+  display: block;
+  width: 11.5rem;
+  height: auto;
+  max-width: 36vw;
+  opacity: 0.78;
+  animation: feature-drift 18s ease-in-out infinite;
+}
+@keyframes feature-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(4px, -5px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academy .feature-motif { animation: none; }
+}
+@media (max-width: 900px) {
+  .feature-word,
+  .academy .feature-word {
+    display: flex;
+  }
+  .academy .feature-motif {
+    width: 6.75rem;
+    max-width: 34vw;
+  }
+}
