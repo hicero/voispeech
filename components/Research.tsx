@@ -163,12 +163,16 @@ export default function Research() {
   return (
     <section id="research" className="section-pad">
       <div className="content-shell">
-        <div className="section-intro prose-col">
+        <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">RESEARCH</p>
-          <h2>
-            발성을 과학으로 다루는 이유
-            <span className="text-sky" aria-hidden>
-              .
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">
+                발성을 과학으로 다루는 이유
+                <span className="text-sky" aria-hidden>
+                  .
+                </span>
+              </span>
             </span>
           </h2>
           <p>

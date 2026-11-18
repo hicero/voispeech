@@ -18,7 +18,11 @@ export default function Testimonials() {
       <div className="content-shell">
         <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">SAMPLE</p>
-          <h2>샘플 후기</h2>
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">샘플 후기</span>
+            </span>
+          </h2>
           <p>실제 후기가 등록되기 전의 자리 표시입니다.</p>
         </div>
 

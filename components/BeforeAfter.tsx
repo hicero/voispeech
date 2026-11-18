@@ -33,10 +33,14 @@ export default function BeforeAfter() {
       <div className="content-shell">
         <div className="section-intro prose-col" data-reveal>
           <p className="eyebrow">BEFORE &amp; AFTER</p>
-          <h2>
-            같은 구간, 달라진 발성 조건
-            <span className="text-sky" aria-hidden>
-              .
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">
+                같은 구간, 달라진 발성 조건
+                <span className="text-sky" aria-hidden>
+                  .
+                </span>
+              </span>
             </span>
           </h2>
           <p>

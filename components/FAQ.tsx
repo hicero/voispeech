@@ -36,7 +36,11 @@ export default function FAQ() {
       <div className="content-shell faq-layout">
         <div className="faq-intro" data-reveal>
           <p className="eyebrow">FAQ</p>
-          <h2>자주 묻는 질문</h2>
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">자주 묻는 질문</span>
+            </span>
+          </h2>
         </div>
 
         <Accordion

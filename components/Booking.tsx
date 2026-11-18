@@ -118,13 +118,16 @@ export default function Booking() {
   return (
     <section id="booking" className="section-pad booking-section">
       <div className="content-shell">
-        <div className="section-heading">
+        <div className="section-heading" data-reveal>
           <div>
             <p className="eyebrow">BOOK YOUR LESSON</p>
-            <h2>
-              내 목소리를 위한 시간,
-              <br />
-              지금 골라보세요.
+            <h2 className="line-rise">
+              <span className="line-rise-item">
+                <span className="line-rise-inner">내 목소리를 위한 시간,</span>
+              </span>
+              <span className="line-rise-item">
+                <span className="line-rise-inner">지금 골라보세요.</span>
+              </span>
             </h2>
           </div>
           <p>1:1 발성 원데이 클래스 예약</p>

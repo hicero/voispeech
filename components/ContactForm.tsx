@@ -28,12 +28,15 @@ export default function ContactForm() {
   return (
     <section id="contact" className="section-pad contact-section">
       <div className="content-shell contact-grid">
-        <div className="contact-copy">
+        <div className="contact-copy" data-reveal>
           <p className="eyebrow">LET’S FIND YOUR VOICE</p>
-          <h2>
-            어떤 소리가
-            <br />
-            어려우신가요?
+          <h2 className="line-rise">
+            <span className="line-rise-item">
+              <span className="line-rise-inner">어떤 소리가</span>
+            </span>
+            <span className="line-rise-item">
+              <span className="line-rise-inner">어려우신가요?</span>
+            </span>
           </h2>
           <p>막히는 순간이나 배우고 싶은 노래를 편하게 남겨 주세요.</p>
           <p className="contact-small">1:1 발성 코칭 · VoiSpeech</p>

@@ -25,14 +25,22 @@ export default function ReportTeaser() {
         <div className="report-layout grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-5 lg:sticky lg:top-28" data-reveal>
             <p className="eyebrow">COACHING REPORT</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
-              수업에서 확인한 내용을
-              <br />
-              <span className="phrase-mark">개인 발성 코칭 리포트로</span>
-              <br />
-              정리합니다
-              <span className="text-sky" aria-hidden>
-                .
+            <h2 className="line-rise mt-3 text-3xl font-bold tracking-tight text-navy md:text-4xl">
+              <span className="line-rise-item">
+                <span className="line-rise-inner">수업에서 확인한 내용을</span>
+              </span>
+              <span className="line-rise-item">
+                <span className="line-rise-inner">
+                  <span className="phrase-mark">개인 발성 코칭 리포트로</span>
+                </span>
+              </span>
+              <span className="line-rise-item">
+                <span className="line-rise-inner">
+                  정리합니다
+                  <span className="text-sky" aria-hidden>
+                    .
+                  </span>
+                </span>
               </span>
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-muted md:text-base">

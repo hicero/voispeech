@@ -4338,7 +4338,7 @@ section[aria-label="핵심 차별점"],
 }
 
 
-/* Line-rise on key homepage headings, built on the existing data-reveal / is-inview system. */
+/* Line-rise on homepage section headings, built on the existing data-reveal / is-inview system. */
 .line-rise-item {
   display: block;
   overflow: hidden;
