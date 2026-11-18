@@ -1,4 +1,5 @@
 import { testimonials } from "./testimonials";
+import Marquee from "./magicui/marquee";
 
 export default function Testimonials() {
   const cards = testimonials.map((item) => (
@@ -21,19 +22,11 @@ export default function Testimonials() {
           <p>실제 후기가 등록되기 전의 자리 표시입니다.</p>
         </div>
 
-      <div className="review-viewport">
-        <div className="review-track">
-          <div className="review-set">{cards}</div>
-          <div className="review-set" aria-hidden="true">
-            {testimonials.map((item) => (
-              <article key={`dup-${item.id}`} className="review-card">
-                <p className="review-card-label">샘플 후기 {item.id}</p>
-                <p className="review-card-quote">{item.quote}</p>
-              </article>
-            ))}
-          </div>
+        <div className="review-viewport">
+          <Marquee pauseOnHover className="review-marquee" repeat={2}>
+            {cards}
+          </Marquee>
         </div>
-      </div>
       </div>
     </section>
   );

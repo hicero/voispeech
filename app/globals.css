@@ -3854,3 +3854,70 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 .academy-filters button {
   border-radius: 999px;
 }
+
+
+/* ——— Magic UI touches (marquee, count-safe shine) ——— */
+.magic-marquee {
+  display: flex;
+  overflow: hidden;
+}
+.magic-marquee-set {
+  display: flex;
+  flex-shrink: 0;
+  gap: 1rem;
+  padding-right: 1rem;
+  animation: magic-marquee 48s linear infinite;
+}
+.magic-marquee-set.is-reverse {
+  animation-direction: reverse;
+}
+.review-viewport:hover .magic-marquee-set,
+.review-viewport:focus-within .magic-marquee-set,
+.review-viewport.is-paused .magic-marquee-set,
+.magic-marquee.is-pause-on-hover:hover .magic-marquee-set {
+  animation-play-state: paused;
+}
+@keyframes magic-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-100%, 0, 0); }
+}
+
+.feature-lesson,
+.practice-booking-card,
+.academy-subscribe {
+  position: relative;
+  overflow: hidden;
+}
+.feature-lesson::after,
+.practice-booking-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 58%
+  );
+  background-size: 220% 100%;
+  animation: magic-shine 7s ease-in-out infinite;
+}
+.academy-subscribe::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 58%
+  );
+  background-size: 220% 100%;
+  animation: magic-shine 7s ease-in-out infinite;
+}
+@keyframes magic-shine {
+  0% { background-position: 140% 0; }
+  100% { background-position: -40% 0; }
+}

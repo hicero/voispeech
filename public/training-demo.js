@@ -280,6 +280,28 @@ function setCtaLabel(el,text){
   el.innerHTML=icon?('<span>'+escapeHtml(clean)+'</span>'+(ICONS[icon]||'')):escapeHtml(clean);
 }
 
+
+function tickCount(el,nextText){
+  if(!el)return;
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){el.textContent=nextText;return;}
+  const m=String(nextText).match(/(\d+)\s*\/\s*(\d+)/);
+  if(!m){el.textContent=nextText;return;}
+  const to=+m[1], den=m[2];
+  const from=parseInt((el.textContent||'').replace(/[^0-9].*/,''),10);
+  const startVal=Number.isFinite(from)?from:0;
+  if(startVal===to){el.textContent=nextText;return;}
+  const start=performance.now(), dur=520;
+  const step=(now)=>{
+    const p=Math.min(1,(now-start)/dur);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=Math.round(startVal+(to-startVal)*eased)+' / '+den;
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=nextText;
+  };
+  requestAnimationFrame(step);
+}
+
 function renderFilters(){
   const wrap=$('.academy-filters');
   if(!wrap)return;
@@ -343,7 +365,7 @@ function renderLibrary(){
     if(featureBtn)featureBtn.dataset.lesson=free.id;
   }
   const completion=$('#completion-count');
-  if(completion)completion.textContent=`${done.size} / ${list.length||4}`;
+  if(completion)tickCount(completion,`${done.size} / ${list.length||4}`);
   filterCourses();
 }
 
@@ -357,7 +379,7 @@ function update(){
   all('[data-progress]').forEach(e=>{const lesson=lessonById(e.dataset.progress);const total=lessonStepCount(lesson);const done=(modules[e.dataset.progress]||new Set()).size;e.textContent=`${done} / ${total}`;e.style.setProperty('--progress',total?String(done/total):'0');});
   all('[data-favorite]').forEach(e=>{const on=favorites.has(String(e.dataset.favorite));e.setAttribute('aria-pressed',String(on));e.innerHTML=withIcon(on?'starFill':'star',on?'저장됨':'저장');});
   const saved=$('#favorites-list');if(saved){saved.replaceChildren();if(!favorites.size)saved.textContent='저장한 코스가 없습니다.';favorites.forEach(id=>{const lesson=lessonById(id);const b=document.createElement('button');b.dataset.lesson=id;b.textContent=lesson?lesson.title:id;saved.append(b);});}
-  const completion=$('#completion-count');if(completion)completion.textContent=`${done.size} / ${list.length||4}`;
+  const completion=$('#completion-count');if(completion)tickCount(completion,`${done.size} / ${list.length||4}`);
   all('[data-access]').forEach(e=>{
     const lesson=lessonById(e.dataset.access);
     if(!lesson){e.innerHTML=withIcon('lock','구독 전용');e.dataset.kind='locked';return;}
@@ -548,7 +570,7 @@ function renderPracticePanel(){
   const list=lessons();
   const total=list.length||0;
   const countEl=$('#practice-panel-count');
-  if(countEl)countEl.textContent=`${done.size} / ${total||0}`;
+  if(countEl)tickCount(countEl,`${done.size} / ${total||0}`);
   const bar=$('#practice-panel-bar');
   if(bar)bar.style.setProperty('--progress',total?String(done.size/total):'0');
 }
