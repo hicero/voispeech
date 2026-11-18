@@ -6,7 +6,8 @@ import HeroPin from "./HeroPin";
 export default function Hero() {
   return (
     <HeroPin>
-      <section id="top" className="hero-section">
+      <div id="top" className="scroll-top-anchor" tabIndex={-1} />
+      <section className="hero-section">
         <div className="hero-stick">
           <div className="hero-grid content-shell">
             <div className="hero-copy" data-reveal>

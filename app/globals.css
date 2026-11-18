@@ -194,6 +194,7 @@ body {
 /* VoiSpeech editorial refinement */
 body { font-size:1.0625rem; line-height:1.8; color:var(--color-navy); word-break:keep-all; overflow-wrap:anywhere; }
 section[id] { scroll-margin-top:5.5rem; }
+#top, .scroll-top-anchor { display:block; height:0; width:0; overflow:hidden; scroll-margin-top:0; }
 h1,h2,h3 { text-wrap:balance; line-height:1.35; }
 .text-sm { font-size:1rem; }
 .text-xs { font-size:.875rem; }
