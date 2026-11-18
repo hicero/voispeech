@@ -4416,3 +4416,16 @@ section[aria-label="핵심 차별점"],
     position: static;
   }
 }
+
+
+/* Remove the brass connector line across Method step numbers. Keep the grid. */
+#method .method-rail::before,
+.method-rail::before,
+.js-motion .method-rail::before,
+.js-motion .method-rail.is-inview::before {
+  content: none;
+  display: none;
+  background: none;
+  transform: none;
+  transition: none;
+}
