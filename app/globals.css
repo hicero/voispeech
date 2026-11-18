@@ -4454,3 +4454,103 @@ section[aria-label="핵심 차별점"],
   background: #ffffff;
   overflow: hidden;
 }
+
+
+/* Wide viewports: keep the 1440 filled proportion.
+   Unchanged at 1440 and below. Home only (not /training/). */
+@media (min-width: 1441px) {
+  body:has(.hero-section) {
+    --content-max: min(135.111rem, calc(76rem * 100vw / 1440px));
+    --wide-scale: min(1.7778, calc(100vw / 1440px));
+  }
+
+  body:has(.hero-section) .content-shell {
+    padding-inline: calc(2rem * var(--wide-scale));
+  }
+
+  .hero-grid {
+    gap: calc(4rem * var(--wide-scale));
+  }
+
+  .hero-copy h1 {
+    font-size: calc(4rem * var(--wide-scale));
+    margin: calc(1.6rem * var(--wide-scale)) 0;
+  }
+
+  .hero-copy .eyebrow {
+    font-size: calc(0.75rem * var(--wide-scale));
+  }
+
+  .hero-description {
+    font-size: calc(1.125rem * var(--wide-scale));
+    max-width: calc(36rem * var(--wide-scale));
+  }
+
+  .hero-actions {
+    gap: calc(1.2rem * var(--wide-scale));
+    margin-top: calc(2.1rem * var(--wide-scale));
+  }
+
+  .hero-actions .btn-primary {
+    font-size: calc(0.9375rem * var(--wide-scale));
+    min-height: calc(48px * var(--wide-scale));
+    padding: calc(0.8125rem * var(--wide-scale)) calc(1.5rem * var(--wide-scale));
+  }
+
+  .hero-link {
+    font-size: calc(0.9375rem * var(--wide-scale));
+    padding: calc(0.6rem * var(--wide-scale)) 0;
+  }
+
+  .hero-meta {
+    font-size: calc(0.8125rem * var(--wide-scale));
+    margin-top: calc(2.5rem * var(--wide-scale));
+    gap: calc(0.6rem * var(--wide-scale));
+  }
+
+  .hero-cover,
+  .hero-cover-slot {
+    min-height: calc(535px * var(--wide-scale));
+  }
+
+  .hero-cover {
+    padding: calc(2rem * var(--wide-scale));
+    /* Keep the existing soft bottom-right corner, scaled with the card. */
+    border-radius: 8px 8px calc(70px * var(--wide-scale)) 8px;
+  }
+
+  .cover-title {
+    font-size: calc(1.8rem * var(--wide-scale));
+    margin-top: calc(2.4rem * var(--wide-scale));
+  }
+
+  .cover-top > span:first-child {
+    font-size: calc(1.125rem * var(--wide-scale));
+  }
+
+  .cover-top > span:last-child {
+    font-size: calc(0.75rem * var(--wide-scale));
+  }
+
+  .cover-arc {
+    width: calc(340px * var(--wide-scale));
+    height: calc(340px * var(--wide-scale));
+    top: calc(125px * var(--wide-scale));
+    right: calc(-12px * var(--wide-scale));
+  }
+
+  .cover-bottom {
+    bottom: calc(2rem * var(--wide-scale));
+    left: calc(2rem * var(--wide-scale));
+    right: calc(2.5rem * var(--wide-scale));
+    padding-top: calc(1.2rem * var(--wide-scale));
+  }
+
+  .cover-bottom p {
+    font-size: calc(1rem * var(--wide-scale));
+  }
+
+  .cover-bottom span {
+    font-size: calc(0.75rem * var(--wide-scale));
+  }
+}
