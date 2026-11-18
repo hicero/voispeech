@@ -4364,3 +4364,52 @@ section[aria-label="핵심 차별점"],
     transition: none;
   }
 }
+
+
+/* Desktop-only sticky left headings in Method / Coach. Static at 900px and below. */
+@media (min-width: 901px) {
+  #method .content-shell,
+  #coach .content-shell {
+    display: grid;
+    grid-template-columns: minmax(16.5rem, 0.82fr) minmax(0, 1.18fr);
+    column-gap: 3.25rem;
+    align-items: start;
+  }
+  #method .section-intro,
+  #coach .section-intro {
+    position: sticky;
+    top: 5.25rem;
+    align-self: start;
+  }
+  #method .method-rail,
+  #coach .coach-grid {
+    margin-top: 0;
+  }
+  #method .method-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #method .method-rail > li {
+    border-bottom: 1px solid #dce4eb;
+    border-right: 1px solid #dce4eb;
+  }
+  #method .method-rail > li:nth-child(2n) {
+    border-right: 0;
+  }
+  #method .method-rail > li:nth-child(n + 3) {
+    border-bottom: 0;
+  }
+  #coach .coach-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 1200px) {
+  #coach .coach-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  #method .section-intro,
+  #coach .section-intro {
+    position: static;
+  }
+}
