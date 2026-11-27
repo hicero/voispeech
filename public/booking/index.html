@@ -868,6 +868,9 @@
     .review-actions { flex-direction: column; }
     .my-booking-list { grid-template-columns: 1fr; }
   }
+  /* 임베드 모드(?embed=1): 메인페이지 안에서 보일 때 바깥 여백 제거 */
+  body.embed { padding: 0; justify-content: flex-start; }
+  body.embed .page-shell { max-width: none; }
 </style>
 </head>
 <body>
@@ -889,7 +892,7 @@
     <aside class="info-pane">
       <div class="host-row">
         <div class="host-avatar">
-          <img src="https://drive.google.com/uc?export=download&id=1Zv10oojOnTD2L3i7p2LXt1zBmKYCi9IN" alt="보이스피치 스튜디오 로고">
+          <img src="voispeech_symbol_192.png" alt="보이스피치 스튜디오 로고">
         </div>
         <div class="host-meta">
           <span class="host-studio">보이스피치 스튜디오</span>
@@ -1742,6 +1745,23 @@ lookupForm.addEventListener('submit', async (e) => {
 
 initLessonTypeFromUrl();
 renderCalendar(null);
+
+// 임베드 모드: ?embed=1이면 부모 페이지(메인페이지)에 높이를 알려 중첩 스크롤 없이 안에서 보이게 함
+(function () {
+  var params = new URLSearchParams(location.search);
+  if (params.get('embed') !== '1') return;
+  document.body.classList.add('embed');
+  var timer = null;
+  function postHeight() {
+    if (window.parent === window) return;
+    var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    window.parent.postMessage({ type: 'voispeech-booking-height', height: h }, '*');
+  }
+  function schedule() { if (timer) clearTimeout(timer); timer = setTimeout(postHeight, 120); }
+  window.addEventListener('load', postHeight);
+  new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, attributes: true });
+  postHeight();
+})();
 </script>
 </body>
 </html>

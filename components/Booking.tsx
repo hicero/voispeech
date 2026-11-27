@@ -1,6 +1,25 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { bookingUrl, isHttpsUrl, onedayPlatforms } from "./siteConfig";
 
 export default function Booking() {
+  const [frameHeight, setFrameHeight] = useState(900);
+
+  useEffect(() => {
+    const embedOrigin = new URL(bookingUrl).origin;
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== embedOrigin) return;
+      const data = event.data as { type?: string; height?: number } | null;
+      if (!data || data.type !== "voispeech-booking-height") return;
+      if (typeof data.height === "number" && data.height > 400 && data.height < 4000) {
+        setFrameHeight(data.height);
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
   return (
     <section id="booking" className="section-pad booking-section">
       <div className="content-shell">
@@ -75,22 +94,21 @@ export default function Booking() {
           </aside>
 
           <div className="booking-calendar">
-            <div className="booking-empty">
-              <span className="eyebrow">LESSON RESERVATION</span>
-              <h3>날짜와 시간을 골라 예약하세요</h3>
-              <p>
-                원데이 60분·30분 중 선택하고,
-                <br />
-                날짜와 시간을 고른 뒤 정보를 입력하면 예약이 확정됩니다.
-              </p>
-              <a className="btn-primary" href={bookingUrl}>
-                예약 페이지로 이동 ↗
-              </a>
-              <p className="booking-help">
-                예약 전 확인 화면에서 레슨·일시·예약자 정보를 다시 확인할 수
-                있습니다.
-              </p>
-            </div>
+            <iframe
+              src={`${bookingUrl}?embed=1`}
+              title="레슨 예약"
+              loading="lazy"
+              style={{
+                width: "100%",
+                height: frameHeight,
+                border: 0,
+                display: "block",
+              }}
+            />
+            <p className="booking-help">
+              예약 전 확인 화면에서 레슨·일시·예약자 정보를 다시 확인할 수
+              있습니다.
+            </p>
           </div>
         </div>
       </div>

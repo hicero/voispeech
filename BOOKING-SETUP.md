@@ -12,10 +12,10 @@
 - 작업실 서버의 카톡 알림(`/api/kakao`)은 이 공개 페이지에서는 동작하지 않습니다. 대시보드 새 예약 팝업으로 확인합니다.
 
 ## 원본과 공개본 동기화
-원본은 작업실 서버 `/root/uploads/public/voicepitch_booking.html`에 있습니다. 원본을 고치면 `public/booking/index.html`에도 같은 내용을 반영해야 합니다. 단, 로고는 공개본에서 Drive 공개 링크(`https://drive.google.com/uc?export=download&id=1Zv10oojOnTD2L3i7p2LXt1zBmKYCi9IN`)를 씁니다. 원본의 상대 경로 로고(`voispeech_symbol_192.png`)를 그대로 쓰지 마세요.
+원본은 작업실 서버 `/root/uploads/public/voicepitch_booking.html`에 있습니다. 원본을 고치면 `public/booking/index.html`에도 같은 내용을 반영해야 합니다. 단, 공개본에만 있는 차이가 2가지 있습니다. ① 로고는 Drive 링크가 아니라 저장소에 함께 올린 `public/booking/voispeech_symbol_192.png`를 씁니다(Drive uc 링크는 폰 브라우저에서 이미지가 바로 안 뜨는 경우가 있어 2026-11-27 Vercel 호스팅으로 교체). 로고 파일은 저장소에 같이 들어 있으니 `public/booking/voispeech_symbol_192.png`가 지워지지 않게 주의하세요. ② 임베드 모드(`?embed=1` + 부모에 높이 전달 postMessage)는 공개본에만 있습니다. 원본에는 없습니다.
 
 ## 홈페이지 연결
-`components/siteConfig.ts`의 `bookingUrl`이 예약페이지 주소입니다. `components/Booking.tsx`는 이 주소를 예약 섹션의 버튼으로 연결합니다.
+`components/siteConfig.ts`의 `bookingUrl`이 예약페이지 주소입니다. `components/Booking.tsx`는 예약 섹션 안에 `/booking/?embed=1`을 iframe으로 넣어, 팝업이나 다른 페이지로 나가지 않고 그 자리에서 예약 폼이 보이게 합니다. 높이는 예약페이지가 postMessage로 알려줘서 자동으로 맞춰집니다(기본 900px).
 
 ## 연결 후 실제 확인
 본인이 통제하는 테스트 예약으로 시간 표시·겹침 차단·취소 시 시간 재개방·모바일 화면을 확인한 뒤 예약을 공개합니다.
