@@ -468,7 +468,7 @@ button:disabled { opacity:.45; cursor:not-allowed; }
 
 /* Coach portraits */
 .coach-photo {
-  aspect-ratio: 4 / 5;
+  height: 22rem;
   overflow: hidden;
   background: var(--color-sky-muted);
 }
@@ -1209,14 +1209,13 @@ a.btn-outline.site-nav-cta {
   }
 }
 .coach-photo {
-  aspect-ratio: 4 / 5;
-  max-height: 22rem;
+  height: 22rem;
   overflow: hidden;
   background: var(--color-sky-muted);
 }
 @media (min-width: 768px) {
   .coach-photo {
-    max-height: 26rem;
+    height: 26rem;
   }
 }
 .coach-photo img {
