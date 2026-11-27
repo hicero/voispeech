@@ -1957,33 +1957,17 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   z-index: 1;
 }
 
-/* Sample reviews marquee */
-.review-viewport {
-  overflow: hidden;
+/* Reviews grid — real reviews, one card per review.
+   Each card carries its platform's color/logo/wording via --platform-color
+   (set inline from REVIEW_PLATFORMS), so a new channel only needs a data entry. */
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
   margin-top: 2rem;
 }
 
-.review-track {
-  display: flex;
-  width: max-content;
-  animation: review-marquee 48s linear infinite;
-}
-
-.review-viewport:hover .review-track,
-.review-viewport:focus-within .review-track,
-.review-viewport.is-paused .review-track {
-  animation-play-state: paused;
-}
-
-.review-set {
-  display: flex;
-  gap: 1rem;
-  padding-right: 1rem;
-}
-
 .review-card {
-  flex: 0 0 auto;
-  width: min(20rem, 78vw);
   padding: 1.25rem 1.35rem 1.35rem;
   background: var(--color-surface);
   border: 1px solid var(--color-line);
@@ -1992,29 +1976,86 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
-.review-card-label {
-  font-size: 0.75rem;
-  font-weight: 650;
-  letter-spacing: 0.12em;
-  color: var(--color-accent);
-  margin: 0 0 0.7rem;
+.review-grid .review-card {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid var(--platform-color, var(--color-accent));
+}
+
+.review-card-source {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  flex-wrap: wrap;
+}
+
+.review-platform-logo {
+  width: auto;
+  height: 1.05rem;
+  flex: none;
+}
+
+.review-platform-name {
+  font-weight: 750;
+  color: var(--platform-color, var(--color-accent));
+}
+
+.review-source {
+  color: var(--color-muted);
+}
+
+.review-stars {
+  margin-left: auto;
+  color: var(--platform-color, var(--color-accent));
+  letter-spacing: 0.08em;
+  font-size: 0.8125rem;
 }
 
 .review-card-quote {
   margin: 0;
-  font-size: 1rem;
+  flex: 1;
+  font-size: 0.9375rem;
   line-height: 1.75;
   color: var(--color-navy-soft);
+  white-space: pre-line;
+}
+
+.review-card-meta {
+  margin: 0.9rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-faint);
+}
+
+.review-intro-logo {
+  height: 1.35rem;
+  width: auto;
+  vertical-align: -0.28rem;
+}
+
+.review-note {
+  margin: 1.5rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-faint);
+}
+
+@media (max-width: 1024px) {
+  .review-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .review-card:hover {
   transform: translateY(-3px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), var(--shadow-card-hover);
-}
-
-@keyframes review-marquee {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
 }
 
 .case-note {
@@ -2166,25 +2207,6 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     animation: none;
   }
 
-  .review-track {
-    animation: none;
-    width: auto;
-    display: block;
-    transform: none;
-  }
-
-  .review-set {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    width: 100%;
-    padding-right: 0;
-  }
-
-  .review-set[aria-hidden="true"] {
-    display: none;
-  }
-
   .review-card {
     width: auto;
   }
@@ -2194,12 +2216,6 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   .program-card:hover,
   .btn-primary:hover {
     transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
-  .review-set {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -3870,9 +3886,6 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 .magic-marquee-set.is-reverse {
   animation-direction: reverse;
 }
-.review-viewport:hover .magic-marquee-set,
-.review-viewport:focus-within .magic-marquee-set,
-.review-viewport.is-paused .magic-marquee-set,
 .magic-marquee.is-pause-on-hover:hover .magic-marquee-set {
   animation-play-state: paused;
 }
