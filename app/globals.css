@@ -1957,30 +1957,26 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   z-index: 1;
 }
 
-/* Reviews grid — real reviews, one card per review.
+/* Reviews marquee — real reviews, one card per review, flowing sideways.
    Each card carries its platform's color/logo/wording via --platform-color
    (set inline from REVIEW_PLATFORMS), so a new channel only needs a data entry. */
-.review-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+.review-viewport {
+  overflow: hidden;
   margin-top: 2rem;
 }
 
 .review-card {
+  flex: 0 0 auto;
+  width: min(20rem, 78vw);
+  display: flex;
+  flex-direction: column;
   padding: 1.25rem 1.35rem 1.35rem;
   background: var(--color-surface);
   border: 1px solid var(--color-line);
+  border-top: 3px solid var(--platform-color, var(--color-accent));
   border-radius: var(--radius-card);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), var(--shadow-card);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
-}
-
-.review-grid .review-card {
-  width: auto;
-  display: flex;
-  flex-direction: column;
-  border-top: 3px solid var(--platform-color, var(--color-accent));
 }
 
 .review-card-source {
@@ -2029,28 +2025,10 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   color: var(--color-faint);
 }
 
-.review-intro-logo {
-  height: 1.35rem;
-  width: auto;
-  vertical-align: -0.28rem;
-}
-
 .review-note {
   margin: 1.5rem 0 0;
   font-size: 0.8125rem;
   color: var(--color-faint);
-}
-
-@media (max-width: 1024px) {
-  .review-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .review-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .review-card:hover {
@@ -2207,8 +2185,12 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
     animation: none;
   }
 
-  .review-card {
-    width: auto;
+  .magic-marquee-set {
+    animation: none;
+  }
+
+  .review-viewport {
+    overflow-x: auto;
   }
 
   .case-note:hover,
@@ -3886,6 +3868,9 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 .magic-marquee-set.is-reverse {
   animation-direction: reverse;
 }
+.review-viewport:hover .magic-marquee-set,
+.review-viewport:focus-within .magic-marquee-set,
+.review-viewport.is-paused .magic-marquee-set,
 .magic-marquee.is-pause-on-hover:hover .magic-marquee-set {
   animation-play-state: paused;
 }

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Marquee from "./magicui/marquee";
 import { REVIEWS, REVIEW_PLATFORMS } from "./testimonials";
 
 function Stars({ value, label }: { value: number; label: string }) {
@@ -11,7 +12,35 @@ function Stars({ value, label }: { value: number; label: string }) {
 }
 
 export default function Testimonials() {
-  const daangn = REVIEW_PLATFORMS.daangn;
+  // 사용자 지시: 옆으로 흐르는 마퀴 카드로 표시, 소개 문구 삭제,
+  // 날짜 표시 삭제, 개별 카드에 전부 별 5개 표시.
+  // (모임 후기는 당근에 별점이 없지만 카드에는 5개로 통일.)
+  const cards = REVIEWS.map((review) => {
+    const platform = REVIEW_PLATFORMS[review.platform];
+    return (
+      <article
+        key={review.id}
+        className="review-card"
+        style={{ "--platform-color": platform.color } as CSSProperties}
+      >
+        <p className="review-card-source">
+          <img
+            src="/daangn-carrot.svg"
+            alt=""
+            aria-hidden="true"
+            className="review-platform-logo"
+          />
+          <span className="review-platform-name">{platform.label}</span>
+          <span className="review-source">{review.source}</span>
+          <Stars value={5} label="별점 5점" />
+        </p>
+        {review.text ? (
+          <p className="review-card-quote">{review.text}</p>
+        ) : null}
+        <p className="review-card-meta">{review.author}</p>
+      </article>
+    );
+  });
 
   return (
     <section
@@ -27,55 +56,12 @@ export default function Testimonials() {
               <span className="line-rise-inner">수강생 후기</span>
             </span>
           </h2>
-          <p>
-            <img
-              src={daangn.logo}
-              alt="당근"
-              className="review-intro-logo"
-            />
-            에 남겨진 실제 후기 {REVIEWS.length}개입니다. 모임 후기 22개,
-            비즈프로필 후기 12개, 비즈프로필 평점 5.0.
-          </p>
         </div>
 
-        <div className="review-grid" data-reveal>
-          {REVIEWS.map((review) => {
-            const platform = REVIEW_PLATFORMS[review.platform];
-            return (
-              <article
-                key={review.id}
-                className="review-card"
-                style={
-                  { "--platform-color": platform.color } as CSSProperties
-                }
-              >
-                <p className="review-card-source">
-                  <img
-                    src="/daangn-carrot.svg"
-                    alt=""
-                    aria-hidden="true"
-                    className="review-platform-logo"
-                  />
-                  <span className="review-platform-name">
-                    {platform.label}
-                  </span>
-                  <span className="review-source">{review.source}</span>
-                  {review.rating ? (
-                    <Stars
-                      value={review.rating}
-                      label={`별점 ${review.rating}점`}
-                    />
-                  ) : null}
-                </p>
-                {review.text ? (
-                  <p className="review-card-quote">{review.text}</p>
-                ) : null}
-                <p className="review-card-meta">
-                  {review.author} · {review.date}
-                </p>
-              </article>
-            );
-          })}
+        <div className="review-viewport">
+          <Marquee pauseOnHover className="review-marquee" repeat={2}>
+            {cards}
+          </Marquee>
         </div>
 
         <p className="review-note">
