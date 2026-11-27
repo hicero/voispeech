@@ -1966,6 +1966,10 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   margin-top: 2rem;
+  /* 위아래 여유: 카드를 터치하면 hover로 3px 들리는데,
+     여유가 없으면 주황 윗띠가 뷰포트에 잘리고
+     아래 그림자도 잘려서 윤곽이 생김 (하얀목련 카드에서 확인) */
+  padding: 8px 0 20px;
 }
 
 .review-viewport::-webkit-scrollbar {
