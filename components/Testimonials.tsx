@@ -34,7 +34,7 @@ export default function Testimonials() {
               className="review-intro-logo"
             />
             에 남겨진 실제 후기 {REVIEWS.length}개입니다. 모임 후기 22개,
-            비즈프로필 후기 10개, 비즈프로필 평점 5.0.
+            비즈프로필 후기 12개, 비즈프로필 평점 5.0.
           </p>
         </div>
 
@@ -79,9 +79,10 @@ export default function Testimonials() {
         </div>
 
         <p className="review-note">
-          2026년 11월 당근에서 수집한 후기입니다. 비즈프로필 후기는 24개 중
-          웹에서 볼 수 있는 10개만 실었고, 나머지 14개는 당근 앱에서만 볼 수
-          있습니다.
+          2026년 11월 당근에서 수집한 후기입니다. FindYourVoice 비즈프로필
+          후기는 24개 중 웹에서 볼 수 있는 10개만 실었고, 나머지 14개는 당근
+          앱에서만 볼 수 있습니다. 보이스피치 비즈프로필 후기 2개는 전부
+          실었습니다.
         </p>
       </div>
     </section>
