@@ -1,23 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { bookingUrl, isHttpsUrl, onedayPlatforms } from "./siteConfig";
 
 export default function Booking() {
   const [frameHeight, setFrameHeight] = useState(900);
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
     const embedOrigin = new URL(bookingUrl).origin;
+    function applyHeight(height: number) {
+      if (height > 400 && height < 5000) {
+        setFrameHeight((prev) => (prev === height ? prev : height));
+      }
+    }
+    // 예약 폼이 뜨는 타이밍이 부모보다 빨라서, 자식이 보내는 높이를 부모가 못 받는 경우가 있다.
+    // 같은 도메인이라 부모가 직접 안쪽 문서 높이를 재는 게 확실하다.
+    function measure() {
+      try {
+        const doc = frameRef.current?.contentDocument;
+        if (!doc) return;
+        const height = Math.max(
+          doc.body?.scrollHeight ?? 0,
+          doc.documentElement?.scrollHeight ?? 0,
+        );
+        applyHeight(height);
+      } catch {
+        // 다른 도메인이면 읽을 수 없어서 아래 postMessage로만 받는다.
+      }
+    }
     function onMessage(event: MessageEvent) {
       if (event.origin !== embedOrigin) return;
       const data = event.data as { type?: string; height?: number } | null;
       if (!data || data.type !== "voispeech-booking-height") return;
-      if (typeof data.height === "number" && data.height > 400 && data.height < 4000) {
-        setFrameHeight(data.height);
-      }
+      if (typeof data.height === "number") applyHeight(data.height);
     }
+    const frame = frameRef.current;
     window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
+    frame?.addEventListener("load", measure);
+    const timer = window.setInterval(measure, 500);
+    measure();
+    return () => {
+      window.removeEventListener("message", onMessage);
+      frame?.removeEventListener("load", measure);
+      window.clearInterval(timer);
+    };
   }, []);
 
   return (
@@ -95,6 +122,7 @@ export default function Booking() {
 
           <div className="booking-calendar">
             <iframe
+              ref={frameRef}
               src={`${bookingUrl}?embed=1`}
               title="레슨 예약"
               loading="lazy"
