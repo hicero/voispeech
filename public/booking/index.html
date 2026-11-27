@@ -871,6 +871,11 @@
   /* 임베드 모드(?embed=1): 메인페이지 안에서 보일 때 바깥 여백 제거 — 단, 단계 표시가 위쪽에 붙지 않게 위쪽 여백은 24px 유지 */
   body.embed { padding: 24px 0 32px; justify-content: flex-start; background: transparent; }
   body.embed .page-shell { max-width: none; }
+  body.embed .booking-card,
+  body.embed .lookup-card,
+  body.embed .confirm-card,
+  body.embed .my-booking-card { border: none; box-shadow: none; }
+  body.embed .info-pane { border-right: none; }
 </style>
 </head>
 <body>
