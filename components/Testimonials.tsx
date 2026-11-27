@@ -15,7 +15,11 @@ export default function Testimonials() {
   // 사용자 지시: 옆으로 흐르는 마퀴 카드로 표시, 소개 문구 삭제,
   // 날짜 표시 삭제, 개별 카드에 전부 별 5개 표시.
   // (모임 후기는 당근에 별점이 없지만 카드에는 5개로 통일.)
-  const cards = REVIEWS.map((review) => {
+  // 본문이 없는 후기(별점만 남긴 경우, 예: 조용한괴물)는 카드에서 뺀다
+  // (사용자 지시 2026-11-27 — 데이터 파일에는 그대로 남아 있음).
+  const cards = REVIEWS.filter(
+    (review) => review.text && review.text.trim().length > 0,
+  ).map((review) => {
     const platform = REVIEW_PLATFORMS[review.platform];
     return (
       <article
