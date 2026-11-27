@@ -35,7 +35,11 @@ export default function Testimonials() {
           <Stars value={5} label="별점 5점" />
         </p>
         {review.text ? (
-          <p className="review-card-quote">{review.text}</p>
+          <p className="review-card-quote">
+            {/* 문단 사이 빈 줄(\n\n)이 카드 안에서 큰 빈틈이 돼
+                5줄 안에 내용이 적게 보이길래, 빈 줄은 한 줄 나눔으로 줄임 */}
+            {review.text.replace(/\n{2,}/g, "\n").trim()}
+          </p>
         ) : null}
         <p className="review-card-meta">{review.author}</p>
       </article>
