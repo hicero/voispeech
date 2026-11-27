@@ -869,7 +869,10 @@
     .my-booking-list { grid-template-columns: 1fr; }
   }
   /* 임베드 모드(?embed=1): 메인페이지 안에서 보일 때 바깥 여백 제거 — 단, 단계 표시가 위쪽에 붙지 않게 위쪽 여백은 24px 유지 */
-  body.embed { padding: 24px 0 32px; justify-content: flex-start; background: transparent; }
+  body.embed { padding: 24px 0 32px; justify-content: flex-start; background: transparent; min-height: 0; scrollbar-width: none; }
+  body.embed::-webkit-scrollbar { display: none; }
+  html.embed { scrollbar-width: none; }
+  html.embed::-webkit-scrollbar { display: none; }
   body.embed .page-shell { max-width: none; }
   body.embed .booking-card,
   body.embed .lookup-card,
@@ -877,6 +880,13 @@
   body.embed .my-booking-card { border: none; box-shadow: none; }
   body.embed .info-pane { border-right: none; }
   body.embed .step-bar { display: none; }
+  /* 시간 선택해도 카드 폭이 바뀌지 않게 폼 단계도 같은 폭으로 고정, 폼 입력칸은 가운데 560px로 유지 */
+  body.embed .booking-card.mode-form,
+  body.embed .lookup-card.mode-form,
+  body.embed .step-bar.mode-form { max-width: 1040px; }
+  body.embed .booking-card.mode-form .form-pane { max-width: 560px; width: 100%; margin: 0 auto; }
+  /* 예약 확인 입력줄을 카드 폭에 맞게 쭉 늘림 */
+  body.embed .lookup-form { max-width: none; }
 </style>
 </head>
 <body>
@@ -1757,6 +1767,7 @@ renderCalendar(null);
   var params = new URLSearchParams(location.search);
   if (params.get('embed') !== '1') return;
   document.body.classList.add('embed');
+  document.documentElement.classList.add('embed');
   var timer = null;
   function postHeight() {
     if (window.parent === window) return;
