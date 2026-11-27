@@ -1961,8 +1961,20 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
    Each card carries its platform's color/logo/wording via --platform-color
    (set inline from REVIEW_PLATFORMS), so a new channel only needs a data entry. */
 .review-viewport {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   margin-top: 2rem;
+}
+
+.review-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+/* 가로 스크롤이 가능해야 해서 안쪽 마퀴의 잘라내기(overflow) 해제 */
+.review-viewport .magic-marquee {
+  overflow: visible;
 }
 
 .review-card {
@@ -3870,6 +3882,7 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
 .review-viewport:hover .magic-marquee-set,
 .review-viewport:focus-within .magic-marquee-set,
 .review-viewport.is-paused .magic-marquee-set,
+.review-viewport:active .magic-marquee-set,
 .magic-marquee.is-pause-on-hover:hover .magic-marquee-set {
   animation-play-state: paused;
 }
