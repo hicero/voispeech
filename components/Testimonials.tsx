@@ -63,13 +63,6 @@ export default function Testimonials() {
             {cards}
           </Marquee>
         </div>
-
-        <p className="review-note">
-          2026년 11월 당근에서 수집한 후기입니다. FindYourVoice 비즈프로필
-          후기는 24개 중 웹에서 볼 수 있는 10개만 실었고, 나머지 14개는 당근
-          앱에서만 볼 수 있습니다. 보이스피치 비즈프로필 후기 2개는 전부
-          실었습니다.
-        </p>
       </div>
     </section>
   );
