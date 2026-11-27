@@ -214,6 +214,8 @@ button:disabled { opacity:.45; cursor:not-allowed; }
 .hero-link { font-size:.9375rem; padding:.6rem 0; border-bottom:1px solid #a7bbcb; }
 .hero-meta { display:flex; flex-wrap:wrap; gap:.6rem; font-size:.8125rem; color:var(--color-muted); margin-top:2.5rem; }
 .hero-meta span { color:var(--color-faint); }
+.hero-straw-badge { display:flex; align-items:center; flex-wrap:wrap; gap:.55rem; margin-top:.9rem; font-size:.8125rem; color:var(--color-muted); }
+.hero-straw-badge svg { flex:none; }
 .hero-cover { background:#20394f; color:#eef5fa; border-radius:8px 8px 70px 8px; min-height:535px; position:relative; overflow:hidden; padding:2rem; box-shadow:0 20px 50px #20394f18; }
 .cover-top { display:flex; justify-content:space-between; align-items:center; gap:1rem; }
 .cover-top>span:first-child { font-size:1.125rem; font-weight:650; }

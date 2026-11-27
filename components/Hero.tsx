@@ -36,6 +36,19 @@ export default function Hero() {
                   1:1 발성 코칭 <span>/</span> 5 VOICE CHECK <span>/</span> 개인 코칭
                   리포트
                 </p>
+                <p className="hero-straw-badge">
+                  <svg
+                    width="18"
+                    height="20"
+                    viewBox="0 0 18 20"
+                    aria-hidden="true"
+                  >
+                    <rect x="1" y="1" width="2.5" height="18" rx="1.25" fill="currentColor" />
+                    <rect x="7" y="1" width="4" height="18" rx="2" fill="currentColor" />
+                    <rect x="13" y="1" width="5" height="18" rx="2.5" fill="currentColor" />
+                  </svg>
+                  Singing Straw Teacher Certification 과정 수강 중
+                </p>
               </div>
             </div>
             <div className="hero-cover-slot">

@@ -36,6 +36,7 @@ const coaches: CoachData[] = [
       "Justin Vocal Studio & Find Your Voice 대표",
       "홍대 실용음악학원(KMC) 발성 메인 강사",
       "대한발성학회(SKVA) 이사 (전)",
+      "Singing Straw Teacher Certification 과정 수강 중",
     ],
     moreCareer: [
       "인하대학교 기계공학 전공",
