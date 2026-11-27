@@ -117,7 +117,7 @@ export default function Hero() {
                   />
                   <div className="hero-slide-caption">
                     <p className="eyebrow">SINGING STRAW</p>
-                    <p>빨대로 소리를 체계적으로 발전시키는 훈련</p>
+                    <p>빨대로 소리를<br />체계적으로<br />발전시키는 훈련</p>
                     <p className="hero-slide-sub">논문과 연구에 근거한 방법</p>
                   </div>
                 </div>
