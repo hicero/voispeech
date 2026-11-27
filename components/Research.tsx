@@ -159,6 +159,7 @@ function PaperCard({ paper }: { paper: Paper }) {
 export default function Research() {
   const [showMore, setShowMore] = useState(false);
   const [showAffilDetail, setShowAffilDetail] = useState(false);
+  const [showResearch, setShowResearch] = useState(false);
 
   return (
     <section id="research" className="section-pad">
@@ -176,11 +177,27 @@ export default function Research() {
             </span>
           </h2>
           <p>
-            출판·논문·소속 활동을 먼저 보고, 추가로 확인된 자료는 아래에서 이어
-            볼 수 있습니다. 확인된 자료만 올립니다.
+            출판·논문·소속 활동은 아래에서 펼쳐 볼 수 있습니다. 확인된 자료만
+            올립니다.
           </p>
         </div>
 
+        <button
+          type="button"
+          className="expand-toggle"
+          aria-expanded={showResearch}
+          aria-controls="research-all"
+          onClick={() => setShowResearch((v) => !v)}
+        >
+          {showResearch ? "연구·학술 활동 접기 −" : "연구·학술 활동 보기 +"}
+        </button>
+
+        <div
+          id="research-all"
+          className={`expand-panel ${showResearch ? "is-open" : ""}`}
+          inert={!showResearch}
+        >
+          <div className="expand-panel-inner">
         <div className="research-block-label">
           <p className="case-kicker">PUBLICATION</p>
           <h3>출판</h3>
@@ -337,6 +354,8 @@ export default function Research() {
           제한될 수 있으니, 장기적으로는 저널·저자 허용 이미지를 쓰는 편이
           안전합니다.
         </p>
+          </div>
+        </div>
       </div>
     </section>
   );

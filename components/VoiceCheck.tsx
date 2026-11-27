@@ -6,31 +6,31 @@ const areas = [
     num: "01",
     name: "숨과 소리 연결",
     en: "Respiration–Phonation Coordination",
-    desc: "소리가 편하게 시작되고 이어지는지 봅니다. 숨이 너무 새거나, 반대로 소리를 눌러 내지는 않는지도 확인합니다.",
+    desc: "소리가 편하게 시작되고 이어지는지 봅니다.",
   },
   {
     num: "02",
     name: "저음·고음 연결",
     en: "Vocal Fold Adjustment & Register Coordination",
-    desc: "낮은 음에서 높은 음으로 자연스럽게 연결되는지 봅니다. 소리를 무겁게 끌어올리거나, 중간에서 갑자기 가볍게 뒤집히는 부분이 있는지도 확인합니다.",
+    desc: "낮은 음에서 높은 음으로 자연스럽게 연결되는지 봅니다.",
   },
   {
     num: "03",
     name: "목·턱·혀의 힘",
     en: "Laryngeal Position & Extralaryngeal Coordination",
-    desc: "음이 높아지거나 강해질 때 목·턱·혀에 불필요한 힘이 들어가는지 봅니다. 특정 음이나 모음에서만 힘이 증가하는지도 함께 확인합니다.",
+    desc: "음이 높아지거나 강해질 때 목·턱·혀에 불필요한 힘이 들어가는지 봅니다.",
   },
   {
     num: "04",
     name: "모음·울림 조절",
     en: "Vocal Tract & Resonance Coordination",
-    desc: "모음이나 음높이가 달라져도 원하는 소리를 만들 수 있는지 봅니다. 밝은 소리, 둥근 소리처럼 다양한 톤을 만들고 노래에 활용할 수 있는지도 확인합니다.",
+    desc: "모음이나 음높이가 달라져도 원하는 소리를 만들 수 있는지 봅니다.",
   },
   {
     num: "05",
     name: "소리 구별·재현",
     en: "Perception, Self-Monitoring & Motor Learning",
-    desc: "달라진 소리를 스스로 구별하고 다시 만들어낼 수 있는지 봅니다. 수업에서 된 소리를 혼자 다시 만들고, 실제 노래까지 가져갈 수 있는지도 확인합니다.",
+    desc: "달라진 소리를 스스로 구별하고 다시 만들어낼 수 있는지 봅니다.",
   },
 ];
 
