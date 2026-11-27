@@ -2040,10 +2040,10 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   font-size: 0.9375rem;
   line-height: 1.75;
   color: var(--color-navy-soft);
-  white-space: pre-line;
   /* 모바일에서 카드가 세로로 너무 길어지지 않게 본문은 5줄까지만 표시 */
   display: -webkit-box;
   -webkit-line-clamp: 5;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
