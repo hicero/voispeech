@@ -24,12 +24,13 @@ export default function Home() {
         <Hero />
         <TrustStrip />
         <Method />
-        <VoiceCheck />
-        <ReportTeaser />
         <Programs />
-        <BeforeAfter />
         <Testimonials />
         <Coach />
+        <Booking />
+        <VoiceCheck />
+        <ReportTeaser />
+        <BeforeAfter />
         <Research />
         <section id="online-training" className="section-pad online-teaser">
           <div className="content-shell online-teaser-grid" data-reveal>
@@ -57,7 +58,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <Booking />
         <FAQ />
         <ContactForm />
       </main>
