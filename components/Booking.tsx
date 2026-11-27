@@ -120,7 +120,16 @@ export default function Booking() {
             </div>
           </aside>
 
-          <div className="booking-calendar">
+          <div
+            className="booking-calendar"
+            style={{
+              background: "transparent",
+              border: "none",
+              boxShadow: "none",
+              padding: 0,
+              overflow: "visible",
+            }}
+          >
             <iframe
               ref={frameRef}
               src={`${bookingUrl}?embed=1`}
