@@ -1,120 +1,6 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
 import { bookingUrl, isHttpsUrl, onedayPlatforms } from "./siteConfig";
 
-type CalFunction = ((...args: unknown[]) => void) & {
-  q: unknown[][];
-  ns: Record<string, unknown>;
-  loaded?: boolean;
-};
-declare global {
-  interface Window {
-    Cal?: CalFunction;
-  }
-}
-
-export function getCalLink(value: string): string | null {
-  try {
-    const url = new URL(value);
-    const parts = url.pathname
-      .split("/")
-      .filter(Boolean)
-      .map(decodeURIComponent);
-    if (
-      url.protocol !== "https:" ||
-      url.hostname !== "cal.com" ||
-      url.port ||
-      url.username ||
-      url.password ||
-      parts.length !== 2
-    )
-      return null;
-    if (!parts.every((part) => /^[\p{L}\p{M}\p{N}_-]+$/u.test(part))) return null;
-    return parts.map(encodeURIComponent).join("/");
-  } catch {
-    return null;
-  }
-}
-
 export default function Booking() {
-  const host = useRef<HTMLDivElement>(null);
-  const calLink = getCalLink(bookingUrl);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [calStatus, setCalStatus] = useState<"loading" | "ready" | "error">(
-    calLink ? "loading" : "ready",
-  );
-
-  useEffect(() => {
-    const element = host.current;
-    if (!calLink || !element) return;
-
-    let cancelled = false;
-    let readyTimer: number | undefined;
-    const markReady = () => {
-      if (!cancelled) setCalStatus("ready");
-    };
-    const markError = () => {
-      if (cancelled) return;
-      setCalStatus("error");
-      element.textContent =
-        "달력을 불러오지 못했습니다. 아래 버튼으로 예약 페이지를 열어 주세요.";
-    };
-
-    const watchIframe = () => {
-      const iframe = element.querySelector("iframe");
-      if (!iframe) return false;
-      iframe.addEventListener("load", markReady, { once: true });
-      readyTimer = window.setTimeout(markReady, 4000);
-      return true;
-    };
-
-    if (!window.Cal) {
-      const queue: unknown[][] = [];
-      const cal = ((...args: unknown[]) => {
-        queue.push(args);
-      }) as CalFunction;
-      cal.q = queue;
-      cal.ns = {};
-      window.Cal = cal;
-      const script = document.createElement("script");
-      script.src = "https://app.cal.com/embed/embed.js";
-      script.async = true;
-      script.onerror = () => {
-        markError();
-        script.remove();
-        delete window.Cal;
-      };
-      document.head.appendChild(script);
-    }
-
-    window.Cal!("init", { origin: "https://cal.com" });
-    window.Cal!("inline", {
-      elementOrSelector: element,
-      calLink,
-      config: { layout: "month_view", theme: "light" },
-    });
-
-    const observer = new MutationObserver(() => {
-      if (watchIframe()) observer.disconnect();
-    });
-    if (!watchIframe()) {
-      observer.observe(element, { childList: true, subtree: true });
-    }
-
-    return () => {
-      cancelled = true;
-      if (readyTimer) window.clearTimeout(readyTimer);
-      observer.disconnect();
-      element.replaceChildren();
-    };
-  }, [calLink]);
-
-  useEffect(() => {
-    if (!mobileOpen) return;
-    // Recalculate embed size after mobile expand.
-    window.dispatchEvent(new Event("resize"));
-  }, [mobileOpen]);
-
   return (
     <section id="booking" className="section-pad booking-section">
       <div className="content-shell">
@@ -189,85 +75,22 @@ export default function Booking() {
           </aside>
 
           <div className="booking-calendar">
-            {calLink ? (
-              <>
-                <div className="booking-mobile-cta">
-                  <button
-                    type="button"
-                    className={`${mobileOpen ? "btn-outline" : "btn-primary"} booking-expand-btn`}
-                    aria-expanded={mobileOpen}
-                    aria-controls="voispeech-cal"
-                    onClick={() => setMobileOpen((open) => !open)}
-                  >
-                    {mobileOpen ? (
-                      <>일정 접기 <span aria-hidden>∧</span></>
-                    ) : (
-                      <>레슨 일정 확인하기 <span aria-hidden>↗</span></>
-                    )}
-                  </button>
-                  <a
-                    className="btn-outline booking-external-btn"
-                    href={`https://cal.com/${calLink}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    예약 페이지 열기
-                  </a>
-                </div>
-
-                <div
-                  className={`booking-cal-wrap${mobileOpen ? " is-open" : ""}`}
-                >
-                  <div className="booking-cal-embed">
-                    {calStatus === "loading" ? (
-                      <div
-                        className="cal-skeleton"
-                        aria-busy="true"
-                        aria-live="polite"
-                      >
-                        <p>레슨 일정을 불러오는 중…</p>
-                        <span className="cal-skeleton-bar" />
-                        <div className="cal-skeleton-grid" aria-hidden>
-                          {Array.from({ length: 28 }, (_, i) => (
-                            <span key={i} />
-                          ))}
-                        </div>
-                      </div>
-                    ) : null}
-                    <div
-                      id="voispeech-cal"
-                      ref={host}
-                      className={`cal-host${calStatus === "ready" ? " is-ready" : ""}`}
-                      aria-label="원데이 레슨 날짜와 시간 선택"
-                      aria-busy={calStatus === "loading"}
-                    />
-                  </div>
-                  <p className="booking-help">
-                    달력이 표시되지 않으면{" "}
-                    <a
-                      href={`https://cal.com/${calLink}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      예약 페이지 열기 ↗
-                    </a>
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="booking-empty">
-                <span className="eyebrow">LESSON RESERVATION</span>
-                <h3>예약 오픈 준비 중</h3>
-                <p>
-                  온라인 예약을 연결하고 있습니다.
-                  <br />
-                  연결 후 이곳에서 날짜와 시간을 선택할 수 있습니다.
-                </p>
-                <a className="btn-outline" href="#contact">
-                  수업 문의 안내
-                </a>
-              </div>
-            )}
+            <div className="booking-empty">
+              <span className="eyebrow">LESSON RESERVATION</span>
+              <h3>날짜와 시간을 골라 예약하세요</h3>
+              <p>
+                원데이 60분·30분 중 선택하고,
+                <br />
+                날짜와 시간을 고른 뒤 정보를 입력하면 예약이 확정됩니다.
+              </p>
+              <a className="btn-primary" href={bookingUrl}>
+                예약 페이지로 이동 ↗
+              </a>
+              <p className="booking-help">
+                예약 전 확인 화면에서 레슨·일시·예약자 정보를 다시 확인할 수
+                있습니다.
+              </p>
+            </div>
           </div>
         </div>
       </div>
