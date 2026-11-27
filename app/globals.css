@@ -1977,6 +1977,18 @@ section[aria-label="핵심 차별점"] .eyebrow::before {
   overflow: visible;
 }
 
+/* 마퀴 속도: 원래 48초 → 데스크톱 96초(절반 속도),
+   모바일은 보이는 범위가 좁아 더 느리게 192초(1/4 속도) */
+.review-viewport .magic-marquee-set {
+  animation-duration: 96s;
+}
+
+@media (max-width: 640px) {
+  .review-viewport .magic-marquee-set {
+    animation-duration: 192s;
+  }
+}
+
 .review-card {
   flex: 0 0 auto;
   width: min(20rem, 78vw);
