@@ -45,8 +45,8 @@ export default function Hero() {
                 </h1>
                 <p className="hero-description">
                   지금 목소리를 먼저 들어봅니다.
-                  <br className="hidden sm:block" /> 어떤 조건에서 소리가 달라지는지 보고,
-                  <br className="hidden sm:block" /> 거기서 연습 방향을 정합니다.
+                  <br className="hidden sm:block" /> 어떤 조건에서 소리가 달라지는지 본 뒤
+                  <br className="hidden sm:block" /> 연습 방향을 정합니다.
                 </p>
                 <div className="hero-actions">
                   <a href="#booking" className="btn-primary">

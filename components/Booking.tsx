@@ -70,7 +70,7 @@ export default function Booking() {
             <span className="booking-tag">ONE-DAY · 1:1</span>
             <h3>발성 원데이 클래스</h3>
             <p>
-              현재 발성의 특징을 살펴보고,
+              현재 발성의 특징을 살펴보고
               <br />
               나에게 필요한 연습을 찾아갑니다.
             </p>
@@ -143,8 +143,7 @@ export default function Booking() {
               }}
             />
             <p className="booking-help">
-              예약 전 확인 화면에서 레슨·일시·예약자 정보를 다시 확인할 수
-              있습니다.
+              예약 전 확인 화면에서 레슨·일시·예약자 정보를 다시 확인합니다.
             </p>
           </div>
         </div>

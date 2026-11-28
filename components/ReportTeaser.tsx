@@ -47,7 +47,7 @@ export default function ReportTeaser() {
             <p className="mt-5 text-sm leading-relaxed text-muted md:text-base">
               지금 발성 특징, 잘 되는 부분, 조정할 부분, 연습 방향을 한 장에
               담습니다. 5 VOICE CHECK 결과와 오늘 연습 방법, 노래 적용 포인트를
-              수업 뒤에 다시 볼 수 있습니다.
+              수업 뒤에 다시 봅니다.
             </p>
             <ul className="mt-6 space-y-3">
               {[

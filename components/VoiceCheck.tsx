@@ -24,13 +24,13 @@ const areas = [
     num: "04",
     name: "모음·울림 조절",
     en: "Vocal Tract & Resonance Coordination",
-    desc: "모음이나 음높이가 달라져도 원하는 소리를 만들 수 있는지 체크합니다.",
+    desc: "모음이나 음높이가 달라져도 원하는 소리가 나오는지 체크합니다.",
   },
   {
     num: "05",
     name: "소리 구별·재현",
     en: "Perception, Self-Monitoring & Motor Learning",
-    desc: "달라진 소리를 스스로 구별하고 다시 만들 수 있는지 알아봅니다.",
+    desc: "달라진 소리를 스스로 구별하고 다시 내는지 알아봅니다.",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function VoiceCheck() {
               </span>
             </h2>
             <p>
-              잘 되는 부분과 조정이 필요한 부분을 보고,{' '}
+              잘 되는 부분과 조정이 필요한 부분을 보고{' '}
               <span className="phrase-mark">연습 순서</span>를 정합니다.
             </p>
           </div>

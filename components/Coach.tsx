@@ -28,7 +28,7 @@ const coaches: CoachData[] = [
     nameEn: "JAE WOO",
     nameKo: "재우",
     role: "VOCAL DIRECTOR",
-    tagline: "SLS Certified Instructor Level 1(2012) 이력을 바탕으로 1:1 발성 코칭과 5 Voice Check를 운영하며, 발성·음성교육을 담당합니다.",
+    tagline: "1:1 발성 코칭과 5 Voice Check를 운영하며 발성·음성교육을 담당합니다.",
     affiliation: "TVF Korea Chapter 회장 · VoiSpeech 대표",
     headlines: [
       "TVF Korea Chapter 회장 (현)",
@@ -191,7 +191,7 @@ export default function Coach() {
             </span>
           </h2>
           <p>
-            소리와 연습 과정을 같이 살펴보고, 직접 시도해볼 수 있는 방법으로
+            소리와 연습 과정을 같이 살펴보고 직접 시도해볼 수 있는 방법으로
             풀어갑니다.
           </p>
         </div>
