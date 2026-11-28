@@ -44,9 +44,9 @@ export default function Hero() {
                   <span className="phrase-mark">연습의 방향까지.</span>
                 </h1>
                 <p className="hero-description">
-                  현재 목소리를 먼저 확인하고,
-                  <br className="hidden sm:block" /> 어떤 조건에서 소리가 달라지는지 본 뒤,
-                  <br className="hidden sm:block" /> 필요한 연습 방향을 찾는 곳입니다.
+                  지금 목소리를 먼저 들어봅니다.
+                  <br className="hidden sm:block" /> 어떤 조건에서 소리가 달라지는지 보고,
+                  <br className="hidden sm:block" /> 거기서 연습 방향을 정합니다.
                 </p>
                 <div className="hero-actions">
                   <a href="#booking" className="btn-primary">
@@ -87,7 +87,7 @@ export default function Hero() {
                   <ArcGraphic className="cover-arc" />
                   <div className="cover-bottom">
                     <p>
-                      듣고, 살펴보고,
+                      들어보고, 살펴보고,
                       <br />
                       직접 바꿔보는 발성 수업.
                     </p>

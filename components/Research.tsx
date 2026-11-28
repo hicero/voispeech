@@ -6,12 +6,12 @@ const affiliations = [
   {
     title: "대한발성학회",
     role: "전 이사",
-    why: "학회 활동을 통해 발성·음성 분야의 흐름을 익혔습니다.",
+    why: "학회 활동으로 발성·음성 분야의 흐름을 익혔습니다.",
   },
   {
     title: "한국발성교정협회",
     role: "정회원",
-    why: "발성교정 현장과 협회 활동을 이어 가고 있습니다.",
+    why: "발성교정 현장과 협회 활동을 이어가고 있습니다.",
   },
 ] as const;
 
@@ -47,7 +47,7 @@ const featuredPapers: Paper[] = [
     venue: "Folia Phoniatrica et Logopaedica",
     year: "2010",
     doi: "https://doi.org/10.1159/000312668",
-    why: "테너가 음역을 넘길 때 MRI에서 입·인두 형태가 어떻게 달라지는지 보여 줍니다.",
+    why: "테너가 음역을 넘길 때 입과 인두 형태가 MRI에서 어떻게 바뀌는지 보여줍니다.",
     figure: {
       src: "/research/figures/echternach-2010-fig-mri.png",
       alt: "Echternach et al. Figure 3 — tenor MRI vocal-tract profiles: modal→falsetto vs voix mixte (D4/G4)",
@@ -65,7 +65,7 @@ const morePapers: Paper[] = [
     venue: "Journal of Voice",
     year: "2014",
     doi: "https://doi.org/10.1016/j.jvoice.2014.01.017",
-    why: "음높이와 소리 조건이 바뀔 때 후두 근육 활동 비율이 어떻게 달라지는지 살펴본 예비 연구입니다.",
+    why: "음높이와 소리 조건이 바뀔 때 후두 근육 활동 비율이 어떻게 바뀌는지 본 예비 연구입니다.",
     figure: {
       src: "/research/figures/kochis-2014-fig1-ct-ta.png",
       alt: "Kochis-Jennings et al. Figure 1 — CT:TA ratio vs fundamental frequency across subjects and registers",
@@ -95,7 +95,7 @@ const morePapers: Paper[] = [
     venue: "Journal of Voice",
     year: "2012",
     doi: "https://doi.org/10.1016/j.jvoice.2010.11.002",
-    why: "여러 소리 조건에서 후두 근육 활동과 접촉 양상이 어떻게 달라지는지 관찰한 연구입니다.",
+    why: "여러 소리 조건에서 후두 근육 활동과 접촉 양상을 관찰한 연구입니다.",
     figure: null,
   },
 ];
@@ -177,8 +177,8 @@ export default function Research() {
             </span>
           </h2>
           <p>
-            출판·논문·소속 활동은 아래에서 펼쳐 볼 수 있습니다. 확인된 자료만
-            올립니다.
+            출판, 논문, 소속 활동은 아래에서 펼쳐서 볼 수 있습니다. 확인된
+            자료만 올렸습니다.
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export default function Research() {
               </div>
             </dl>
             <p>
-              발성학을 보컬 현장에 연결한 도서입니다. VoiSpeech 코치진이 집필에
+              발성학을 보컬 현장에 연결한 책입니다. VoiSpeech 코치진이 집필에
               참여했습니다.
             </p>
           </div>
@@ -322,7 +322,7 @@ export default function Research() {
               >
                 <div className="expand-panel-inner">
                   <p>
-                    학제 간 연구와 교육을 통해 목소리에 대한 이해를 넓히는 일을
+                    학제 간 연구와 교육으로 목소리에 대한 이해를 넓히는 일을
                     함께합니다.
                   </p>
                 </div>
