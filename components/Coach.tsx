@@ -28,7 +28,7 @@ const coaches: CoachData[] = [
     nameEn: "JAE WOO",
     nameKo: "재우",
     role: "VOCAL DIRECTOR",
-    tagline: "1:1 발성 코칭과 5 Voice Check를 운영하고, 발성·음성교육을 담당합니다. SLS Certified Instructor Level 1(2012) 이력이 있습니다.",
+    tagline: "SLS Certified Instructor Level 1(2012) 이력을 바탕으로 1:1 발성 코칭과 5 Voice Check를 운영하며, 발성·음성교육을 담당합니다.",
     affiliation: "TVF Korea Chapter 회장 · VoiSpeech 대표",
     headlines: [
       "TVF Korea Chapter 회장 (현)",

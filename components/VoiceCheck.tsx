@@ -6,13 +6,13 @@ const areas = [
     num: "01",
     name: "숨과 소리 연결",
     en: "Respiration–Phonation Coordination",
-    desc: "소리가 편하게 시작돼서 이어지는지 확인합니다.",
+    desc: "소리가 편하게 시작돼서 이어지는지 봅니다.",
   },
   {
     num: "02",
     name: "저음·고음 연결",
     en: "Vocal Fold Adjustment & Register Coordination",
-    desc: "낮은 음에서 높은 음으로 자연스럽게 이어지는지 확인합니다.",
+    desc: "낮은 음에서 높은 음까지 끊기지 않고 넘어가는지 확인합니다.",
   },
   {
     num: "03",
@@ -24,13 +24,13 @@ const areas = [
     num: "04",
     name: "모음·울림 조절",
     en: "Vocal Tract & Resonance Coordination",
-    desc: "모음이나 음높이가 달라져도 원하는 소리를 만들 수 있는지 확인합니다.",
+    desc: "모음이나 음높이가 달라져도 원하는 소리를 만들 수 있는지 체크합니다.",
   },
   {
     num: "05",
     name: "소리 구별·재현",
     en: "Perception, Self-Monitoring & Motor Learning",
-    desc: "달라진 소리를 스스로 구별하고 다시 만들 수 있는지 살펴봅니다.",
+    desc: "달라진 소리를 스스로 구별하고 다시 만들 수 있는지 알아봅니다.",
   },
 ];
 

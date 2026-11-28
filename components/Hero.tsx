@@ -87,7 +87,7 @@ export default function Hero() {
                   <ArcGraphic className="cover-arc" />
                   <div className="cover-bottom">
                     <p>
-                      들어보고, 살펴보고,
+                      목소리를 듣고 살펴본 뒤,
                       <br />
                       직접 바꿔보는 발성 수업.
                     </p>
